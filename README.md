@@ -10,19 +10,35 @@ inference. There is no live dispatch command, automatic reset redemption, paid
 fallback, or installed scheduler. `would_request` is a synthetic planning result;
 it never sends a model request. See the [capability matrix](docs/CAPABILITIES.md).
 
-## Start in five minutes — no account login needed
+## Start here: one account, no login needed
 
 Prerequisites: Git and **Python 3.10+ on Linux**. Development and clean-clone tests
 run on Python 3.12.3. Windows users need WSL2 and run these commands inside Linux.
 Native Windows is unsupported; macOS is not validated. Codex is optional for this
 first offline setup. Python 3.10/3.11 and newer releases have not each been tested.
 
-Clone the repository (currently private; repository access is required):
+Open a Linux terminal (or your WSL2 terminal on Windows). Check your tools:
+
+```bash
+git --version
+python3 --version
+```
+
+Python must report 3.10 or newer. If either command is missing, install Git and
+Python through your Linux distribution's package manager first. On Ubuntu/Debian:
+
+```bash
+sudo apt update
+sudo apt install git python3
+```
+
+Clone the repository (currently private; repository access is required), then
+copy the **single-account** template. Run each line in the same terminal:
 
 ```bash
 git clone https://github.com/nofihq/codex-usage-reset-automation.git
 cd codex-usage-reset-automation
-cp examples/config.example.json config.json
+cp examples/config.single-account.json config.json
 python3 -m optimizer doctor --config config.json
 python3 -m optimizer check --config config.json
 python3 -m unittest discover -s tests -v
@@ -30,14 +46,17 @@ python3 -m optimizer dry-run --config config.json
 ```
 
 Expected: doctor/check return `ok: true`, tests pass, and the dry run reports `hold`
-for both aliases because account status is absent. Nothing contacts an account or
+for the `plus` alias because account status is absent. **`hold` is expected here:**
+it means the program is waiting for account information. Nothing contacts an account or
 the public feed by default. The tick writes bounded private state under
 `~/.local/state/codex-usage-reset-automation`; doctor/check write no state.
 
-For one account, copy `examples/config.single-account.json` instead. For more,
-add profiles with distinct `account_id` aliases and distinct `codex_home` values
-(up to 16). `account_id` is a local nickname, not an email or the real account ID.
-All verification gates default to false, and `model_id` is unset.
+`config.json` is your local settings file; it is ignored by Git. The `plus` alias
+is just a nickname, not an email or the real account ID. All verification gates
+default to false, and `model_id` is unset. You can stop here for offline planning,
+or continue with the optional account setup below.
+
+Add a second account later using [the multi-account instructions](docs/ACCOUNTS.md#add-a-second-account-later).
 
 ## Optional command installation
 
@@ -93,20 +112,23 @@ require hand-writing a snapshot.
 
 ## Read your own account — optional
 
-Install the official Codex CLI using its [official installation instructions](https://learn.chatgpt.com/docs/cli).
-The adapter accepts reviewed versions **0.158.0 and 0.159.2** and rejects other
-versions until their protocol is reviewed. Version 0.159.2 read methods were
-verified in a separate cloud environment; local 0.158.0 schema was inspected but
-account startup was blocked by runtime restrictions. A newer version is not
-assumed compatible merely because it installs.
+First [install the supported CLI version](docs/CLI_SETUP.md), then follow
+[the single-account sign-in guide](docs/ACCOUNTS.md). The CLI guide gives exact
+commands for **0.159.2**, keeps it separate from your usual installation, and
+checks the version before sign-in. Codex and Node.js/npm are needed only for
+this optional account-reading step.
 
-Follow [per-account sign-in](docs/ACCOUNTS.md), then:
+Once you have signed in and saved the account hash, run from the clone:
 
 ```bash
 python3 -m optimizer probe --config config.json --alias plus --check-version-only
 python3 -m optimizer probe --config config.json --alias plus
 python3 -m optimizer dry-run --config config.json --read-accounts
 ```
+
+Expected: read-only metadata, with `live_requests_enabled: false`. A `hold` can
+still be normal; use the [troubleshooting table](docs/ACCOUNTS.md#troubleshooting)
+to distinguish missing setup from an intentionally conservative decision.
 
 The optimizer never reads credential files itself, copies logins, or accesses
 session history. Official Codex owns its selected auth store and may perform its

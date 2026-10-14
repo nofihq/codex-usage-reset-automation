@@ -23,12 +23,20 @@ def main():
     with tempfile.TemporaryDirectory(prefix='optimizer-clean-clone-') as temp:
         base=Path(temp); clone=base/'source'; prefix=base/'installed'
         run(['git','clone','--no-hardlinks','--quiet',str(ROOT),str(clone)],base,env)
-        shutil.copyfile(clone/'examples/config.example.json',clone/'config.json')
+        shutil.copyfile(clone/'examples/config.single-account.json',clone/'config.json')
         steps=[]
         for command in ('doctor','check'):
             result=run(['python3','-m','optimizer',command,'--config','config.json'],clone,env)
             if not json.loads(result.stdout)['ok']: raise RuntimeError('Offline check failed')
             steps.append(command)
+        result=run(['python3','-m','optimizer','dry-run','--config','config.json',
+                    '--state-dir',str(base/'quickstart-state')],clone,env)
+        quickstart=json.loads(result.stdout)
+        if (quickstart['live_requests_enabled'] or len(quickstart['decisions']) != 1
+                or quickstart['decisions'][0]['account_id'] != 'plus'
+                or quickstart['decisions'][0]['action'] != 'hold'):
+            raise RuntimeError('Single-account quickstart must hold without live requests')
+        steps.append('single-account quickstart')
         result=run(['python3','-m','unittest','discover','-s','tests','-v'],clone,env)
         count=re.search(r'Ran (\d+) tests',result.stderr)
         steps.append('unit tests')
