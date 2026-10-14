@@ -22,8 +22,15 @@ tests pass after packaging and conservative adapter/storage changes.
 - Installed zipapp runs from an unrelated directory; errors retain nonzero exit
   codes; accidental overwrite is refused.
 - A fresh Git clone is checked with the documented config-copy, doctor/check,
-  tests, synthetic replay, privacy scan and executable installation steps.
+  single-account dry run, tests, synthetic replay, privacy scan and executable installation steps.
   `scripts/verify_clean_clone.py` reproduces these checks without network or auth.
+
+The beginner CLI installation path was also smoke-tested separately: the official
+`@openai/codex@0.159.2` npm package installed into an isolated user-owned prefix,
+the binary reported `codex-cli 0.159.2`, and the optimizer's version-only probe
+reported `reviewed: true` and `account_reads: 0`. This did not sign in, inspect
+an existing account, or validate live metadata/automation behavior. Node.js
+24.15.0 and npm 12.0.2 were used; other Node.js versions were not tested here.
 
 Run from a committed checkout:
 
