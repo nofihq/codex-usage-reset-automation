@@ -1,6 +1,8 @@
 # Contributing
 
-Use Linux and Python 3.10+; Python 3.12.3 is the verified development runtime.
+Use Python 3.10+ on Linux, macOS or Windows. Linux Python 3.12.3 is the verified
+development runtime; native Windows/macOS execution is still pending validation.
+On Windows replace `python3` below with `py -3`.
 No dependencies need installing. Start with:
 
 ```bash

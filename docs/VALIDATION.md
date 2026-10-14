@@ -46,6 +46,28 @@ actual reset inventory or account session was included. Git commits use a generi
 project identity. Private configuration and the preserved earlier source backup
 are outside the tracked source set.
 
+## Portability and cloud-benefit update
+
+The current portability suite contains 65 tests: 63 pass on Linux, and two native
+Windows ACL integration tests are skipped on Linux. It adds cross-process locking,
+Windows ACL policy rejection, three-OS CLI readiness, safe npm-shim resolution,
+explicit isolated interactive sign-in coverage, and timeout cleanup of the
+child process and pipe reader. Native Windows/macOS execution
+has not been run in this session; these implementations are not labeled validated.
+
+Linux no longer gates macOS/Windows out of the CLI. Windows uses native private
+ACL creation/validation and nonblocking byte-range locks; POSIX retains ownership,
+permissions and flock checks. A bounded threaded pipe reader supports the account
+protocol across OSes. The installer emits a Windows `.pyz`, and verification uses
+the current Python interpreter rather than assuming a `python3` command exists.
+
+The original personal dot conversation was inspected read-only. It reported cloud
+CLI account reads and manual cloud-browser Work message tests without using the
+personal computers, and reported archiving those test chats. No new account reads,
+model requests, cloud deployment, chat cleanup or dot/schedule changes were made
+for this update. Native OS integration, the pending Plus scheduled run and reusable
+cloud automation remain unverified here. See [cloud and usage](CLOUD_AND_USAGE.md).
+
 ## Historical evidence and unverified behavior
 
 The public keyless tracker adapter had previously completed a bounded REST fetch.

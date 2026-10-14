@@ -27,7 +27,7 @@ def main():
         if not path.is_file():
             problems.append({'file':name,'reason':'tracked file missing'})
             continue
-        text = path.read_text()
+        text = path.read_text(encoding='utf-8')
         if re.search(r'/home/[A-Za-z0-9_-]+/|/Users/[A-Za-z0-9_-]+/',text):
             problems.append({'file':name,'reason':'owner-specific absolute home path'})
         if re.search(r'\bsk-(?:proj-)?[A-Za-z0-9_-]{24,}',text) or re.search(r'\bgh[pousr]_[A-Za-z0-9]{24,}',text):

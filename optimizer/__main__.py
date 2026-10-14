@@ -9,6 +9,7 @@ from pathlib import Path
 from .adapters import FEED_BYTES, SnapshotStatusAdapter, TrackerAdapter, ingest_events, parse_timeline, read_json
 from .core import Policy, Profile, decide, iso, timestamp
 from .storage import Store, increment
+from .platforms import state_default
 
 
 def load_config(path):
@@ -65,7 +66,7 @@ def main(argv=None):
     parser.add_argument("--feed-fixture", help="Explicit tracker JSON fixture")
     parser.add_argument("--fetch-feed", action="store_true", help="Opt-in keyless read-only public GET; no account calls")
     parser.add_argument("--user-agent", help="Project name and contact URL for public feed")
-    parser.add_argument("--state-dir", default=str(Path.home()/".local"/"state"/"codex-usage-reset-automation"))
+    parser.add_argument("--state-dir", default=state_default())
     parser.add_argument("--now", help="ISO timestamp with timezone, for deterministic replay")
     args = parser.parse_args(argv)
     try:

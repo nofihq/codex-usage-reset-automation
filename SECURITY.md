@@ -17,11 +17,14 @@ oversized/stale responses and missing fields provide no authorization. Credit
 balances, permission, identity and activity must never default to safe values.
 
 Runtime state is bounded and uses atomic replacement and single-host locking.
-The directory must be owned by the current user with no group/world access.
+On POSIX the directory must be owned by the current user with no group/world
+access. Native Windows requires a private ACL granting access only to the current
+user, SYSTEM and local administrators; ACL-less/shared filesystems are rejected.
 Symlinked directories, symlinked/hard-linked state files, wrong owners and
 unsafe file write modes are rejected. Existing shared directory permissions are
 never repaired automatically. Create a new private directory or inspect locally.
-Same-user hostile concurrent filesystem modification is outside this guarantee;
+Windows junctions/reparse points are also rejected. Existing Windows ACLs are
+never repaired automatically. Same-user hostile concurrent filesystem modification is outside this guarantee;
 do not share this directory among adversarial processes or multiple hosts.
 
 No paid fallback, credit purchase, automatic earned-reset redemption or live

@@ -1,22 +1,18 @@
 """Composable commands; JSON output and no live inference command."""
 import argparse
 import json
-from pathlib import Path
 import sys
+from .platforms import state_default, supported
 
 
 def emit(value):
     print(json.dumps(value, indent=2, allow_nan=False))
 
 
-def state_default():
-    return str(Path.home()/".local"/"state"/"codex-usage-reset-automation")
-
-
 def doctor(config_path=None):
     """Offline readiness only; no account reads, network, or state writes."""
     result = {"mode": "offline", "python": ".".join(map(str, sys.version_info[:3])),
-              "platform_supported": sys.platform.startswith("linux") and sys.version_info >= (3, 10),
+              "platform_supported": supported(),
               "config_valid": None, "profile_count": 0, "live_requests_enabled": False,
               "account_reads": 0, "auth": "not inspected", "dependencies": "Python standard library only"}
     if config_path:
@@ -61,8 +57,8 @@ def main(argv=None):
     if parsed.command == "doctor":
         result = doctor(parsed.config); emit(result)
         return 0 if result["ok"] else 2
-    if not sys.platform.startswith("linux") or sys.version_info < (3, 10):
-        emit({"ok": False, "action": "hold", "reason": "Supported runtime is Linux with Python 3.10+; Windows requires WSL2"})
+    if not supported():
+        emit({"ok": False, "action": "hold", "reason": "Use Python 3.10+ on Windows, macOS or Linux"})
         return 2
     if parsed.command == "check":
         result = doctor(parsed.config); emit(result)

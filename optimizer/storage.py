@@ -1,4 +1,4 @@
-"""Single-host lock, atomic bounded state, fixed counters, rotating scrubbed logs."""
+"""Single-host native locks, private bounded state, rotating scrubbed logs."""
 from contextlib import contextmanager
 try:
     import fcntl
@@ -11,6 +11,11 @@ from pathlib import Path
 import tempfile
 
 from .adapters import read_json
+from .platforms import is_link, private_directory
+
+if os.name == 'nt':
+    import msvcrt
+    from .windows_security import validate_private
 
 STATE_BYTES = 131072
 LOG_BYTES = 65536
@@ -21,20 +26,19 @@ METRICS = ("ticks", "hold", "check_status", "would_request", "feed_ok", "feed_fa
 
 class Store:
     def __init__(self, directory):
-        if fcntl is None:
-            raise ValueError("POSIX file locking required; use Linux or WSL2")
-        self.directory = Path(directory).expanduser().absolute()
-        for component in (self.directory, *self.directory.parents):
-            if component.is_symlink():
-                raise ValueError("Symlinked state directory prohibited")
-        self.directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+        if fcntl is None and os.name != 'nt':
+            raise ValueError("No supported file-locking backend")
+        self.directory = private_directory(directory)
         self.path = self.directory / "state.json"
         self.validate_paths()
 
     def validate_paths(self):
         info = self.directory.lstat()
-        if (not stat.S_ISDIR(info.st_mode) or info.st_uid != os.geteuid()
-                or stat.S_IMODE(info.st_mode) & 0o077):
+        if not stat.S_ISDIR(info.st_mode) or is_link(self.directory):
+            raise ValueError("Unsafe state directory")
+        if os.name == 'nt':
+            validate_private(self.directory)
+        elif (info.st_uid != os.geteuid() or stat.S_IMODE(info.st_mode) & 0o077):
             raise ValueError("State directory must be owned by this user and private (0700)")
         paths = [self.path, self.directory/"lock"]
         paths += list(self.directory.glob("events.log*")) + list(self.directory.glob("state-*.tmp"))
@@ -43,18 +47,25 @@ class Store:
                 info = path.lstat()
             except FileNotFoundError:
                 continue
-            if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.geteuid()
-                    or info.st_nlink != 1 or stat.S_IMODE(info.st_mode) & 0o022):
+            if not stat.S_ISREG(info.st_mode) or is_link(path) or info.st_nlink != 1:
+                raise ValueError("Unsafe state file")
+            if os.name == 'nt':
+                validate_private(path)
+            elif (info.st_uid != os.geteuid() or stat.S_IMODE(info.st_mode) & 0o022):
                 raise ValueError("Unsafe state file; inspect locally without changing shared permissions")
 
     @contextmanager
     def locked(self):
         self.validate_paths()
-        fd = os.open(self.directory/"lock", os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+        fd = os.open(self.directory/"lock", os.O_RDWR | os.O_CREAT | getattr(os, 'O_NOFOLLOW', 0), 0o600)
         with os.fdopen(fd, "a") as lock:
             try:
-                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            except BlockingIOError as exc:
+                if os.name == 'nt':
+                    lock.seek(0)
+                    msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
+                else:
+                    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except OSError as exc:
                 raise ValueError("Another tick owns the state lock") from exc
             try:
                 # Remove only our own abandoned atomic-write temp files, under lock.
@@ -62,7 +73,11 @@ class Store:
                     orphan.unlink()
                 yield
             finally:
-                fcntl.flock(lock, fcntl.LOCK_UN)
+                if os.name == 'nt':
+                    lock.seek(0)
+                    msvcrt.locking(lock.fileno(), msvcrt.LK_UNLCK, 1)
+                else:
+                    fcntl.flock(lock, fcntl.LOCK_UN)
 
     def load(self):
         self.validate_paths()
@@ -92,11 +107,12 @@ class Store:
                 handle.flush()
                 os.fsync(handle.fileno())
             os.replace(name, self.path)
-            directory_fd = os.open(self.directory, os.O_RDONLY)
-            try:
-                os.fsync(directory_fd)
-            finally:
-                os.close(directory_fd)
+            if os.name != 'nt':
+                directory_fd = os.open(self.directory, os.O_RDONLY)
+                try:
+                    os.fsync(directory_fd)
+                finally:
+                    os.close(directory_fd)
         finally:
             Path(name).unlink(missing_ok=True)
 
@@ -117,16 +133,18 @@ class Store:
                 rows = path.read_text().splitlines(keepends=True)
                 keep = [row for row in rows if json.loads(row)["at"] >= now - LOG_RETENTION_SECONDS]
                 if keep != rows:
-                    path.write_text("".join(keep))
+                    with path.open("w", encoding="utf-8", newline="") as handle:
+                        handle.write("".join(keep))
         entry = json.dumps({"at": now, "code": code}, separators=(",", ":")) + "\n"
         if paths[0].exists() and paths[0].stat().st_size + len(entry.encode()) > LOG_BYTES:
             paths[-1].unlink(missing_ok=True)
             for i in range(LOG_FILES-2, -1, -1):
                 if paths[i].exists():
                     paths[i].replace(paths[i+1])
-        with paths[0].open("a") as handle:
+        with paths[0].open("a", encoding="utf-8", newline="") as handle:
             handle.write(entry)
-        os.chmod(paths[0], 0o600)
+        if os.name != 'nt':
+            os.chmod(paths[0], 0o600)
         os.utime(paths[0], (now, now))
 
 

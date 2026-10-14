@@ -8,13 +8,17 @@ import math
 import os
 from pathlib import Path
 import re
-import select
+import queue
 import subprocess
 import tempfile
+import threading
 import time
 from decimal import Decimal, InvalidOperation
 
 from .core import Status, Window, iso, timestamp
+from .platforms import codex_command, is_link
+
+CALL_TIMEOUT = 20
 
 ALLOWED = {"initialize", "account/read", "account/rateLimits/read", "model/list"}
 REVIEWED_VERSIONS = {"0.158.0", "0.159.2"}
@@ -39,7 +43,7 @@ def installed_version():
     """Version discovery uses an empty temporary home, never the owner's login."""
     try:
         with tempfile.TemporaryDirectory(prefix="optimizer-version-") as home:
-            result = subprocess.run(["codex", "--version"], env=child_environment(home), cwd=home,
+            result = subprocess.run(codex_command()+["--version"], env=child_environment(home), cwd=home,
                                     capture_output=True, timeout=10, text=True)
         match = re.fullmatch(r"codex-cli (\d+\.\d+\.\d+)\s*", result.stdout)
         return match.group(1) if result.returncode == 0 and match else None
@@ -49,20 +53,39 @@ def installed_version():
 
 class ReadOnlyClient:
     def __init__(self, codex_home):
-        if os.name != "posix":
-            raise ProbeError("AppServer probe requires POSIX; use Linux or WSL2")
         if installed_version() not in REVIEWED_VERSIONS:
             raise ProbeError("Codex version unavailable or outside reviewed versions")
         home = Path(codex_home).expanduser().absolute()
         # No inspection of files inside the selected credential store.
-        if home == Path.home()/".codex" or not home.is_dir() or home.is_symlink():
+        if home == Path.home()/".codex" or not home.is_dir() or is_link(home):
             raise ProbeError("A separate existing account home is required")
         self.process = subprocess.Popen(
-            ["codex", "-c", 'forced_login_method="chatgpt"', "app-server", "--listen", "stdio://"],
+            codex_command()+["-c", 'forced_login_method="chatgpt"', "app-server", "--listen", "stdio://"],
             env=child_environment(home), cwd=home, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL, bufsize=0)
         self.buffer = b""
         self.counter = 0
+        self.blocks = queue.Queue(maxsize=32)
+        self.stopped = threading.Event()
+        self.reader = threading.Thread(target=self.read_blocks, daemon=True)
+        self.reader.start()
+
+    def read_blocks(self):
+        # select() cannot wait on Windows anonymous pipes. One blocking reader
+        # works on all three OSes, with bounded buffering and no polling of I/O.
+        while not self.stopped.is_set():
+            try:
+                block = os.read(self.process.stdout.fileno(), 8192)
+            except OSError:
+                block = b''
+            while not self.stopped.is_set():
+                try:
+                    self.blocks.put(block, timeout=0.1)
+                    break
+                except queue.Full:
+                    continue
+            if not block:
+                return
 
     def send(self, payload):
         self.process.stdin.write((json.dumps(payload)+"\n").encode())
@@ -76,14 +99,14 @@ class ReadOnlyClient:
         if params is not None:
             message["params"] = params
         self.send(message)
-        deadline = time.monotonic()+20
+        deadline = time.monotonic()+CALL_TIMEOUT
         total = len(self.buffer)
         while time.monotonic() < deadline:
             if b"\n" not in self.buffer:
-                ready, _, _ = select.select([self.process.stdout], [], [], max(0, deadline-time.monotonic()))
-                if not ready:
+                try:
+                    block = self.blocks.get(timeout=max(0, deadline-time.monotonic()))
+                except queue.Empty:
                     break
-                block = os.read(self.process.stdout.fileno(), 8192)
                 if not block:
                     raise ProbeError("AppServer closed; check runtime support locally")
                 total += len(block)
@@ -112,6 +135,7 @@ class ReadOnlyClient:
         raise ProbeError("Read-only AppServer call timed out")
 
     def close(self):
+        self.stopped.set()
         self.process.terminate()
         try:
             self.process.wait(timeout=3)
@@ -120,6 +144,7 @@ class ReadOnlyClient:
             self.process.wait(timeout=3)
         for handle in (self.process.stdin, self.process.stdout):
             handle.close()
+        self.reader.join(timeout=1)
 
 
 def safe_number(value):

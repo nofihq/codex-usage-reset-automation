@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 import shutil
+import os
 import tempfile
 import zipapp
 
@@ -14,7 +15,7 @@ def main():
     parser.add_argument('--replace', action='store_true', help='Replace an existing optimizer executable only')
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
-    output = Path(args.prefix).expanduser()/'bin'/'codex-usage-optimizer'
+    output = Path(args.prefix).expanduser()/'bin'/('codex-usage-optimizer.pyz' if os.name == 'nt' else 'codex-usage-optimizer')
     if output.exists() and not args.replace:
         parser.error('Command already exists; choose another prefix or explicitly use --replace')
     if output.is_symlink():

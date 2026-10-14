@@ -2,7 +2,8 @@
 
 The repository installs **no schedule, service, workflow, cloud resource or secret**.
 Every `dry-run` exits after one finite tick. You may later manage a schedule with
-an existing free system scheduler on a Linux machine you control. Keep the
+an existing system scheduler on a machine you control (for example cron/systemd
+on Linux, launchd on macOS or Task Scheduler on Windows). Keep the
 command in dry-run/read-only mode and use one persistent private state directory
 for the configuration. Do not schedule a model invocation.
 
@@ -28,12 +29,18 @@ describes included usage and account-specific billing. No workflow is shipped.
 caches/artifacts as authoritative account/idempotency state. It is not the
 recommended host for authenticated subscription monitoring in this release.
 
-Only one host may use a state directory. POSIX `flock` is not a distributed lock.
+Only one host may use a state directory. POSIX `flock` and Windows byte-range
+locking are not distributed locks.
 For multiple hosts a separate durable state adapter, lease/compare-and-swap,
 concurrency tests and uncertainty recovery would be required; none is implemented.
 A cloud adapter would also need supported subscription auth, identity matching,
 explicit included-usage permission, and authoritative zero-credit/auto-reload and
 inactivity evidence before any hypothetical executor could be considered.
+
+For the cloud tests already reported by the personal dot, and the distinction
+between no extra paid API, subscription usage and always-on devices, see
+[CLOUD_AND_USAGE.md](CLOUD_AND_USAGE.md). Dot scheduling and OK execution remain
+deferred until the Plus run is verified.
 
 Nothing in this document changes subscription limits, creates quota, guarantees
 first-use timer behavior, or enables live dispatch. Keep any existing personal

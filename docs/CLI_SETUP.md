@@ -12,7 +12,7 @@ will work on every host.
 
 ## 1. Check Node.js and npm
 
-In a Bash terminal on Linux/WSL2, run:
+In a terminal on Linux/macOS/WSL2, or PowerShell on Windows, run:
 
 ```bash
 node --version
@@ -22,10 +22,12 @@ npm --version
 Both commands must work. The pinned package declares Node.js 16 or newer;
 use a currently supported Node.js LTS release from the
 [official Node.js download page](https://nodejs.org/en/download) if you need to
-install or update Node.js. Choose the Linux instructions when using WSL2.
+install or update Node.js. Choose your actual OS; use Linux instructions in WSL2.
 Return here once both version commands succeed.
 
 ## 2. Install exactly 0.159.2 in its own folder
+
+### Linux, macOS or WSL2 (Bash)
 
 These commands download the official package into a user-owned folder. They do
 not require `sudo`, change your npm configuration, or replace a CLI elsewhere:
@@ -59,6 +61,28 @@ overrides `codex`, use a fresh Bash terminal and repeat the PATH commands there.
 If npm reports a permission error, check that the destination belongs to your
 user; this installation should not need administrator rights.
 
+### Native Windows (PowerShell)
+
+Run these commands in PowerShell. npm's Windows installation puts its command
+shim directly in the prefix folder, so this PATH differs from the Bash version:
+
+```powershell
+npm install --global --prefix "$env:LOCALAPPDATA/codex-optimizer/cli-0.159.2" @openai/codex@0.159.2
+$env:PATH = "$env:LOCALAPPDATA/codex-optimizer/cli-0.159.2;$env:PATH"
+codex --version
+```
+
+Expected: `codex-cli 0.159.2`. Keep using this terminal; repeat the PATH line in
+new PowerShell windows. To inspect an unexpected version:
+
+```powershell
+& "$env:LOCALAPPDATA/codex-optimizer/cli-0.159.2/codex.cmd" --version
+Get-Command codex -All
+```
+
+The optimizer invokes the official npm JavaScript launcher through Node directly,
+so probes do not depend on executing a batch file or a PowerShell script.
+
 ## 3. Verify the optimizer sees the supported version
 
 From the repository folder, with the single-account `config.json` from the README:
@@ -66,6 +90,8 @@ From the repository folder, with the single-account `config.json` from the READM
 ```bash
 python3 -m optimizer probe --config config.json --alias plus --check-version-only
 ```
+
+On Windows, use `py -3` instead of `python3` in that command.
 
 Expected JSON includes `"codex_version": "0.159.2"`, `"reviewed": true`, and
 `"account_reads": 0`. This check uses an empty temporary Codex home; you do not

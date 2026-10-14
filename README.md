@@ -1,23 +1,48 @@
 # Codex Usage & Reset Optimizer
 
-Monitor Codex usage windows, recognize public reset hints, and plan the next useful
-status check. This small Python project ships **dry-run planning and opt-in
-read-only account metadata**, with free tooling and no third-party dependencies.
-It does not grant extra quota or bypass subscription limits.
+Keep track of Codex usage and reset windows with a small, free Python monitor.
+It saves verified window timestamps and usage percentages, plans the next useful
+check, and avoids sending model requests just to inspect usage.
 
-**Current stage:** a portable monitoring scaffold, not clone-and-forget autonomous
-inference. There is no live dispatch command, automatic reset redemption, paid
-fallback, or installed scheduler. `would_request` is a synthetic planning result;
-it never sends a model request. See the [capability matrix](docs/CAPABILITIES.md).
+- **Free tooling:** Python standard library only; no paid API key, paid fallback,
+  or additional package dependencies for the monitor.
+- **Cloud-first goal:** monitor from a cloud environment and access results from
+  Windows, macOS or Linux, without leaving your personal laptop running.
+- **Minimal usage:** offline planning sends zero model requests. Account reads are
+  explicit; the public reset feed defaults to one check every four hours when
+  enabled. The planner returns `next_check_at` for timestamp-based follow-up.
+- **Small storage footprint:** state is capped at 128 KiB; four rotating logs at
+  64 KiB each give about 384 KiB of steady optimizer data. Atomic writes can add
+  one temporary state file. CLI installs, caches and cloud chat storage are separate.
+
+**What is verified today:** the Python monitor and Linux clean-clone setup. A
+separate personal dot setup previously read account metadata through a cloud CLI
+and sent manual test messages through cloud browser Work without using the
+personal computers. That demonstrates a cloud route independent of the laptop's
+OS; it does not install that route for everyone who clones this repository.
+
+**Still pending:** the scheduled Plus run, automatic OK requests, verified timer
+benefits, and reusable dot/cloud deployment. Keep those deferred until the Plus
+run is verified. The shipped repo runs finite monitoring/dry-run ticks and installs
+no scheduler. It does not create extra quota or bypass subscription limits.
+
+Cloud access can avoid an always-on personal device **when execution stays in the
+cloud**. A task that controls your connected laptop still needs that laptop online.
+Cloud service/subscription eligibility and allowance apply; "free tooling" does
+not mean a free ChatGPT subscription or guaranteed free hosting. See
+[cloud, usage and chat storage](docs/CLOUD_AND_USAGE.md) and the
+[capability matrix](docs/CAPABILITIES.md).
 
 ## Start here: one account, no login needed
 
-Prerequisites: Git and **Python 3.10+ on Linux**. Development and clean-clone tests
-run on Python 3.12.3. Windows users need WSL2 and run these commands inside Linux.
-Native Windows is unsupported; macOS is not validated. Codex is optional for this
-first offline setup. Python 3.10/3.11 and newer releases have not each been tested.
+Prerequisites: Git and **Python 3.10+**. Linux, macOS and native Windows code paths
+are implemented; Linux is tested here, while native Windows/macOS validation is
+pending. WSL2 remains an option. Codex is optional for the first offline setup.
+Development tests use Python 3.12.3; other Python releases are not each tested.
 
-Open a Linux terminal (or your WSL2 terminal on Windows). Check your tools:
+### Linux, macOS or WSL2
+
+Open a terminal. Check your tools:
 
 ```bash
 git --version
@@ -25,7 +50,7 @@ python3 --version
 ```
 
 Python must report 3.10 or newer. If either command is missing, install Git and
-Python through your Linux distribution's package manager first. On Ubuntu/Debian:
+Python for your OS first. On Ubuntu/Debian:
 
 ```bash
 sudo apt update
@@ -48,8 +73,32 @@ python3 -m optimizer dry-run --config config.json
 Expected: doctor/check return `ok: true`, tests pass, and the dry run reports `hold`
 for the `plus` alias because account status is absent. **`hold` is expected here:**
 it means the program is waiting for account information. Nothing contacts an account or
-the public feed by default. The tick writes bounded private state under
-`~/.local/state/codex-usage-reset-automation`; doctor/check write no state.
+the public feed by default. Doctor/check write no state. Dry-run state defaults to
+`~/.local/state/codex-usage-reset-automation` on Linux,
+`~/Library/Application Support/codex-usage-reset-automation` on macOS, and
+`%LOCALAPPDATA%\codex-usage-reset-automation` on Windows.
+
+### Native Windows (PowerShell)
+
+Install Git and Python 3.10+ if needed, then open PowerShell. The Python installer
+must provide the `py` launcher. Run each line:
+
+```powershell
+git --version
+py -3 --version
+git clone https://github.com/nofihq/codex-usage-reset-automation.git
+Set-Location codex-usage-reset-automation
+Copy-Item examples/config.single-account.json config.json
+py -3 -m optimizer doctor --config config.json
+py -3 -m optimizer check --config config.json
+py -3 -m unittest discover -s tests -v
+py -3 -m optimizer dry-run --config config.json
+```
+
+Expected: `ok: true` from doctor/check and one `hold` for `plus`. Runtime state
+requires a filesystem with working Windows ACLs; unsafe/shared state folders hold.
+In the remaining Python examples, replace `python3` with `py -3` on Windows.
+The [CLI setup guide](docs/CLI_SETUP.md) has separate PowerShell installation steps.
 
 `config.json` is your local settings file; it is ignored by Git. The `plus` alias
 is just a nickname, not an email or the real account ID. All verification gates
@@ -60,12 +109,20 @@ Add a second account later using [the multi-account instructions](docs/ACCOUNTS.
 
 ## Optional command installation
 
-No pip, npm, virtualenv, administrator rights, or downloads are needed:
+For the optimizer executable, no pip, npm, virtualenv, administrator rights, or
+downloads are needed. On Linux/macOS:
 
 ```bash
 python3 scripts/install.py --prefix "$HOME/.local"
 export PATH="$HOME/.local/bin:$PATH"
 codex-usage-optimizer doctor --config "$PWD/config.json"
+```
+
+On Windows, the installer produces a `.pyz` archive; run it through Python:
+
+```powershell
+py -3 scripts/install.py --prefix "$HOME/.local"
+py -3 "$HOME/.local/bin/codex-usage-optimizer.pyz" doctor --config "$PWD/config.json"
 ```
 
 The installer builds one executable Python zipapp. Python must stay installed.

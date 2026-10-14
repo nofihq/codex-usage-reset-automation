@@ -10,21 +10,28 @@ stay in a separate Codex home, which is a folder where the official CLI stores
 that account's login. Do not copy your existing login or select your usual
 `.codex` home.
 
-## 1. Create a private account folder
+## 1. Start official sign-in for your alias
+
+The single-account template already chooses a separate account home. The helper
+creates that folder with private permissions (POSIX mode or native Windows ACL),
+checks the reviewed CLI version, and launches the official interactive login.
+It never reads/copies credentials, sends a model request, or edits dot schedules.
+
+On Linux/macOS/WSL2:
 
 ```bash
-mkdir -p "$HOME/.local/share/codex-optimizer/accounts"
-install -d -m 700 "$HOME/.local/share/codex-optimizer/accounts/plus"
+python3 scripts/account_login.py --config config.json --alias plus
 ```
 
-The single-account template already points to this folder; no path editing is
-needed. Use a new, empty account folder for this first setup.
+On native Windows (PowerShell):
 
-## 2. Sign in through the official CLI
-
-```bash
-env CODEX_HOME="$HOME/.local/share/codex-optimizer/accounts/plus" codex -c 'forced_login_method="chatgpt"' login
+```powershell
+py -3 scripts/account_login.py --config config.json --alias plus
 ```
+
+You run this helper explicitly; it does not perform unattended authentication.
+Use a new, empty account folder for this first setup. Existing shared permissions
+are rejected, not silently repaired.
 
 Complete the browser sign-in and confirm that it is the account you want to
 monitor. If the browser selected a different account, change the browser identity
@@ -33,7 +40,9 @@ during sign-in. Use ChatGPT sign-in; do not paste API keys or access tokens.
 If you are on a host that cannot open a browser, use the
 [device-code alternative](#sign-in-on-a-headless-host) instead of this command.
 
-## 3. Read the account hash
+## 2. Read the account hash
+
+On Windows use `py -3` instead of `python3` in the following commands.
 
 ```bash
 python3 -m optimizer probe --config config.json --alias plus
@@ -41,14 +50,14 @@ python3 -m optimizer probe --config config.json --alias plus
 
 Expected: `limits_read` and `models_read` are `"completed"`. Find the
 `account_identity_hash` **inside the `limits` object**. It must be a 16-character
-value. Before recording it, confirm that step 2 signed in to the intended account.
+value. Before recording it, confirm that step 1 signed in to the intended account.
 A hash alone does not identify the browser user.
 
 On this first probe, `status_available: false` is expected because you have not
 saved the expected hash yet. If the hash is null/missing, or either read is not
 completed, see [troubleshooting](#troubleshooting); do not guess a hash.
 
-## 4. Save the hash in your local config
+## 3. Save the hash in your local config
 
 Open `config.json` in a text editor. In the `plus` profile, replace this line:
 
@@ -85,7 +94,7 @@ check staged files before committing anything.
 |---|---|
 | `codex: command not found`, a null version, or an unreviewed version | Repeat the PATH selection and version check in [CLI setup](CLI_SETUP.md). |
 | `check` reports `ok: false` after editing | Check JSON syntax: double quotes around the hash, exactly 16 lowercase hexadecimal characters, and no missing/extra commas. |
-| Probe says the selected context is not a ChatGPT subscription | Repeat official ChatGPT sign-in in the separate account folder and confirm browser identity. |
+| Probe says the selected context is not a ChatGPT subscription | Repeat the sign-in helper for that alias and confirm browser identity. |
 | Account reads complete, but `limits.account_identity_hash` is null | The required usage identity is unavailable on that host/protocol. Stop at offline planning; do not substitute the top-level hash or invent one. |
 | `status_available: false` after saving the correct hash | Identity, permission, complete windows or models may still be unavailable. Read the `limits` fields and `blocker` locally; unknown information holds. |
 | Socket/permission error, startup failure, or timeout | This is a host capability blocker. Keep offline planning available; do not loosen sandbox or account-folder permissions. |
@@ -97,17 +106,17 @@ account hashes, real probe output, or private file paths.
 
 ## Sign in on a headless host
 
-Where official device-code sign-in is available, use this instead of step 2:
+Where official device-code sign-in is available, use this instead of step 1:
 
 ```bash
-env CODEX_HOME="$HOME/.local/share/codex-optimizer/accounts/plus" codex -c 'forced_login_method="chatgpt"' login --device-auth
+python3 scripts/account_login.py --config config.json --alias plus --device-auth
 ```
 
 Follow the displayed URL/code using a browser and confirm the intended account.
 Device-code support can require an account/workspace setting. If unavailable,
 resolve official sign-in on that host; do not copy credentials from another
 computer. See [official authentication](https://learn.chatgpt.com/docs/auth#login-on-headless-devices).
-Then continue with step 3.
+On Windows replace `python3` with `py -3`. Then continue with step 2.
 
 ## Add a second account later
 
@@ -116,17 +125,17 @@ profile from `examples/config.example.json` as a second object in the `profiles`
 array, with a comma between the objects. Do not replace your configured file with
 the template. Every account needs a distinct nickname and Codex home.
 
-Create the second home and sign in to the second account:
+Let the helper create the second private home and sign in to the second account
+(on Windows replace `python3` with `py -3`):
 
 ```bash
-install -d -m 700 "$HOME/.local/share/codex-optimizer/accounts/pro"
-env CODEX_HOME="$HOME/.local/share/codex-optimizer/accounts/pro" codex -c 'forced_login_method="chatgpt"' login
+python3 scripts/account_login.py --config config.json --alias pro
 python3 -m optimizer check --config config.json
 python3 -m optimizer probe --config config.json --alias pro
 ```
 
 Confirm the second browser identity, then save that probe's
-`limits.account_identity_hash` in the `pro` profile using steps 3–4. Run
+`limits.account_identity_hash` in the `pro` profile using steps 2–3. Run
 `python3 -m optimizer dry-run --config config.json --read-accounts` to read both.
 Up to 16 profiles are supported. Leave existing aliases unchanged when reusing
 state; changing/removing them can require manual reconciliation.

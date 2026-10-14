@@ -1,3 +1,4 @@
+from helpers import private_temp
 import contextlib
 from dataclasses import asdict, replace
 import io
@@ -245,7 +246,7 @@ class StorageAndCLI(unittest.TestCase):
         self.assertEqual(len(identity_hash("fixture-id")),16)
 
     def test_snapshot_missing_identity_permission_invalid_auth_and_zero(self):
-        with tempfile.TemporaryDirectory() as temp:
+        with private_temp() as temp:
             path=Path(temp)/"snapshot.json"
             base=json.loads((ROOT/"fixtures/status-after.json").read_text())
             for field,value in (("auth_kind","api_key"),("account_id",None),("ordinary_usage_allowed","true")):
@@ -257,7 +258,7 @@ class StorageAndCLI(unittest.TestCase):
             path.write_text(json.dumps(base)); self.assertEqual(SnapshotStatusAdapter(path).read("plus").windows[0].used_percent,0)
 
     def test_atomic_state_limits_corruption_and_lock(self):
-        with tempfile.TemporaryDirectory() as temp:
+        with private_temp() as temp:
             store=Store(temp); state=store.load(); store.save(state)
             self.assertEqual(store.load(),state)
             with store.locked():
@@ -270,7 +271,7 @@ class StorageAndCLI(unittest.TestCase):
             with self.assertRaises(ValueError): store.load()
 
     def test_logs_rotate_and_retention(self):
-        with tempfile.TemporaryDirectory() as temp:
+        with private_temp() as temp:
             store=Store(temp)
             entry=json.dumps({"at":NOW,"code":"hold"})+"\n"
             for i in range(6):
@@ -295,7 +296,7 @@ class StorageAndCLI(unittest.TestCase):
         return code,json.loads(out.getvalue())
 
     def test_cli_two_accounts_missing_status_and_replay(self):
-        with tempfile.TemporaryDirectory() as temp:
+        with private_temp() as temp:
             base=["--config",str(ROOT/"examples/config.fixture.json"),"--state-dir",temp]
             code,out=self.run_cli(base+["--now","2026-10-14T10:00:00Z"])
             self.assertEqual(code,0); self.assertEqual(len(out["decisions"]),2)
@@ -311,7 +312,7 @@ class StorageAndCLI(unittest.TestCase):
             self.assertEqual(code,2); self.assertEqual(out["action"],"hold")
 
     def test_oversized_nonfinite_and_naive_inputs(self):
-        with tempfile.TemporaryDirectory() as temp:
+        with private_temp() as temp:
             path=Path(temp)/"input"; path.write_text("x"*100)
             with self.assertRaises(ValueError): read_json(path,10)
             path.write_text('{"used":NaN}')

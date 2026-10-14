@@ -1,4 +1,5 @@
 """Offline regression coverage; every account/protocol payload is synthetic."""
+from helpers import private_temp
 from contextlib import redirect_stdout
 from dataclasses import asdict, replace
 import io
@@ -6,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -16,6 +18,7 @@ from optimizer.core import decide
 from optimizer.probe import (OfficialStatusAdapter, ProbeError, ReadOnlyClient, child_environment,
                              identity_hash, probe, sanitized_limits, status_from_report)
 from optimizer.storage import Store
+from optimizer.platforms import installed_command
 import test_optimizer as baseline
 from test_optimizer import NOW, ROOT
 
@@ -23,7 +26,7 @@ from test_optimizer import NOW, ROOT
 class ConfigAndCLI(unittest.TestCase):
     def test_one_and_sixteen_aliases_and_duplicates(self):
         original=json.loads((ROOT/'examples/config.fixture.json').read_text())
-        with tempfile.TemporaryDirectory() as temp:
+        with private_temp() as temp:
             path=Path(temp)/'config.json'
             for count in (1,3,16):
                 data={**original,'profiles':[{**original['profiles'][0],'account_id':f'account-{i}'} for i in range(count)]}
@@ -34,7 +37,7 @@ class ConfigAndCLI(unittest.TestCase):
 
     def test_homes_relative_to_config_and_unique(self):
         original=json.loads((ROOT/'examples/config.fixture.json').read_text())
-        with tempfile.TemporaryDirectory() as temp:
+        with private_temp() as temp:
             path=Path(temp)/'config.json'
             original['profiles'][0]['codex_home']='accounts/plus'
             path.write_text(json.dumps(original))
@@ -52,7 +55,7 @@ class ConfigAndCLI(unittest.TestCase):
             self.assertFalse(doctor('/missing-config-fixture')['ok'])
 
     def test_check_exit_and_no_state_creation(self):
-        with tempfile.TemporaryDirectory() as temp:
+        with private_temp() as temp:
             out=io.StringIO()
             with redirect_stdout(out):
                 code=main(['check','--config',str(ROOT/'examples/config.example.json')])
@@ -142,7 +145,7 @@ class OfficialAdapter(unittest.TestCase):
             with self.assertRaises(ProbeError): ReadOnlyClient('/synthetic/home')
 
     def test_tick_uses_time_after_read_and_rejects_simulated_clock(self):
-        with tempfile.TemporaryDirectory() as temp:
+        with private_temp() as temp:
             base=Path(temp); config=json.loads((ROOT/'examples/config.example.json').read_text())
             for row in config['profiles']: row['expected_account_id_hash']=identity_hash('synthetic-account-id')
             path=base/'config.json'; path.write_text(json.dumps(config))
@@ -158,7 +161,7 @@ class OfficialAdapter(unittest.TestCase):
             self.assertEqual(code,2); self.assertFalse((base/'other').exists())
 
     def test_tick_read_only_adapter_connection(self):
-        with tempfile.TemporaryDirectory() as temp:
+        with private_temp() as temp:
             out=io.StringIO()
             with patch('optimizer.probe.probe',return_value=self.report()), redirect_stdout(out):
                 code=tick(['--config',str(ROOT/'examples/config.example.json'),'--read-accounts','--state-dir',temp])
@@ -169,17 +172,20 @@ class OfficialAdapter(unittest.TestCase):
 
 
 class PrivateStorage(unittest.TestCase):
+    @unittest.skipUnless(os.name == 'posix', 'POSIX permission bits')
     def test_shared_directory_rejected_without_chmod(self):
-        with tempfile.TemporaryDirectory() as temp:
+        with private_temp() as temp:
             path=Path(temp)/'shared'; path.mkdir(mode=0o777); path.chmod(0o777)
             with self.assertRaises(ValueError): Store(path)
             self.assertEqual(path.stat().st_mode & 0o777,0o777)
             self.assertEqual(list(path.iterdir()),[])
 
     def test_symlinked_directory_and_state_paths_rejected(self):
-        with tempfile.TemporaryDirectory() as temp:
+        with private_temp() as temp:
             base=Path(temp); safe=base/'safe'; safe.mkdir(mode=0o700)
-            link=base/'link'; link.symlink_to(safe,target_is_directory=True)
+            link=base/'link'
+            try: link.symlink_to(safe,target_is_directory=True)
+            except OSError: self.skipTest('Symlink creation requires OS permission')
             with self.assertRaises(ValueError): Store(link)
             sentinel=base/'sentinel'; sentinel.write_text('unchanged')
             for name in ('state.json','lock','events.log','state-unsafe.tmp'):
@@ -188,32 +194,33 @@ class PrivateStorage(unittest.TestCase):
                 self.assertEqual(sentinel.read_text(),'unchanged'); path.unlink()
 
     def test_wrong_owner_and_hard_link_rejected(self):
-        with tempfile.TemporaryDirectory() as temp:
-            with patch('optimizer.storage.os.geteuid',return_value=os.geteuid()+1):
-                with self.assertRaises(ValueError): Store(temp)
+        with private_temp() as temp:
+            if os.name == 'posix':
+                with patch('optimizer.storage.os.geteuid',return_value=os.geteuid()+1):
+                    with self.assertRaises(ValueError): Store(temp)
             path=Path(temp)/'state.json'; path.write_text('{}'); path.chmod(0o600)
             os.link(path,Path(temp)/'second-link')
             with self.assertRaises(ValueError): Store(temp)
 
     def test_new_directory_is_private(self):
-        with tempfile.TemporaryDirectory() as temp:
+        with private_temp() as temp:
             path=Path(temp)/'state'; store=Store(path)
-            self.assertEqual(path.stat().st_mode & 0o777,0o700)
+            if os.name == 'posix': self.assertEqual(path.stat().st_mode & 0o777,0o700)
             with store.locked(): store.save(store.load())
-            self.assertEqual((path/'state.json').stat().st_mode & 0o777,0o600)
+            if os.name == 'posix': self.assertEqual((path/'state.json').stat().st_mode & 0o777,0o600)
 
 
 class Install(unittest.TestCase):
     def test_zipapp_from_unrelated_directory_and_error_exit(self):
-        with tempfile.TemporaryDirectory() as temp:
-            result=subprocess.run(['python3',str(ROOT/'scripts/install.py'),'--prefix',temp],capture_output=True,text=True)
+        with private_temp() as temp:
+            result=subprocess.run([sys.executable,str(ROOT/'scripts/install.py'),'--prefix',temp],capture_output=True,text=True)
             self.assertEqual(result.returncode,0,result.stderr)
-            command=str(Path(temp)/'bin/codex-usage-optimizer')
-            result=subprocess.run([command,'doctor','--config',str(ROOT/'examples/config.example.json')],cwd=temp,capture_output=True,text=True)
+            command=installed_command(temp)
+            result=subprocess.run(command+['doctor','--config',str(ROOT/'examples/config.example.json')],cwd=temp,capture_output=True,text=True)
             self.assertEqual(result.returncode,0,result.stderr); self.assertTrue(json.loads(result.stdout)['ok'])
-            result=subprocess.run([command,'check','--config','/missing-fixture-config'],cwd=temp,capture_output=True,text=True)
+            result=subprocess.run(command+['check','--config','/missing-fixture-config'],cwd=temp,capture_output=True,text=True)
             self.assertEqual(result.returncode,2)
-            result=subprocess.run(['python3',str(ROOT/'scripts/install.py'),'--prefix',temp],capture_output=True,text=True)
+            result=subprocess.run([sys.executable,str(ROOT/'scripts/install.py'),'--prefix',temp],capture_output=True,text=True)
             self.assertEqual(result.returncode,2)
 
 
