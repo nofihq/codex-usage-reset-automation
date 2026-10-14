@@ -1,7 +1,7 @@
 # Validation evidence — October 14, 2026
 
 Repository packaging was verified on Linux with Python 3.12.3 and Git, using only
-existing free tooling. The original 36 tests passed before edits; 56 distinct
+existing free tooling. The original 36 tests passed before edits; 57 distinct
 tests pass after packaging and conservative adapter/storage changes.
 
 ## Verification scope

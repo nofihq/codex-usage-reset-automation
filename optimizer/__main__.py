@@ -69,6 +69,8 @@ def main(argv=None):
     parser.add_argument("--now", help="ISO timestamp with timezone, for deterministic replay")
     args = parser.parse_args(argv)
     try:
+        if args.read_accounts and args.now:
+            raise ValueError("Live metadata reads cannot use a simulated clock")
         if args.read_accounts and args.status:
             raise ValueError("Choose snapshots or read-only accounts")
         config, profiles, policy = load_config(args.config)
@@ -103,12 +105,13 @@ def main(argv=None):
                     official = OfficialStatusAdapter(row.get("codex_home"), row.get("expected_account_id_hash"))
                     status = official.read(profile.account_id)
                     probes.append({"alias": profile.account_id, "report": official.report})
-                decision = decide(profile, status, account.get("previous"), new_events, account, now, policy)
+                decision_now = time.time() if args.read_accounts else now
+                decision = decide(profile, status, account.get("previous"), new_events, account, decision_now, policy)
                 increment(state, decision.action)
                 store.log(now, decision.action)
                 if status and status.verified and status.account_id == profile.account_id and status.ordinary_usage_allowed is True:
                     # Snapshot tracking only; reset feed never changes these clocks.
-                    if 0 <= now - status.observed_at <= policy.status_max_age_seconds:
+                    if 0 <= decision_now - status.observed_at <= policy.status_max_age_seconds:
                         account["previous"] = asdict(status)
                 row = asdict(decision)
                 row["next_check_at"] = iso(decision.next_check_at)

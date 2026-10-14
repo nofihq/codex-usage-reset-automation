@@ -141,6 +141,22 @@ class OfficialAdapter(unittest.TestCase):
         with patch('optimizer.probe.installed_version',return_value='99.0.0'), patch('subprocess.Popen',side_effect=AssertionError('No startup')):
             with self.assertRaises(ProbeError): ReadOnlyClient('/synthetic/home')
 
+    def test_tick_uses_time_after_read_and_rejects_simulated_clock(self):
+        with tempfile.TemporaryDirectory() as temp:
+            base=Path(temp); config=json.loads((ROOT/'examples/config.example.json').read_text())
+            for row in config['profiles']: row['expected_account_id_hash']=identity_hash('synthetic-account-id')
+            path=base/'config.json'; path.write_text(json.dumps(config))
+            out=io.StringIO()
+            with patch('optimizer.probe.probe',return_value=self.report()), patch('optimizer.__main__.time.time',side_effect=[NOW-1,NOW+1,NOW+2]), redirect_stdout(out):
+                code=tick(['--config',str(path),'--read-accounts','--state-dir',str(base/'state')])
+            self.assertEqual(code,0)
+            result=json.loads(out.getvalue())
+            self.assertTrue(all('stale or from the future' not in d['reason'] for d in result['decisions']))
+            out=io.StringIO()
+            with redirect_stdout(out):
+                code=tick(['--config',str(path),'--read-accounts','--now','2026-10-14T12:02:00Z','--state-dir',str(base/'other')])
+            self.assertEqual(code,2); self.assertFalse((base/'other').exists())
+
     def test_tick_read_only_adapter_connection(self):
         with tempfile.TemporaryDirectory() as temp:
             out=io.StringIO()
