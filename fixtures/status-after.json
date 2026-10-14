@@ -1,0 +1,50 @@
+{
+  "accounts": {
+    "plus": {
+      "account_id": "plus",
+      "auth_kind": "chatgpt",
+      "verified": true,
+      "ordinary_usage_allowed": true,
+      "observed_at": "2026-10-14T12:02:00Z",
+      "model_ids": [],
+      "windows": [
+        {
+          "key": "fixture-primary",
+          "used_percent": 0,
+          "resets_at": "2026-10-14T17:00:00Z",
+          "duration_minutes": 300
+        },
+        {
+          "key": "fixture-weekly",
+          "used_percent": 0,
+          "resets_at": "2026-10-20T12:00:00Z",
+          "duration_minutes": 10080
+        }
+      ],
+      "purchased_credit_balance_zero": true,
+      "auto_reload_enabled": false,
+      "active_work": false,
+      "inactivity_verified": true
+    },
+    "pro": {
+      "account_id": "pro",
+      "auth_kind": "chatgpt",
+      "verified": true,
+      "ordinary_usage_allowed": null,
+      "observed_at": "2026-10-14T12:02:00Z",
+      "model_ids": [],
+      "windows": [
+        {
+          "key": "fixture-weekly",
+          "used_percent": 0,
+          "resets_at": "2026-10-20T12:00:00Z",
+          "duration_minutes": 10080
+        }
+      ],
+      "purchased_credit_balance_zero": true,
+      "auto_reload_enabled": false,
+      "active_work": false,
+      "inactivity_verified": true
+    }
+  }
+}

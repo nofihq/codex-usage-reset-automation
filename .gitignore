@@ -1,0 +1,33 @@
+# Private configuration and runtime
+/config.json
+/config.*.json
+/runtime*/
+/accounts/
+/.accounts/
+/private/
+/snapshots/
+*auth*.json
+.env
+.env.*
+*.pem
+*.key
+*.log
+*.log.*
+# Never commit Codex credential stores, sessions or browser captures
+.codex/
+sessions/
+history.jsonl
+screenshots/
+captures/
+*.har
+*.mp4
+*.png
+*.jpg
+# Python/install artifacts
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
