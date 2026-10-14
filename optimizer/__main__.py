@@ -7,7 +7,7 @@ import time
 from pathlib import Path
 
 from .adapters import FEED_BYTES, SnapshotStatusAdapter, TrackerAdapter, ingest_events, parse_timeline, read_json
-from .core import Policy, Profile, decide, iso, timestamp
+from .core import Policy, Profile, decide, iso, timestamp, observe_fixed_resets
 from .storage import Store, increment
 
 
@@ -43,7 +43,17 @@ def load_config(path):
     for p in profiles:
         if not re.fullmatch(r"[A-Za-z0-9_.:-]{1,100}", p.account_id):
             raise ValueError("Invalid expected account identity")
-        if len(p.assumed_windows_minutes) > 16:
+        if p.activity_policy not in {"verified_inactivity", "remaining_percent_heuristic"}:
+            raise ValueError("Invalid activity policy")
+        if p.trigger_window_minutes is not None and (type(p.trigger_window_minutes) is not int or p.trigger_window_minutes <= 0):
+            raise ValueError("Invalid trigger window duration")
+        if p.activity_policy == "remaining_percent_heuristic" and p.trigger_window_minutes is None:
+            raise ValueError("Heuristic requires explicit trigger window duration")
+        if p.trigger_window_minutes is not None and p.trigger_window_minutes not in p.assumed_windows_minutes:
+            raise ValueError("Trigger window must be included in expected coverage")
+        if p.activity_policy == "remaining_percent_heuristic" and p.trigger_window_minutes == 300 and 10080 not in p.assumed_windows_minutes:
+            raise ValueError("Five-hour heuristic requires weekly coverage")
+        if not 1 <= len(p.assumed_windows_minutes) <= 16:
             raise ValueError("Too many window assumptions")
         if any(type(v) is not int or v <= 0 for v in p.assumed_windows_minutes):
             raise ValueError("Invalid window assumptions")
@@ -98,6 +108,13 @@ def main(argv=None):
             probes = []
             for index, profile in enumerate(profiles):
                 account = state["accounts"].setdefault(profile.account_id, {})
+                identity = config["profiles"][index].get("expected_account_id_hash") or profile.account_id
+                binding = account.get("identity_binding")
+                if binding is not None and binding != identity:
+                    raise ValueError("Configured account identity changed; inspect state")
+                if binding is None and any(account.get(key) for key in ("fixed_resets", "attempt", "inflight", "uncertain")):
+                    raise ValueError("Unbound legacy operational state; inspect before migration")
+                account["identity_binding"] = identity
                 status = adapter.read(profile.account_id) if adapter else None
                 if args.read_accounts:
                     from .probe import OfficialStatusAdapter
@@ -106,6 +123,7 @@ def main(argv=None):
                     status = official.read(profile.account_id)
                     probes.append({"alias": profile.account_id, "report": official.report})
                 decision_now = time.time() if args.read_accounts else now
+                observe_fixed_resets(profile, status, account, decision_now, policy)
                 decision = decide(profile, status, account.get("previous"), new_events, account, decision_now, policy)
                 increment(state, decision.action)
                 store.log(now, decision.action)

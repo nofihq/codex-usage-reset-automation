@@ -8,7 +8,9 @@ It does not grant extra quota or bypass subscription limits.
 **Current stage:** a portable monitoring scaffold, not clone-and-forget autonomous
 inference. There is no live dispatch command, automatic reset redemption, paid
 fallback, or installed scheduler. `would_request` is a synthetic planning result;
-it never sends a model request. See the [capability matrix](docs/CAPABILITIES.md).
+it never sends a model request. The opt-in remaining-percent heuristic is a
+planning policy, not proof of cross-device inactivity. See the
+[capability matrix](docs/CAPABILITIES.md) and [safety contract](docs/SAFETY_CONTRACT.md).
 
 ## Start here: one account, no login needed
 
@@ -53,8 +55,10 @@ the public feed by default. The tick writes bounded private state under
 
 `config.json` is your local settings file; it is ignored by Git. The `plus` alias
 is just a nickname, not an email or the real account ID. All verification gates
-default to false, and `model_id` is unset. You can stop here for offline planning,
-or continue with the optional account setup below.
+default to false, `model_id` is unset, and `activity_policy` defaults to
+`verified_inactivity`. The single-account example explicitly targets the
+300-minute bucket with `trigger_window_minutes`. You can stop here for offline
+planning, or continue with the optional account setup below.
 
 Add a second account later using [the multi-account instructions](docs/ACCOUNTS.md#add-a-second-account-later).
 
@@ -144,11 +148,26 @@ a hash alone does not tell you whose account was selected. Unknown identity or
 upstream calls them `primary` or `secondary`.
 
 Zero usage can be rounded; 100% remaining does not prove inactivity. No reliable
-cross-device active-work indicator was verified. The official adapter always keeps
-activity unknown and cannot produce an allowed live request. Purchased credits
-must be proven zero and auto reload off before any hypothetical future dispatch;
-missing fields remain unknown. A fresh active window skips redundant requests;
-an exhausted weekly bucket holds. First-use timer anchoring remains unverified.
+cross-device active-work indicator was verified. The official adapter keeps that
+activity unknown. The default `verified_inactivity` policy holds without verified
+inactivity; the opt-in `remaining_percent_heuristic` instead requires the exact
+target bucket to report 100% remaining. Other buckets may be partially used, but
+none may be exhausted, and explicit active work always holds. Purchased credits
+must be proven zero and auto reload off; missing fields remain unknown.
+
+A candidate also needs a persisted, verified fixed reset for the **same target
+bucket**, observed unchanged in two distinct reads, and that reset must expire
+before another attempt is considered. Idle API clocks drifting with `now + 5h`
+are not anchors. The supplied Plus target is 300 minutes; the Pro target is 10080
+minutes. Fresh target timers skip redundant requests. See the full
+[activity, timer, request, and cleanup contract](docs/SAFETY_CONTRACT.md).
+The [heuristic example](examples/config.heuristic.json) is opt-in and keeps all
+live-request gates disabled; no scheduler or dispatcher is activated.
+
+One manual browser check on October 14 completed an exact `OK`, observed the same
+fixed five-hour reset twice, and verified archiving of that disposable chat.
+This is narrow environment-specific evidence. Later unattended-session execution
+is still pending, and no browser adapter or live CLI dispatch is shipped.
 
 ## Public reset hints and cloud options
 
@@ -168,7 +187,23 @@ describes an externally managed single-host tick. No timers or GitHub workflows
 are shipped or activated. Free hosting depends on provider/account eligibility;
 there is no guaranteed free always-on cloud service here. Never import subscription
 credentials into GitHub Actions. Browser Work execution is environment-specific
-and is not included as a portable dispatcher.
+and is not included as a portable dispatcher. Nested CLI model execution remains
+blocked on the examined cloud host by a fixed daemon-directory permission check;
+see the [verified blocker and safe boundary](docs/CLI_SETUP.md#nested-cloud-sandbox-blocker).
+
+## Keep usage and storage small
+
+The shipped dry run sends no model requests. Its intended disposable request asks
+for exactly `OK`, with no tools or other work; that limits output but is not a
+verified least-cost model ranking or a promise of zero usage. Do not send repeated
+requests to establish a timer when the evidence is missing. Honor `next_check_at`
+and retain only the small state needed to prevent duplicate work.
+
+Local optimizer state and logs are bounded as described below. Codex's own caches
+and browser/server-side chats are separate and are not covered by those bounds.
+Only a completed, identified disposable chat may be archived in an authorized
+workflow. Archiving retains the chat; it does not delete it or prove disk space
+was freed. No automatic browser cleanup or permanent deletion is implemented.
 
 ## Privacy, storage, and contributions
 

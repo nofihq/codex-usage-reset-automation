@@ -88,8 +88,10 @@ check staged files before committing anything.
 | Probe says the selected context is not a ChatGPT subscription | Repeat official ChatGPT sign-in in the separate account folder and confirm browser identity. |
 | Account reads complete, but `limits.account_identity_hash` is null | The required usage identity is unavailable on that host/protocol. Stop at offline planning; do not substitute the top-level hash or invent one. |
 | `status_available: false` after saving the correct hash | Identity, permission, complete windows or models may still be unavailable. Read the `limits` fields and `blocker` locally; unknown information holds. |
-| Socket/permission error, startup failure, or timeout | This is a host capability blocker. Keep offline planning available; do not loosen sandbox or account-folder permissions. |
-| Dry run reports `hold` | Read its `reason`. Missing information and unverified activity/spending controls intentionally hold; success does not require `would_request`. |
+| Socket/permission error, startup failure, or timeout | Treat this as a host capability blocker. For nested cloud execution, see the [fixed-daemon-directory diagnosis](CLI_SETUP.md#nested-cloud-sandbox-blocker). Keep offline planning available; do not loosen sandbox or account-folder permissions. |
+| Dry run reports `hold` | Read its `reason`. Missing controls, default unknown activity, or absent/unexpired fixed target anchors intentionally hold; success does not require `would_request`. |
+| Target reports 100% remaining, but the planner still holds | This alone proves neither inactivity nor a fixed reset. The heuristic is explicit opt-in, and all other gates still apply. Read the [safety contract](SAFETY_CONTRACT.md). |
+| An idle reset keeps moving with each probe | Do not record it as a fixed anchor. Two distinct reads must agree on a future target reset before its later expiration can be considered. |
 | Adding another alias causes a state/config error | Reconcile the existing aliases and state locally; do not delete uncertain records to force a run. |
 
 If you ask for help, share the error category and command name, not credentials,
@@ -129,7 +131,10 @@ Confirm the second browser identity, then save that probe's
 `limits.account_identity_hash` in the `pro` profile using steps 3–4. Run
 `python3 -m optimizer dry-run --config config.json --read-accounts` to read both.
 Up to 16 profiles are supported. Leave existing aliases unchanged when reusing
-state; changing/removing them can require manual reconciliation.
+state; changing/removing them can require manual reconciliation. The supplied Pro
+profile targets `trigger_window_minutes: 10080`; the Plus profile targets `300`.
+Verify the actual account bucket duration instead of inferring it from the nickname
+or plan label. Both profiles default to `activity_policy: "verified_inactivity"`.
 
 ## Account-read boundaries
 
@@ -149,4 +154,12 @@ means no model turn, login command, credit purchase or redemption is invoked.
 A sandbox/socket permission error is a capability blocker. Do not change unrelated
 socket ownership, relax mode 0700, disable sandboxing, or escalate inference.
 Version gating rejects unknown releases; review the schema and synthetic tests
-before updating the reviewed version list.
+before updating the reviewed version list. The sandbox diagnosis on stable 0.162.1
+does not add it to the account adapter's allowlist.
+
+The official metadata adapter does not establish cross-device inactivity. If you
+intentionally opt into `remaining_percent_heuristic`, the exact target's known
+100% remaining becomes an activity proxy only; explicit active work, unknown
+spending controls, or missing fixed-reset evidence still holds. Do not manufacture
+private snapshots or enable verification flags to get around a hold. No combination
+of settings enables live CLI dispatch.

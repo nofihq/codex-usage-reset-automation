@@ -8,7 +8,9 @@ is reviewed. Installing the latest release does not guarantee compatibility.
 Version 0.159.2 account read methods were previously verified in a separate cloud
 environment. Local 0.158.0 schema was inspected, but account startup was blocked
 by runtime restrictions. Installing successfully does not prove account access
-will work on every host.
+will work on every host. In particular, model dispatch in the examined nested
+cloud sandbox remains blocked. Version-only checks and read-only metadata do not
+exercise that model execution path; see the diagnosis below.
 
 ## 1. Check Node.js and npm
 
@@ -77,3 +79,25 @@ Next: [sign in to your one account](ACCOUNTS.md).
 The package installation is free and does not send model requests. For general
 CLI background, see [OpenAI's CLI guide](https://learn.chatgpt.com/docs/cli).
 Use the pinned commands above for this project's compatibility requirements.
+
+## Nested cloud sandbox blocker
+
+As of October 14, 2026, portable model dispatch with 0.159.2 remains blocked on the
+examined nested cloud host. The reserved `/tmp/codex-daemon-<uid>` directory must
+be user-owned with mode `0700`. An outer sandbox presents that path as a read-only
+mode-`000` tmpfs mask; an inner sandbox fails its preparation check before running
+the command. This is not evidence that all CLI hosts or account reads fail.
+
+The stable 0.162.1 source retains the same fixed-directory requirement and mask:
+[daemon_directory.rs](https://github.com/openai/codex/blob/rust-v0.162.1/codex-rs/uds/src/daemon_directory.rs)
+and [bwrap.rs](https://github.com/openai/codex/blob/rust-v0.162.1/codex-rs/linux-sandbox/src/bwrap.rs).
+The public reproduction is [upstream issue #53799](https://github.com/openai/codex/issues/53799).
+Reviewing that release for this diagnosis does **not** add it to this project's
+account-adapter allowlist.
+
+No supported override was identified. `HOME`, `TMPDIR`, `XDG_RUNTIME_DIR` and
+`CODEX_HOME` do not relocate this fixed daemon root. A different `--listen` address
+is not a fix. Do not chmod/chown the mask, remount it, expose privileged sockets,
+disable sandboxing or patch the check. Keep offline/read-only functionality
+available and wait for a supported runtime change. This repository includes no
+live CLI dispatcher and no browser replacement adapter.

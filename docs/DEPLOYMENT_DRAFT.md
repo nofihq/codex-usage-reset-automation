@@ -32,9 +32,28 @@ Only one host may use a state directory. POSIX `flock` is not a distributed lock
 For multiple hosts a separate durable state adapter, lease/compare-and-swap,
 concurrency tests and uncertainty recovery would be required; none is implemented.
 A cloud adapter would also need supported subscription auth, identity matching,
-explicit included-usage permission, and authoritative zero-credit/auto-reload and
-inactivity evidence before any hypothetical executor could be considered.
+explicit included-usage permission, authoritative zero-credit/auto-reload
+evidence, and the selected activity-policy gates before any hypothetical executor
+could be considered. The heuristic is an explicit acceptance of unproven cross-device
+inactivity, never permission to default other unknowns to safe values.
+
+Store independently corroborated fixed-reset anchors for the exact configured
+target. Two future-reset observations must agree and be sufficiently separated;
+a later expiration needs fresh status. A moving idle API estimate is not a timer
+to schedule against. Persist the account/window deduplication and before-send
+marker across restarts; uncertain outcomes require manual reconciliation. Losing
+state is a blocker, not a new request opportunity. See the
+[safety contract](SAFETY_CONTRACT.md).
+
+The examined cloud host blocks nested CLI model execution even with the stable
+0.162.1 source's daemon-directory check. No environment-variable or listener
+change is a supported fix. Do not bypass that sandbox boundary; see
+[the runtime diagnosis](CLI_SETUP.md#nested-cloud-sandbox-blocker). A manually
+verified browser `OK` request and archive on October 14 do not establish a portable
+browser adapter or successful later unattended session.
 
 Nothing in this document changes subscription limits, creates quota, guarantees
-first-use timer behavior, or enables live dispatch. Keep any existing personal
-schedules outside this project's setup and unchanged.
+timer behavior across accounts, or enables live dispatch. No automatic chat
+cleanup runs; archiving an authorized disposable chat retains it and cannot be
+advertised as storage deletion. Keep any existing personal schedules outside
+this project's setup and unchanged.

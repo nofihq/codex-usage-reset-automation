@@ -8,7 +8,9 @@
         10080
       ],
       "codex_home": "~/.local/share/codex-optimizer/accounts/plus",
-      "expected_account_id_hash": null
+      "expected_account_id_hash": null,
+      "activity_policy": "verified_inactivity",
+      "trigger_window_minutes": 300
     },
     {
       "account_id": "pro",
@@ -17,7 +19,9 @@
         10080
       ],
       "codex_home": "~/.local/share/codex-optimizer/accounts/pro",
-      "expected_account_id_hash": null
+      "expected_account_id_hash": null,
+      "activity_policy": "verified_inactivity",
+      "trigger_window_minutes": 10080
     }
   ],
   "policy": {

@@ -209,7 +209,7 @@ def probe(codex_home=None):
         report.update(models_read="completed", model_ids=[value for value in ids if value],
                       models_complete=len(rows) <= 100 and len(ids) == len(rows) and all(ids)
                       and models.get("nextCursor") is None)
-        report["blocker"] = "Live dispatch disabled; auto reload, cross-device inactivity and first-use timer behavior remain unverified"
+        report["blocker"] = "Live dispatch disabled; auto reload and fixed-timer evidence require separate verification; activity is unknown"
     except (OSError, ValueError, TypeError, AttributeError, subprocess.SubprocessError, ProbeError) as error:
         report["blocker"] = error.reason if isinstance(error, ProbeError) else "Read-only client could not start or parse supported protocol"
         if isinstance(error, ProbeError):

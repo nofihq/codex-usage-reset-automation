@@ -25,11 +25,13 @@ class Decisions(unittest.TestCase):
         self.status = Status("plus", NOW, (Window("p",0,NOW+18000,300), Window("w",0,NOW+604800,10080)),
                              ("fixture-model",), True, True, True, False, False, True)
         self.previous = {"windows":[{"key":"p","resets_at":NOW-120}]}
+        self.state = {"fixed_resets": {"p": {"resets_at": NOW-120, "duration_minutes": 300,
+                       "first_observed_at": NOW-1000, "verified_at": NOW-900}}}
 
     def decision(self, **kwargs):
         return decide(kwargs.get("profile", self.profile), kwargs.get("status", self.status),
                       kwargs.get("previous", self.previous), kwargs.get("events", []),
-                      kwargs.get("state", {}), kwargs.get("now", NOW))
+                      {**self.state, **kwargs.get("state", {})}, kwargs.get("now", NOW))
 
     def test_verified_expiration_candidate(self):
         self.assertEqual(self.decision().action, "would_request")
@@ -55,7 +57,7 @@ class Decisions(unittest.TestCase):
                 self.assertEqual(self.decision(status=status).action,"hold")
 
     def test_elapsed_time_only_requests_fresh_status(self):
-        status=replace(self.status,windows=(Window("p",100,NOW-10,300),))
+        status=replace(self.status,windows=(Window("p",100,NOW-10,300),self.status.windows[1]))
         self.assertEqual(self.decision(status=status).action,"check_status")
 
     def test_exhausted_weekly_blocks_even_after_short_reset(self):
@@ -73,17 +75,18 @@ class Decisions(unittest.TestCase):
     def test_public_reset_not_personal_refill(self):
         for confirmed in (True,False,None):
             event=Event("event","global_reset",NOW-120,"https://codex-reset.com/",confirmed,"announced")
-            self.assertEqual(self.decision(previous=None,events=[event]).action,"hold")
+            self.assertEqual(self.decision(previous=None,events=[event],state={"fixed_resets":{}}).action,"hold")
             old=replace(self.status,observed_at=NOW-150)
             self.assertEqual(self.decision(status=old,previous=None,events=[event]).action,"check_status")
 
     def test_banked_notice_never_candidate(self):
         event=Event("grant","banked_notice",NOW-120,"https://codex-reset.com/",True,"announced")
-        self.assertEqual(self.decision(previous=None,events=[event]).action,"hold")
+        self.assertEqual(self.decision(previous=None,events=[event],state={"fixed_resets":{}}).action,"hold")
 
-    def test_assumed_durations_do_not_control_timer(self):
-        d=self.decision(profile=replace(self.profile,assumed_windows_minutes=(1,)))
-        self.assertEqual(d.next_check_at,NOW+18060)
+    def test_observed_reset_clock_controls_timer(self):
+        status=replace(self.status,windows=(replace(self.status.windows[0],resets_at=NOW+1000),self.status.windows[1]))
+        d=self.decision(status=status)
+        self.assertEqual(d.next_check_at,NOW+1060)
 
     def test_idempotency_and_uncertain_holds(self):
         for state in ({"handled_through":NOW-120},{"inflight":"key"},{"uncertain":True}):
@@ -195,19 +198,19 @@ class Requests(unittest.TestCase):
         self.assertEqual(dispatch(self.decision(),self.profile,DisabledRequestAdapter(),{},NOW,lambda:None,dry_run=False),"disabled")
 
     def test_one_bounded_retry_then_hold(self):
-        calls=[]; saves=[]; state={}
+        calls=[]; saves=[]; state=json.loads(json.dumps(self.state))
         class Fake:
             enabled=True
             def request(self,*args):
                 self_test.assertIn("inflight",state)
                 calls.append(args)
-                return RequestResult("safe_retry")
+                return RequestResult("safe_retry", no_usage_verified=True)
         self_test=self
         d=self.decision()
         save=lambda:saves.append(json.loads(json.dumps(state)))
-        self.assertEqual(dispatch(d,self.profile,Fake(),state,NOW,save,False),"safe_retry")
+        self.assertEqual(dispatch(d,self.profile,Fake(),state,NOW,save,False,clock=lambda:NOW),"safe_retry")
         self.assertEqual(dispatch(d,self.profile,Fake(),state,NOW+30,save,False),"hold")
-        self.assertEqual(dispatch(d,self.profile,Fake(),state,NOW+60,save,False),"hold")
+        self.assertEqual(dispatch(d,self.profile,Fake(),state,NOW+60,save,False,clock=lambda:NOW+60),"hold")
         self.assertEqual(dispatch(d,self.profile,Fake(),state,NOW+120,save,False),"duplicate")
         self.assertEqual(len(calls),2)
         self.assertEqual(len(saves),4)
@@ -216,17 +219,21 @@ class Requests(unittest.TestCase):
         class Fake:
             enabled=True
             def request(self,*a): raise TimeoutError()
-        state={}; d=self.decision()
-        self.assertEqual(dispatch(d,self.profile,Fake(),state,NOW,lambda:None,False),"uncertain")
+        state=json.loads(json.dumps(self.state)); d=self.decision()
+        self.assertEqual(dispatch(d,self.profile,Fake(),state,NOW,lambda:None,False,clock=lambda:NOW),"uncertain")
         self.assertEqual(dispatch(d,self.profile,Fake(),state,NOW+60,lambda:None,False),"uncertain")
 
     def test_success_duplicate_and_unverified_block(self):
         class Fake:
             enabled=True
-            def request(self,*a): return RequestResult("success")
-        state={}; d=self.decision()
+            def request(self,*a):
+                return RequestResult("success", True, "OK", "plus", "fixture-model", "fixture-thread", True,
+                                     NOW, NOW+1, (replace(self_test.status,observed_at=NOW+2),
+                                                  replace(self_test.status,observed_at=NOW+62)))
+        self_test=self
+        state=json.loads(json.dumps(self.state)); d=self.decision()
         self.assertEqual(dispatch(d,replace(self.profile,usage_impact_verified=False),Fake(),state,NOW,lambda:None,False),"disabled")
-        self.assertEqual(dispatch(d,self.profile,Fake(),state,NOW,lambda:None,False),"success")
+        self.assertEqual(dispatch(d,self.profile,Fake(),state,NOW,lambda:None,False,clock=iter((NOW,NOW+62)).__next__),"success")
         self.assertEqual(dispatch(d,self.profile,Fake(),state,NOW,lambda:None,False),"duplicate")
 
 
