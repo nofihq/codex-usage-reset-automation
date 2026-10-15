@@ -15,8 +15,12 @@ initialization. Routine later runs use the recorded fixed anchor and durable
 account/window marker. Missing state or an uncertain submission holds for
 reconciliation; the worker must never silently initialize again.
 
-Rearm the same cloud task for the verified reset plus two minutes. Keep current
-state small and retain unresolved outcomes. One short prompt and one OK limit
+Rearm the same cloud task for the verified reset plus two minutes. Keep
+task ownership intact: when a delegated worker cannot update the saved schedule,
+the schedule-owning controller must perform the update and verify the enabled
+job, preserved prompt and next wake. A worker's proposed time alone is not a
+saved schedule. This controller/worker handoff was observed in the normal cycle.
+Keep current state small and retain unresolved outcomes. One short prompt and one OK limit
 requested output, but the cloud task itself can consume Work/Codex allowance.
 Archive only the exact disposable chat; archiving retains data. Neither total
 cloud storage nor long-term uninterrupted login is guaranteed by this setup.

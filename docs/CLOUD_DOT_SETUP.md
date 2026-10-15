@@ -112,6 +112,11 @@ permit stays consumed; routine later opportunities use their own window marker.
 
 Update the same account's cloud task for the next verified reset plus two minutes.
 Verify its saved prompt and next wake. Do not create another task each run.
+Keep the schedule-owning controller responsible for rearming if a delegated
+worker lacks permission to update that task. The worker returns the completed
+result and verified anchor; the controller updates the existing task and reads
+back its enabled state, prompt and next wake. A suggested wake time is not proof
+that scheduling succeeded.
 Routine automatic checks still require an expired verified fixed anchor and all
 current account/spending gates. A future fixed timer means wait.
 
@@ -119,6 +124,12 @@ If a read fails with no known eligible boundary, rearm the same task with bounde
 read-only backoff: 1, 2, 4, 8, then at most 12 hours. Notify on a meaningful result,
 failure or required sign-in, not on every unchanged hold. A sign-in prompt needs
 the owner; preserve state while waiting.
+
+An ordinary timer wake is separate from detecting an unexpected global reset.
+This recipe does not include a verified push connection from the public tracker
+to the dot. Periodic feed checks can lag; they must not be advertised as immediate
+alerts. Direct site notifications to the owner are a separate service. See
+[the tested source capabilities](VALIDATION.md#global-reset-notifications).
 
 There is no extra hosting or API bill required within an existing eligible plan's
 included allowances. Work/Codex tasks still consume their normal allowance. One
@@ -130,6 +141,7 @@ read-only metadata. It is not the cloud browser dispatcher. The experimental CLI
 execution route stays disabled until its warm-up and quota behavior are verified.
 
 
-See [validation evidence](VALIDATION.md) for the tested scope. One successful
-scheduled run and later readback do not establish months of operation or
+Scheduled initialization, later state readbacks, and the following normal
+five-hour cycle passed. See [validation evidence](VALIDATION.md) for the checks.
+This establishes the observed unattended cycle, not months of operation or
 forced-container-restart recovery.
