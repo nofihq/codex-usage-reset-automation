@@ -12,7 +12,8 @@ macOS or Linux in a supported desktop browser; no terminal or local runtime is n
   reader checks the authenticated routing ID against the usage ID; missing or
   mismatched identities hold. A real read-only result passes before enabling sends.
 - Included allowance is available, purchased credits are zero and reload is off.
-- Guarded Page writes read back exactly; a stale write fails without overwriting.
+- Guarded Page writes change only intended fields, preserve unrelated state and
+  read back exactly; a stale write fails without overwriting.
 - A later scheduled canary reads and updates that same Page without local receipts.
 - The saved account task is enabled, names the intended account and private ledger,
   and its actual next wake is visible in a native task receipt or settings.
