@@ -76,42 +76,76 @@ Use a fresh disposable chat, no files, project, search or requested tools, and a
 
 > Reply with only OK.
 
-Require a completed response exactly `OK`, two fresh numeric reset reads at least
-60 seconds apart agreeing on the same target and fixed reset, and verified archive
-of that exact chat. The fixed reset should place the window's start within the
-send-to-completion observation interval. A moving `now + duration` estimate fails.
+Send that prompt **once** and wait for a completed reply exactly `OK`. Then read
+the account's usage/reset status through the CLI. Wait at least 60 seconds and
+read that status again. These are two read-only checks, not two prompts or two
+model requests. Both must show the same reset timestamp for the same window.
+Archive that exact completed chat and verify it was archived.
+
+The fixed reset should place the window's start within the send-to-completion
+observation interval. A moving `now + duration` estimate fails.
 
 Save the result and rearm the same account timer for the verified reset plus two
 minutes. Verify a later scheduled read retains the result and prevents a duplicate.
 Routine requests require an expired verified anchor and fresh eligibility checks.
 Timeouts, unknown saves or unresolved cleanup hold for reconciliation, never resend.
 
-## 5. Add reset-email events
+## 5. Add Tibo reset email alerts
+
+There are two ways the dot knows to check your accounts:
+
+- **Your saved account timer:** wakes after your account's ordinary reset time.
+- **A reset email:** wakes when Gmail receives a matching alert about a public
+  reset announcement. This is useful when a refill happens outside your normal timer.
+
+The emails come from [Codex Reset](https://codex-reset.com/), an independent
+community site that tracks Tibo's ([@thsottiaux](https://x.com/thsottiaux)) reset
+announcements. They are not direct messages from Tibo or official OpenAI emails.
+The [email service](https://notify.codex-reset.com/) covers global resets,
+banked-reset updates and high-confidence forecasts. Their meanings differ:
+
+| Email type | What it means | What the dot does |
+|---|---|---|
+| Confirmed global reset | A usage refill was reported as applied, rather than merely promised | Verify the source, then check every configured account's actual usage and reset time. An eligible account may proceed through the normal one-request checks; active windows remain protected. |
+| Banked-reset update | A reset was announced or saved for later redemption; receiving it is not a usage refill | Keep it separate from a global reset. An account inventory read can check available count and expiry. Never automatically redeem it or send an `OK` because of this email. |
+| Forecast, promise or “arriving soon” | A reset may happen later | Do not treat it as completed or send an `OK`. |
+| Signup confirmation or welcome | Subscription setup, not a usage event | Verify the subscription only; send no `OK`. |
+
+Follow these steps to connect the emails:
 
 1. Manually subscribe to [Codex Reset email alerts](https://notify.codex-reset.com/)
    using the connected Gmail account. Complete its double opt-in yourself. The
    service [prohibits automated subscription requests](https://notify.codex-reset.com/terms).
 2. Let the dot inspect only the source-related email to verify the actual sender
    and authentication. Confirmation alone does not prove the subscription is active.
-3. Create an **incoming Gmail message** event task for that exact sender. Do not
-   restrict it to the confirmation email's subject. Classify message types inside
-   the handler, using the [controller instructions](../prompts/CONTROLLER.md).
+3. Copy the sender address published on the email service's page and verify it
+   against the real message. Create an **incoming Gmail message** event task for
+   that exact sender. Keep one sender filter for both global and banked messages,
+   without limiting it to the signup email's subject. The dot identifies the
+   message type after waking, using the [controller instructions](../prompts/CONTROLLER.md).
 4. Keep this event task separate from account timers: an event task cannot also
    have a time schedule. If replacing a poller, verify the replacement is enabled
    and its prompt is saved before disabling the old poller.
 5. Verify a genuine email arriving after enablement causes an automatic wake.
    Reading mail manually or pressing Run now does not prove event delivery.
 
-A genuine reset event prompts fresh checks of each monitored account. It does
-not itself authorize usage. The first real reset email may qualify its event
-provenance and continue through the account gates in that same run; the handler
-must not remain permanently in setup-only mode. Confirmation, watch/forecast and
-banked-reset messages must not trigger an `OK`.
+A genuine global-reset email can prompt fresh checks of both Plus and Pro when
+both are configured; one email task serves all monitored accounts. Each account
+still needs its own identity, allowance and duplicate checks. Do not assume a
+public announcement proves a refill reached your particular account.
+
+The first real global-reset email may verify automatic delivery and continue to
+the account checks in that same run; the handler must not remain permanently in
+setup-only mode. Banked-reset, forecast and confirmation emails never authorize
+an `OK`.
 
 The source batches email delivery, so this is not an instant-alert guarantee.
 Ask the dot to record source, inbox and wake times where available and distinguish
-missing timestamps from measured delay. Notify on a meaningful reset/result,
-failure or required action; keep unchanged and duplicate events quiet.
+missing timestamps from measured delay. Notify once about a meaningful confirmed
+global reset, new banked-reset availability, completed result, failure or required
+action. Label banked announcements as public reports unless your account confirms
+the grant. Keep unchanged and duplicate events quiet. Device push notifications
+also depend on your ChatGPT notification settings and need their own delivery check.
 
 ## 6. Add a second account
 

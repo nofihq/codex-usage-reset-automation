@@ -4,6 +4,10 @@ A cloud-dot setup for checking Codex usage, sending one short `OK` when eligible
 and keeping the next reset check scheduled. It runs on the dot's cloud computer,
 so your own device can be off.
 
+The goal is to start an eligible new usage window with a tiny request rather
+than wait until you next need to work. The dot checks the reset time returned by
+your account; it does not create extra allowance or reset usage itself.
+
 **Use it from Windows, macOS or Linux through a supported desktop browser, or
 from the ChatGPT mobile app.** No local CLI, Python, Node, server or API key is
 needed on your device. Inside its cloud computer, the dot uses the official
@@ -23,9 +27,56 @@ The CLI is used only for reads in this workflow. Browser and CLI sign-in are
 separate; follow the private authorization steps for each. If a session expires,
 the dot must stop and request sign-in instead of guessing or retrying a request.
 
-Each successful request requires a completed `OK`, two matching fixed-reset reads
-at least 60 seconds apart and verified archive of that exact chat. An optional
-Gmail event task reacts to reset-alert emails alongside the ordinary account timer.
+### One prompt, then two usage checks
+
+1. When the account passes its checks, send **one** prompt: `Reply with only OK.`
+2. After the reply finishes, read the account's usage and reset time through the CLI.
+3. At least 60 seconds later, read that status again. Both reads must show the same
+   reset time for the same usage window. **This does not send another prompt.**
+4. Archive the completed chat and schedule the next check for that reset time
+   plus two minutes. Save the result so another wake cannot send a duplicate.
+
+For example, if both status reads show a reset at 7:00 p.m., the next check is
+scheduled for 7:02 p.m. The pause between reads checks that the reset time stays
+fixed instead of moving forward every time it is read.
+
+### Tibo reset emails
+
+The optional email setup follows [Codex Reset](https://codex-reset.com/), an
+independent community tracker of reset announcements associated with Tibo
+([@thsottiaux](https://x.com/thsottiaux)). These are community-service emails,
+not emails sent directly by Tibo or OpenAI.
+
+- **Global reset:** a reported automatic usage refill. The dot checks each
+  configured account, such as Plus and Pro, to see what actually changed before
+  considering an `OK`. An email alone never permits an extra request.
+- **Banked reset:** a reset saved in your account for you to redeem later.
+  Receiving one does not refill usage immediately. The automation never redeems
+  it or sends an `OK` just because a banked-reset email arrived.
+- **Forecast or promise:** a possible future reset, not a completed refill.
+  It must not trigger an `OK`.
+
+Your normal account timer still works without these emails. See
+[email setup and message types](docs/SETUP.md#5-add-tibo-reset-email-alerts)
+for signup, Gmail and notification details. Email can arrive late; it is not an
+instant-alert guarantee.
+
+### What it checks and records
+
+| Information | Meaning |
+|---|---|
+| Account and plan | Confirms the browser and CLI refer to the account you configured |
+| Usage used and remaining | Reads `usedPercent`; remaining is `100 − usedPercent` |
+| Window length | Reads the actual duration, such as 300 minutes or 10,080 minutes |
+| Reset time | Reads the server's timestamp; time until reset can be calculated from it |
+| Spending controls | Checks included usage, purchased-credit balance and automatic reload before sending |
+| Banked resets, when requested | Optional `--inventory` reads available count, status, grant time and expiry when returned; unknown dates stay unknown |
+| Run result | Saves the request attempt, completed reply, two reset checks and exact-chat archive result |
+| Next check | Saves and verifies the next wake for each account |
+| Email handling | Records handled events and available source, inbox and wake times to avoid duplicates and measure delivery delay |
+
+These checks do not measure an exact token cost or prove how much usage the
+automation saves. A short reply keeps output small; normal plan usage still applies.
 
 The workflow uses your normal included allowance; it does not add quota.
 Archiving hides a chat from Recents and retains its data.
@@ -73,7 +124,7 @@ logins, private Page and cloud tasks; none of the owner's account state is inclu
 
 | File | Purpose |
 |---|---|
-| [Setup](docs/SETUP.md) | One account first, Gmail alerts, then an optional second account |
+| [Setup](docs/SETUP.md) | One account first, Tibo global/banked-reset emails, then an optional second account |
 | [Cloud tools](docs/CLOUD_TOOLS.md) | Install and sign in to the usage reader inside the dot's computer |
 | [Native CLI](docs/CLI.md) | Optional Windows, macOS and Linux usage-reader commands |
 | [Verify](docs/VERIFY.md) | Check your own setup, scheduled run and email-trigger delivery |

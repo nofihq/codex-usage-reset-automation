@@ -28,7 +28,7 @@ already active window. For a completed run, require:
 | Before-send proof | A guarded account/window reservation and exact fresh readback before submission |
 | Request count | One attempt; no automatic retry or renewed initialization permit |
 | Completion | Response exactly `OK`, visibly completed |
-| Reset | Two fresh numeric reads at least 60 seconds apart; same duration and reset |
+| Reset | Two read-only CLI status checks at least 60 seconds apart; same duration and reset, with no second prompt |
 | Timing | Reset minus duration falls within the send-to-completion observation interval |
 | Cleanup | That exact disposable chat is archived and can be identified as the completed chat |
 | Next wake | Same account timer enabled for the verified reset plus two minutes |
@@ -38,6 +38,11 @@ Unknown completion, missing state, changed identity or ambiguous cleanup must
 produce a hold. Do not clear the record to make a retry possible.
 
 ## Email-trigger checks
+
+The trigger covers Tibo-related global resets and banked-reset updates from the
+community email service. A global reset is a reported automatic refill; a banked
+reset is saved for later use. Neither an email nor a forecast proves your account
+has refilled. See [message types](SETUP.md#5-add-tibo-reset-email-alerts).
 
 Subscription, task configuration and live delivery are separate checks:
 

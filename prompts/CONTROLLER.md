@@ -50,9 +50,10 @@ For each account independently:
    additionally requires an unexpired scoped single-use permit consumed before send.
 5. Use a fresh disposable chat, an included model, minimum reasoning and fast off.
    No project, files, requested search or tools. Ask only `Reply with only OK.`
-6. Require completed exact `OK`, two matching numeric target/reset reads at least
-   60 seconds apart, and window timing consistent with that request. A moving
-   reset estimate is not success. Preserve uncertain results without retrying.
+6. Require completed exact `OK`, then two read-only CLI status checks at least
+   60 seconds apart with matching numeric target/reset values. Send no second
+   prompt for this verification. Require window timing consistent with that request.
+   A moving reset estimate is not success. Preserve uncertain results without retrying.
 7. Archive only that exact completed chat and verify its archived state. Record
    one attempt and its proofs. Archive retains data; never permanently delete.
 8. Rearm the same account task for the verified reset plus two minutes, and verify
@@ -60,6 +61,12 @@ For each account independently:
    then at most 12 hours. No repeated model requests to establish a missing timer.
 
 ## Gmail event task
+
+This task handles Tibo-related reset announcements relayed by the independent
+Codex Reset email service, not direct emails from Tibo or OpenAI. A confirmed
+global reset reports an automatic refill; a banked update concerns a reset saved
+for later use. A forecast or promise is not a completed refill. Keep these types
+distinct, and never infer an account refill from the email alone.
 
 Use a native incoming-message trigger for the verified exact source sender, with
 no subject restriction until a production subject pattern is genuinely verified.
@@ -82,4 +89,8 @@ Never resend an uncertain submission or replace a completed account/window claim
 Record source/inbox/wake times when available. Email can be delayed; do not promise
 instant delivery. Notify the owner once on a meaningful reset/result, failure or
 required action, identifying which accounts ran or held and their next checks.
+Include meaningful new banked-reset availability as a distinct notification;
+label public reports as unconfirmed for the account until an authorized inventory
+read confirms them. Never redeem a banked reset automatically or use a banked
+message to authorize an `OK`.
 Keep duplicate and unchanged events quiet. Verify device push separately.
