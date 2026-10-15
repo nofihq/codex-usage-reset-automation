@@ -71,6 +71,12 @@ python3 -m optimizer probe --config config.json --alias plus
 python3 -m optimizer dry-run --config config.json --read-accounts
 ```
 
+If you already ran the first offline demo, its untouched local alias can now bind
+to this first account hash. The state records whether the binding is a nickname
+or an established account hash. Measured/operational state, ambiguous legacy
+bindings and later account changes still hold for reconciliation; do not delete
+state or remove a saved hash to force another opportunity.
+
 Expected: `check` reports `ok: true`; the probe can report `status_available: true`
 when identity, permission, windows and models are all available. The dry run
 reports `live_requests_enabled: false`. A `hold` remains normal when required

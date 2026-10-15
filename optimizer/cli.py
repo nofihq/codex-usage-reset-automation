@@ -47,6 +47,7 @@ def main(argv=None):
     dry = sub.add_parser("dry-run", help="One finite planning tick; model dispatch always disabled")
     dry.add_argument("--config", default="config.json")
     dry.add_argument("--status")
+    dry.add_argument("--due-only", action="store_true", help="Skip read-only account probes until their saved deadlines")
     dry.add_argument("--read-accounts", action="store_true", help="Opt-in read-only metadata from isolated Codex homes")
     dry.add_argument("--feed-fixture")
     dry.add_argument("--fetch-feed", action="store_true")
@@ -74,7 +75,7 @@ def main(argv=None):
             value = getattr(parsed, name)
             if value is not None:
                 flags += ["--"+name.replace("_", "-"), value]
-        for name in ("read_accounts", "fetch_feed"):
+        for name in ("read_accounts", "fetch_feed", "due_only"):
             if getattr(parsed, name): flags.append("--"+name.replace("_", "-"))
         return tick(flags)
     from .__main__ import load_config

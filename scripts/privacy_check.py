@@ -32,6 +32,8 @@ def main():
             problems.append({'file':name,'reason':'owner-specific absolute home path'})
         if re.search(r'\bsk-(?:proj-)?[A-Za-z0-9_-]{24,}',text) or re.search(r'\bgh[pousr]_[A-Za-z0-9]{24,}',text):
             problems.append({'file':name,'reason':'possible access credential'})
+        if re.search(r'\bpage_[0-9a-f]{32}\b', text):
+            problems.append({'file':name,'reason':'private cloud Page reference'})
         emails = re.findall(r'[A-Za-z0-9_.+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}',text)
         if any(not email.endswith('.invalid') for email in emails):
             problems.append({'file':name,'reason':'non-synthetic email address'})

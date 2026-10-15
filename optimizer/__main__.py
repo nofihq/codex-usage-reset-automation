@@ -9,6 +9,8 @@ from pathlib import Path
 from .adapters import FEED_BYTES, SnapshotStatusAdapter, TrackerAdapter, ingest_events, parse_timeline, read_json
 from .core import Policy, Profile, decide, iso, timestamp, observe_fixed_resets
 from .storage import Store, increment
+from .cadence import due, fingerprint, record, health_transition
+from .core import Decision, valid_status
 
 
 def load_config(path):
@@ -71,6 +73,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="config.json")
     parser.add_argument("--read-accounts", action="store_true", help="Opt-in official read-only status for configured isolated homes")
+    parser.add_argument("--due-only", action="store_true", help="Read account metadata only when its persisted deadline is due")
     parser.add_argument("--status", help="Explicit normalized JSON snapshot; omission holds")
     parser.add_argument("--feed-fixture", help="Explicit tracker JSON fixture")
     parser.add_argument("--fetch-feed", action="store_true", help="Opt-in keyless read-only public GET; no account calls")
@@ -79,6 +82,8 @@ def main(argv=None):
     parser.add_argument("--now", help="ISO timestamp with timezone, for deterministic replay")
     args = parser.parse_args(argv)
     try:
+        if args.due_only and not args.read_accounts:
+            raise ValueError("Due-only requires read-only account mode")
         if args.read_accounts and args.now:
             raise ValueError("Live metadata reads cannot use a simulated clock")
         if args.read_accounts and args.status:
@@ -106,15 +111,38 @@ def main(argv=None):
             adapter = SnapshotStatusAdapter(args.status) if args.status else None
             reports = []
             probes = []
+            alerts = []
             for index, profile in enumerate(profiles):
                 account = state["accounts"].setdefault(profile.account_id, {})
-                identity = config["profiles"][index].get("expected_account_id_hash") or profile.account_id
+                expected_hash = config["profiles"][index].get("expected_account_id_hash")
+                identity = expected_hash or profile.account_id
                 binding = account.get("identity_binding")
+                binding_kind = account.get("identity_binding_kind")
+                if binding_kind not in {None, "local_alias", "account_hash"}:
+                    raise ValueError("Unknown identity binding provenance; inspect state")
+                if binding_kind == "account_hash" and expected_hash is None:
+                    raise ValueError("Established account identity removed; inspect state")
                 if binding is not None and binding != identity:
-                    raise ValueError("Configured account identity changed; inspect state")
-                if binding is None and any(account.get(key) for key in ("fixed_resets", "attempt", "inflight", "uncertain")):
+                    # Offline setup initially knows only the alias. Permit its first
+                    # hash binding before any measured/operational state exists.
+                    placeholder = (binding_kind == "local_alias" or
+                                   (binding_kind is None and not re.fullmatch(r"[0-9a-f]{16}", binding)))
+                    if (binding == profile.account_id and placeholder and
+                            set(account) <= {"identity_binding", "identity_binding_kind"}):
+                        pass
+                    else:
+                        raise ValueError("Configured account identity changed; inspect state")
+                if binding is None and account:
                     raise ValueError("Unbound legacy operational state; inspect before migration")
                 account["identity_binding"] = identity
+                account["identity_binding_kind"] = "account_hash" if expected_hash else "local_alias"
+                read_hash = fingerprint(profile, policy, config["profiles"][index].get("expected_account_id_hash"))
+                if args.due_only and not due(account, time.time(), read_hash,
+                        force=any(event.kind == "global_reset" for event in new_events)):
+                    row = asdict(Decision(profile.account_id, "hold", "Metadata read not due", account["next_status_read_at"]))
+                    row["next_check_at"] = iso(row["next_check_at"])
+                    reports.append(row)
+                    continue
                 status = adapter.read(profile.account_id) if adapter else None
                 if args.read_accounts:
                     from .probe import OfficialStatusAdapter
@@ -131,6 +159,12 @@ def main(argv=None):
                     # Snapshot tracking only; reset feed never changes these clocks.
                     if 0 <= decision_now - status.observed_at <= policy.status_max_age_seconds:
                         account["previous"] = asdict(status)
+                if args.due_only:
+                    available = valid_status(profile, status, decision_now, policy)
+                    next_at = record(account, decision, available, decision_now, policy, read_hash)
+                    alert = health_transition(account, available)
+                    if alert: alerts.append({"alias": profile.account_id, "code": alert})
+                    decision = Decision(**{**asdict(decision), "next_check_at": next_at})
                 row = asdict(decision)
                 row["next_check_at"] = iso(decision.next_check_at)
                 reports.append(row)
@@ -144,7 +178,7 @@ def main(argv=None):
             print(json.dumps({"mode": "dry_run", "live_requests_enabled": False, "feed": feed_result,
                               "feed_source": "https://codex-reset.com/", "new_feed_hints": len(new_events),
                               "feed_hints": [asdict(e) for e in new_events],
-                              "decisions": reports, "probes": probes}, indent=2))
+                              "decisions": reports, "probes": probes, "account_probe_attempts": len(probes), "alerts": alerts}, indent=2))
         return 0
     except (OSError, ValueError, KeyError, TypeError, AttributeError):
         # No raw exception printing: inputs could include private paths or feed text.

@@ -1,59 +1,61 @@
-# Optional scheduling and free cloud setup options
+# Cloud dot workflow and optional read-only scheduling
 
-The repository installs **no schedule, service, workflow, cloud resource or secret**.
-Every `dry-run` exits after one finite tick. You may later manage a schedule with
-an existing free system scheduler on a Linux machine you control. Keep the
-command in dry-run/read-only mode and use one persistent private state directory
-for the configuration. Do not schedule a model invocation.
+Use [single-account cloud dot setup](CLOUD_DOT_SETUP.md) for the cloud workflow.
+It runs in an existing eligible dot's cloud environment with a private Page ledger
+and one saved task. A personal computer can be off; no external runner, API key,
+new hosting account or credential-bearing GitHub workflow is required. Existing
+plan eligibility and included allowances still apply. Plus alone is not currently
+listed as dot-eligible; the monitored account and the dot owner's eligibility are
+separate setup checks.
 
-For a machine you already have, cron or a systemd user timer can run an installed
-command with absolute config/state paths. Test that command interactively first;
-a scheduler's PATH and working directory differ from your shell. Poll at most
-hourly for personal metadata, respect `next_check_at`, and leave public-feed
-polling at four hours. The current finite tick does not enforce personal-account
-read cadence for an external scheduler. A sleeping/offline machine misses ticks.
-No timer unit or crontab is supplied or modified.
+The repository installs no schedule, service or secret by itself. The dot must
+inspect its available native tools, sign in privately, test the guarded Page and
+a later scheduled read/write, then perform the explicitly authorized one-time
+initialization. Routine later runs use the recorded fixed anchor and durable
+account/window marker. Missing state or an uncertain submission holds for
+reconciliation; the worker must never silently initialize again.
 
-For a free cloud option, evaluate an **existing** Linux host covered by a provider's
-free allowance. Verify eligibility and cost controls in that account before
-creating anything. This project does not create a host or guarantee any cloud
-service stays free. Cloud metadata needs supported official subscription sign-in
-on that host, separate account homes, and retained private state. Use interactive
-or supported device-code sign-in there; no credential copying from other devices.
+Rearm the same cloud task for the verified reset plus two minutes. Keep current
+state small and retain unresolved outcomes. One short prompt and one OK limit
+requested output, but the cloud task itself can consume Work/Codex allowance.
+Archive only the exact disposable chat; archiving retains data. Neither total
+cloud storage nor long-term uninterrupted login is guaranteed by this setup.
 
-GitHub Actions can run offline tests and synthetic checks on a fresh clone within
-an eligible allowance. [GitHub billing documentation](https://docs.github.com/en/billing/concepts/product-billing/github-actions)
-describes included usage and account-specific billing. No workflow is shipped.
-**Do not import subscription credentials into Actions** or use ephemeral runner
-caches/artifacts as authoritative account/idempotency state. It is not the
-recommended host for authenticated subscription monitoring in this release.
+## Optional Python metadata tick
 
-Only one host may use a state directory. POSIX `flock` is not a distributed lock.
-For multiple hosts a separate durable state adapter, lease/compare-and-swap,
-concurrency tests and uncertainty recovery would be required; none is implemented.
-A cloud adapter would also need supported subscription auth, identity matching,
-explicit included-usage permission, authoritative zero-credit/auto-reload
-evidence, and the selected activity-policy gates before any hypothetical executor
-could be considered. The heuristic is an explicit acceptance of unproven cross-device
-inactivity, never permission to default other unknowns to safe values.
+Every `dry-run` exits after one finite tick and sends no model request. An existing
+system scheduler on a Linux machine you control can run that read-only command.
+A sleeping or offline machine misses those local ticks; this is separate from
+the cloud dot route. No timer unit, crontab, hosted runner or workflow is supplied.
 
-Store independently corroborated fixed-reset anchors for the exact configured
-target. Two future-reset observations must agree and be sufficiently separated;
-a later expiration needs fresh status. A moving idle API estimate is not a timer
-to schedule against. Persist the account/window deduplication and before-send
-marker across restarts; uncertain outcomes require manual reconciliation. Losing
-state is a blocker, not a new request opportunity. See the
-[safety contract](SAFETY_CONTRACT.md).
+Test an absolute config/state command interactively before scheduling it:
 
-The examined cloud host blocks nested CLI model execution even with the stable
-0.162.1 source's daemon-directory check. No environment-variable or listener
-change is a supported fix. Do not bypass that sandbox boundary; see
-[the runtime diagnosis](CLI_SETUP.md#nested-cloud-sandbox-blocker). A manually
-verified browser `OK` request and archive on October 14 do not establish a portable
-browser adapter or successful later unattended session.
+```bash
+python3 -m optimizer dry-run --config /absolute/path/config.json --state-dir /absolute/private/state --read-accounts --due-only
+```
 
-Nothing in this document changes subscription limits, creates quota, guarantees
-timer behavior across accounts, or enables live dispatch. No automatic chat
-cleanup runs; archiving an authorized disposable chat retains it and cannot be
-advertised as storage deletion. Keep any existing personal schedules outside
-this project's setup and unchanged.
+Replace the example paths with your private locations. `--due-only` requires
+`--read-accounts` and real time. It persists a deadline and configuration fingerprint
+for each account; a fresh process skips its account probe until due. A configuration
+change or a newly ingested public global-reset hint can request an earlier metadata
+read. Such a hint never permits model usage.
+
+Unavailable metadata uses bounded exponential backoff: the default starts at one
+hour, doubles, and caps at twelve hours. Success resets the failure count and
+records the decision's next deadline. JSON includes `account_probe_attempts` and
+change-only `alerts`: `account_check_blocked` once on entry, and
+`account_check_recovered` once on recovery. An unchanged skipped/blocked tick has
+no repeated health alert. Explicit `probe` commands still run when requested.
+These flags do not install a scheduler or add live dispatch.
+
+Use one persistent private local state directory per configuration and one host
+for that directory. POSIX `flock` is not a distributed lock. Do not copy subscription
+credentials into runners or use caches/artifacts as an authoritative ledger.
+The Python package supplies no Page transport or distributed multi-executor
+adapter. The cloud recipe instead uses the dot's native Pages tool and a single
+responsible sender with a guarded canonical block.
+
+The examined cloud host still blocks nested CLI model execution. The credential-free
+[runtime diagnostic](CLI_SETUP.md#nested-cloud-sandbox-blocker) helps identify that
+failure; it does not enable a bypass. [Validation](VALIDATION.md) separates offline
+code tests from the observed cloud workflow.
