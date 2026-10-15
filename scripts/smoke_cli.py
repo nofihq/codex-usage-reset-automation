@@ -1,5 +1,6 @@
 """Real official CLI handshake in an empty private home; no account or model use."""
 import json
+import platform
 from pathlib import Path
 import sys
 import tempfile
@@ -32,7 +33,8 @@ def main():
             client.close()
     if methods != ['initialize', 'account/read']:
         raise RuntimeError('Unexpected method sequence')
-    print(json.dumps({'ok': True, 'checks': ['native official binary', 'empty-home handshake',
+    print(json.dumps({'ok': True, 'os': platform.system(), 'architecture': platform.machine(),
+                      'checks': ['native official binary', 'empty-home handshake',
                       'unauthenticated identity hold'], 'model_requests': 0, 'sign_ins': 0}))
 
 

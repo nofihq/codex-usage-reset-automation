@@ -7,7 +7,6 @@ inheritable DACL at creation. Unsupported ACL forms/filesystems fail closed.
 import ctypes
 from ctypes import wintypes
 from functools import lru_cache
-import re
 
 PVOID = ctypes.c_void_p
 PPVOID = ctypes.POINTER(PVOID)
@@ -28,7 +27,9 @@ def api():
         (advapi, 'ConvertStringSecurityDescriptorToSecurityDescriptorW', [wintypes.LPCWSTR, wintypes.DWORD, PPVOID, PVOID], wintypes.BOOL),
         (advapi, 'GetNamedSecurityInfoW', [wintypes.LPCWSTR, ctypes.c_int, wintypes.DWORD, PPVOID, PPVOID, PPVOID, PPVOID, PPVOID], wintypes.DWORD),
         (advapi, 'GetSecurityInfo', [wintypes.HANDLE, ctypes.c_int, wintypes.DWORD, PPVOID, PPVOID, PPVOID, PPVOID, PPVOID], wintypes.DWORD),
-        (advapi, 'ConvertSecurityDescriptorToStringSecurityDescriptorW', [PVOID, wintypes.DWORD, wintypes.DWORD, PPVOID, PVOID], wintypes.BOOL),
+        (advapi, 'GetSecurityDescriptorOwner', [PVOID, PPVOID, ctypes.POINTER(wintypes.BOOL)], wintypes.BOOL),
+        (advapi, 'GetSecurityDescriptorDacl', [PVOID, ctypes.POINTER(wintypes.BOOL), PPVOID, ctypes.POINTER(wintypes.BOOL)], wintypes.BOOL),
+        (advapi, 'GetAce', [PVOID, wintypes.DWORD, PPVOID], wintypes.BOOL),
     ]
     for library, name, arguments, result in signatures:
         function = getattr(library, name)
@@ -64,31 +65,27 @@ def current_sid():
         kernel.CloseHandle(token)
 
 
-def private_sddl(value, sid):
-    """Conservative SDDL policy, separate from WinAPI for regression coverage."""
-    owner = re.search(r'(?:^|(?<=\)))O:([^:()]+?)(?=[GDS]:|$)', value)
-    # SDDL owner normally precedes G:/D:; no ACE is allowed in the owner field.
-    if not owner or owner.group(1) != sid:
-        return False
-    dacl = re.search(r'D:([^:]*)(?=S:|$)', value)
-    if not dacl or 'NO_ACCESS_CONTROL' in dacl.group(1):
-        return False
-    entries = re.findall(r'\(([^()]*)\)', dacl.group(1))
-    if not entries:
-        return False
-    allowed = {sid, 'SY', 'BA', 'S-1-5-18', 'S-1-5-32-544'}
-    for entry in entries:
-        fields = entry.split(';')
-        if len(fields) != 6 or fields[0] not in {'A', 'D'} or fields[3] or fields[4]:
-            return False
-        if fields[0] == 'A' and fields[5] not in allowed:
-            return False
-    return True
+def private_acl(owner, entries, sid):
+    """Compare canonical SIDs, avoiding SDDL aliases and string parsing."""
+    allowed = {sid, 'S-1-5-18', 'S-1-5-32-544'}
+    return (owner == sid and bool(entries)
+            and all(kind in (0, 1) and (kind == 1 or trustee in allowed)
+                    for kind, trustee in entries))
+
+
+def sid_text(pointer):
+    kernel, advapi = api()
+    text = PVOID()
+    require(advapi.ConvertSidToStringSidW(pointer, ctypes.byref(text)))
+    try:
+        return ctypes.wstring_at(text)
+    finally:
+        kernel.LocalFree(text)
 
 
 def validate_private(path=None, handle=None):
     kernel, advapi = api()
-    descriptor, text = PVOID(), PVOID()
+    descriptor = PVOID()
     if handle is None:
         code = advapi.GetNamedSecurityInfoW(str(path), 1, 5, None, None, None, None, ctypes.byref(descriptor))
     else:
@@ -96,12 +93,30 @@ def validate_private(path=None, handle=None):
     if code:
         raise OSError('Windows file security unavailable')
     try:
-        require(advapi.ConvertSecurityDescriptorToStringSecurityDescriptorW(descriptor, 1, 5, ctypes.byref(text), None))
-        if not private_sddl(ctypes.wstring_at(text), current_sid()):
+        owner, dacl = PVOID(), PVOID()
+        defaulted, present = wintypes.BOOL(), wintypes.BOOL()
+        require(advapi.GetSecurityDescriptorOwner(descriptor, ctypes.byref(owner), ctypes.byref(defaulted)))
+        require(advapi.GetSecurityDescriptorDacl(descriptor, ctypes.byref(present), ctypes.byref(dacl), ctypes.byref(defaulted)))
+        if not present.value or not dacl:
+            raise ValueError('Missing or unrestricted Windows DACL')
+        class AclHeader(ctypes.Structure):
+            _fields_ = [('revision', wintypes.BYTE), ('reserved', wintypes.BYTE),
+                        ('size', wintypes.WORD), ('count', wintypes.WORD), ('reserved2', wintypes.WORD)]
+        header = ctypes.cast(dacl, ctypes.POINTER(AclHeader)).contents
+        if not 0 < header.count <= 64:
+            raise ValueError('Unsupported Windows DACL')
+        entries = []
+        for index in range(header.count):
+            ace = PVOID()
+            require(advapi.GetAce(dacl, index, ctypes.byref(ace)))
+            kind = ctypes.cast(ace, ctypes.POINTER(wintypes.BYTE))[0]
+            if kind not in (0, 1):
+                raise ValueError('Unsupported Windows ACE')
+            # ACCESS_ALLOWED_ACE / ACCESS_DENIED_ACE: header(4), mask(4), SID.
+            entries.append((kind, sid_text(PVOID(ace.value + 8))))
+        if not private_acl(sid_text(owner), entries, current_sid()):
             raise ValueError('State ACL must restrict access to this user, SYSTEM and administrators')
     finally:
-        if text:
-            kernel.LocalFree(text)
         kernel.LocalFree(descriptor)
 
 

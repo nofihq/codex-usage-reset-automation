@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import patch
 
 from cli import read_account_status as reader
-from cli.windows_security import private_sddl
+from cli.windows_security import private_acl
 
 
 def responses():
@@ -108,6 +108,15 @@ class IdentityGates(unittest.TestCase):
 
 
 class PrivateStorage(unittest.TestCase):
+    @unittest.skipUnless(os.name == 'nt', 'Native Windows DACL check')
+    def test_windows_public_acl_is_rejected(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = reader.private_directory(Path(temp)/'fixture', create=True)
+            # Only this empty disposable fixture is shared, never an account home.
+            subprocess.run(['icacls', str(root), '/grant', '*S-1-1-0:(OI)(CI)R'],
+                           capture_output=True, check=True)
+            with self.assertRaises(ValueError): reader.private_directory(root)
+
     def test_private_directories_and_expected_identity_file(self):
         with tempfile.TemporaryDirectory() as temp:
             root = reader.private_directory(Path(temp)/'private', create=True)
@@ -129,12 +138,25 @@ class PrivateStorage(unittest.TestCase):
 
     def test_windows_acl_policy_rejects_public_and_null_access(self):
         sid = 'S-1-5-21-1-2-3-1000'
-        self.assertTrue(private_sddl(f'O:{sid}D:P(A;OICI;FA;;;{sid})(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)', sid))
-        for acl in (f'O:{sid}D:(A;;FR;;;WD)', f'O:{sid}D:NO_ACCESS_CONTROL', 'O:BAD:'):
-            self.assertFalse(private_sddl(acl, sid))
+        self.assertTrue(private_acl(sid, [(0, sid), (0, 'S-1-5-18'), (0, 'S-1-5-32-544')], sid))
+        self.assertFalse(private_acl(sid, [(0, 'S-1-1-0')], sid))
+        self.assertFalse(private_acl(sid, [], sid))
+        self.assertFalse(private_acl('other', [(0, sid)], sid))
 
 
 class Transport(unittest.TestCase):
+    def test_unreviewed_cli_version_is_rejected_before_server_launch(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            home = reader.private_directory(root/'home', create=True)
+            runtime = reader.private_directory(root/'runtime', create=True)
+            version = subprocess.CompletedProcess([], 0, stdout=b'codex-cli 999.0.0\n', stderr=b'')
+            with patch.object(reader.subprocess, 'run', return_value=version), \
+                 patch.object(reader.subprocess, 'Popen') as start:
+                with self.assertRaisesRegex(reader.Hold, 'unsupported_cli_version'):
+                    reader.MetadataClient(str(root/'native'), str(home), str(runtime), 1)
+                start.assert_not_called()
+
     def run_transport(self, variant='normal'):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
