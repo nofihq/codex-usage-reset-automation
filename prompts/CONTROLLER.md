@@ -31,6 +31,10 @@ ordinary metadata reads without inventory or model requests, not periodic pollin
 
 Use one owner-only Page with one canonical JSON block. Read its hash and guard
 narrow edits with that exact hash; use a sequence guard only when returned.
+If a default editing read exceeds the Page tool's size limit, request a full read
+or the already-known canonical block using the supported selector. Require a
+complete, successful read and its current hash before editing. A size-limit or
+no-content error is a hold, never evidence of an empty or missing ledger.
 Patch only the intended uniquely matched values from the fresh read, preserving
 every unrelated or unknown field.
 Inspect edit receipts and freshly read back the exact account/window claim before

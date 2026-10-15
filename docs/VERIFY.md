@@ -14,6 +14,9 @@ macOS or Linux in a supported desktop browser; no terminal or local runtime is n
 - Included allowance is available, purchased credits are zero and reload is off.
 - Guarded Page writes change only intended fields, preserve unrelated state and
   read back exactly; a stale write fails without overwriting.
+- A Page size-limit/no-content error holds. A supported full or canonical-block
+  read recovers the complete state and current hash; it never recreates the ledger
+  or clears reservations, uncertainty or reminder history.
 - A later scheduled canary reads and updates that same Page without local receipts.
 - The saved account task is enabled, names the intended account and private ledger,
   and its actual next wake is visible in a native task receipt or settings.
