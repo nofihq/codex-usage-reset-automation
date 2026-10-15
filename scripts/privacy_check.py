@@ -18,7 +18,8 @@ def main():
         parts = Path(name).parts
         if (name == 'config.json' or any(part in {'.codex','runtime','accounts','.accounts','sessions','captures','screenshots','snapshots','private'} for part in parts)
                 or path.suffix in {'.png','.jpg','.mp4','.har','.pem','.key'} or path.name.startswith('.env')
-                or path.name in {'auth.json','history.jsonl'}):
+                or ('auth' in path.name.lower() and path.suffix.lower() == '.json')
+                or path.name.endswith('.expected.json') or path.name == 'history.jsonl'):
             problems.append({'file':name,'reason':'private/generated path tracked'})
             continue
         if path.is_symlink():
@@ -30,7 +31,10 @@ def main():
         text = path.read_text(encoding="utf-8")
         if re.search(r'/home/[A-Za-z0-9_-]+/|/Users/[A-Za-z0-9_-]+/',text):
             problems.append({'file':name,'reason':'owner-specific absolute home path'})
-        if re.search(r'\bsk-(?:proj-)?[A-Za-z0-9_-]{24,}',text) or re.search(r'\bgh[pousr]_[A-Za-z0-9]{24,}',text):
+        if (re.search(r'\bsk-(?:proj-)?[A-Za-z0-9_-]{24,}',text)
+                or re.search(r'\bgh[pousr]_[A-Za-z0-9]{24,}',text)
+                or re.search(r'\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}', text)
+                or re.search(r'"(?:access_token|refresh_token|id_token)"\s*:\s*"[^"\s]{20,}"', text)):
             problems.append({'file':name,'reason':'possible access credential'})
         if re.search(r'\bpage_[0-9a-f]{32}\b', text):
             problems.append({'file':name,'reason':'private cloud Page reference'})
