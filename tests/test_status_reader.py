@@ -142,6 +142,9 @@ class PrivateStorage(unittest.TestCase):
         self.assertFalse(private_acl(sid, [(0, 'S-1-1-0')], sid))
         self.assertFalse(private_acl(sid, [], sid))
         self.assertFalse(private_acl('other', [(0, sid)], sid))
+        self.assertFalse(private_acl('S-1-5-32-544', [(0, sid)], sid))
+        self.assertTrue(private_acl('S-1-5-32-544', [(0, sid)], sid, file_owner=True))
+        self.assertFalse(private_acl('other', [(0, sid)], sid, file_owner=True))
 
 
 class Transport(unittest.TestCase):

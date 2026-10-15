@@ -173,9 +173,12 @@ class MetadataClient:
                             continue
                     if not chunk:
                         return
-            except OSError:
+            except (OSError, ValueError):
                 if not self.stopped.is_set():
-                    self.messages.put(b"", timeout=1)
+                    try:
+                        self.messages.put(b"", timeout=1)
+                    except queue.Full:
+                        pass
         self.reader = threading.Thread(target=read, daemon=True)
         self.reader.start()
 
@@ -235,6 +238,8 @@ class MetadataClient:
         self.reader.join(timeout=2)
         if not self.reader.is_alive():
             self.process.stdout.close()
+        else:
+            raise OSError("Reader shutdown incomplete")
 
 
 def number(value, minimum, maximum, integer=False):

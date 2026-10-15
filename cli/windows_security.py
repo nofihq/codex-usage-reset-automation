@@ -65,10 +65,14 @@ def current_sid():
         kernel.CloseHandle(token)
 
 
-def private_acl(owner, entries, sid):
+def private_acl(owner, entries, sid, file_owner=False):
     """Compare canonical SIDs, avoiding SDDL aliases and string parsing."""
     allowed = {sid, 'S-1-5-18', 'S-1-5-32-544'}
-    return (owner == sid and bool(entries)
+    # Windows can assign newly created files to Administrators/SYSTEM. Those
+    # principals already have full access in this policy; directory ownership
+    # remains tied to the current user.
+    owners = allowed if file_owner else {sid}
+    return (owner in owners and bool(entries)
             and all(kind in (0, 1) and (kind == 1 or trustee in allowed)
                     for kind, trustee in entries))
 
@@ -114,7 +118,7 @@ def validate_private(path=None, handle=None):
                 raise ValueError('Unsupported Windows ACE')
             # ACCESS_ALLOWED_ACE / ACCESS_DENIED_ACE: header(4), mask(4), SID.
             entries.append((kind, sid_text(PVOID(ace.value + 8))))
-        if not private_acl(sid_text(owner), entries, current_sid()):
+        if not private_acl(sid_text(owner), entries, current_sid(), file_owner=handle is not None):
             raise ValueError('State ACL must restrict access to this user, SYSTEM and administrators')
     finally:
         kernel.LocalFree(descriptor)
