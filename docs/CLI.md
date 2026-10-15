@@ -76,3 +76,12 @@ Neither result submits a request. See [field mappings and browser gates](CLOUD_T
 For another account, create a separate private CLI home and expectations file;
 never reuse a binding or credential cache. Keep the normal cloud timer and Page
 workflow for autonomous execution while your personal computer is off.
+
+## Verify the installation
+
+Require a real `metadata_verified` read for your own account before using its
+numbers in a cloud task. The [native checks](../.github/workflows/native-cli.yml)
+test Windows, macOS and Linux installation, executable selection, protocol handling
+and local safeguards without credentials. Those checks do not sign in to your
+account, verify browser sessions or send model requests. Use the
+[setup verification checklist](VERIFY.md) for those account-specific checks.

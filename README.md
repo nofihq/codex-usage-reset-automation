@@ -13,10 +13,19 @@ supported.
 
 ## What it does
 
-- Checks the selected account and its actual usage windows.
-- Saves reset times and duplicate protection in a private Page.
-- Verifies a completed `OK`, checks its fixed reset twice, and archives that chat.
-- Schedules the next account check and reacts to reset-alert emails through Gmail.
+| Part | Job |
+|---|---|
+| Official CLI + Python reader | Read and validate account identity, usage and numeric reset times |
+| Dot's cloud browser | Verify the selected account and spending controls, send the eligible `OK`, then archive its exact chat |
+| Private Page + cloud tasks | Preserve duplicate protection and schedule the next check |
+
+The CLI is used only for reads in this workflow. Browser and CLI sign-in are
+separate; follow the private authorization steps for each. If a session expires,
+the dot must stop and request sign-in instead of guessing or retrying a request.
+
+Each successful request requires a completed `OK`, two matching fixed-reset reads
+at least 60 seconds apart and verified archive of that exact chat. An optional
+Gmail event task reacts to reset-alert emails alongside the ordinary account timer.
 
 The workflow uses your normal included allowance; it does not add quota.
 Archiving hides a chat from Recents and retains its data.
