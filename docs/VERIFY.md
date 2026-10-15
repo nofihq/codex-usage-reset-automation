@@ -31,7 +31,7 @@ already active window. For a completed run, require:
 | Reset | Two read-only CLI status checks at least 60 seconds apart; same duration and reset, with no second prompt |
 | Timing | Reset minus duration falls within the send-to-completion observation interval |
 | Cleanup | That exact disposable chat is archived and can be identified as the completed chat |
-| Next wake | Same account timer enabled for the verified reset plus two minutes |
+| Next wake | Same account timer enabled for the verified reset plus two minutes, or an earlier read-only expiry reminder that preserves that normal deadline |
 | Persistence | A later scheduled wake retains the result, reservation proof, anchor and cleanup |
 
 Unknown completion, missing state, changed identity or ambiguous cleanup must
@@ -62,6 +62,28 @@ Subscription, task configuration and live delivery are separate checks:
 The first genuine reset after enablement verifies the live delivery path. Until
 then, report configuration as enabled with delivery unmeasured. Device push
 notifications require separate notification settings and actual delivery proof.
+
+## Banked-expiry reminder checks
+
+- Read actual available inventory and exact expiry for every configured account.
+  Do not infer a personal expiry from a public banked-reset announcement.
+- Verify this is a one-time setup read, with no daily inventory task or deadline.
+  Further inventory reads require a new verified banked-grant event or owner request.
+- Verify the saved early-warning deadline is 72 hours before expiry, with a
+  24-hour follow-up. The first planned notice must be at least 24 hours early.
+  Late discovery produces an immediate honest warning, not a claimed past delivery.
+- Confirm the designated existing coordinator's actual next wake is the earliest
+  of its normal account check or any account's pending warning.
+  Read-only reminder wakes preserve normal deadlines and other account timers;
+  they cannot send `OK` or redeem anything.
+- Reminder-only wakes use saved expiry evidence, make no account probe, and label
+  availability with its last verification time and "if still unused" wording.
+- Simulate before/at/after warning boundaries, late discovery, unknown expiry,
+  redeemed/removed grants, two accounts, repeated wakes and unknown notification
+  outcomes. Accepted stages must not cause another alert or a wake scheduled in
+  the past. A new banked-grant email can refresh inventory but cannot send `OK`.
+- Check durable per-account/grant/expiry/stage notification state and receipt readback.
+  A schedule or simulated pass is not proof a real reminder reached your device.
 
 ## Check another device
 

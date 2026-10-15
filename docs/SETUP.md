@@ -147,7 +147,56 @@ action. Label banked announcements as public reports unless your account confirm
 the grant. Keep unchanged and duplicate events quiet. Device push notifications
 also depend on your ChatGPT notification settings and need their own delivery check.
 
-## 6. Add a second account
+## 6. Add banked-reset expiry reminders
+
+A banked-reset announcement and an expiry reminder are different notifications.
+The announcement says a saved reset may be available. The expiry reminder warns
+that a reset actually present in your account is approaching its use-by time.
+Do not rely on the public email service to send that personal expiry reminder.
+
+Ask the dot to use your first account's existing task as the reminder coordinator,
+including reminders for any second account:
+
+1. Read the account's banked inventory with the reader's `--inventory` option.
+   Use the expiry returned for each available reset; do not assume every grant
+   lasts 30 days. Unknown expiry means the dot must report that it cannot schedule
+   a reliable expiry reminder.
+2. Save an early warning for **72 hours before expiry**, plus a follow-up around
+   **24 hours before expiry**. The first warning must be planned at least a full
+   day ahead. If a reset is first discovered with 24–72 hours left, notify immediately.
+   If less than 24 hours remain, notify immediately and say the one-day notice
+   could not be met; do not pretend an earlier reminder was delivered.
+3. Save this **one-time setup inventory** for each account. Do not schedule daily
+   inventory checks. Read inventory again only after a verified new banked-grant
+   availability email or your direct request. Ordinary usage checks and expiry
+   reminder wakes do not request inventory.
+4. Use that **same saved task** for read-only reminder wakes across the
+   configured accounts. Its next wake is the earlier of its normal account check
+   or any pending expiry warning. Keep every account's normal
+   reset deadline saved separately so an early reminder cannot erase it. Other
+   account timers keep their own normal schedules. A reminder must not wait behind
+   a five-hour, weekly or failure-backoff schedule.
+5. Save which account, grant, expiry and warning stage have already been notified.
+   Preserve the count when several grants share timestamps. Read this state back
+   before sending, keep the notification receipt afterward, and reconcile an
+   unknown outcome instead of sending another alert blindly. A restart or repeated
+   email must not repeat the same warning.
+
+An expiry notification should name the account, last-verified reset count, exact
+expiry in your time zone and time remaining, all based on the saved inventory.
+Include when availability was last verified and say **if still unused**; without
+another authorized read the dot cannot know whether you redeemed it elsewhere.
+Suppress reminders for grants already known redeemed or removed. This is a
+reminder for you to decide whether to use the reset: **no automatic redemption,
+new inventory probe or `OK` prompt**.
+
+Verify the actual saved wake and warning policy, not just the dot's promise to
+remember. Test due-time and duplicate handling with simulated dates; never change
+the real expiry to make a test alert look genuine. A saved schedule proves setup,
+not device delivery. Keep scheduled, sent and device-delivered evidence separate;
+cloud or notification delays can still prevent timely delivery.
+
+## 7. Add a second account
 
 Keep the first account's state and timer. Sign in privately to the second identity,
 verify its actual windows and spending controls, and assign a different nickname.
@@ -157,5 +206,6 @@ Add a separate account binding and timer to the same guarded Page. Reuse the one
 Gmail event handler to check both accounts, with separate account/window claims.
 A hold on one account must not switch identities or bypass the other account's gates.
 Do not clone an existing account's credentials, permit or completed-request marker.
+Include both accounts in the banked-inventory and expiry-reminder policy.
 
 Finish [verification](VERIFY.md) before calling the new account ready.

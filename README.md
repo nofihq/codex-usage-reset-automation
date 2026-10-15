@@ -36,6 +36,9 @@ the dot must stop and request sign-in instead of guessing or retrying a request.
 4. Archive the completed chat and schedule the next check for that reset time
    plus two minutes. Save the result so another wake cannot send a duplicate.
 
+An earlier banked-expiry reminder wake is read-only and keeps that normal
+account deadline intact.
+
 For example, if both status reads show a reset at 7:00 p.m., the next check is
 scheduled for 7:02 p.m. The pause between reads checks that the reset time stays
 fixed instead of moving forward every time it is read.
@@ -61,6 +64,19 @@ Your normal account timer still works without these emails. See
 for signup, Gmail and notification details. Email can arrive late; it is not an
 instant-alert guarantee.
 
+### Banked-reset expiry reminders
+
+Configure a **72-hour early warning and a 24-hour follow-up** for available banked
+resets, using the expiry shown by your account. This gives you at least a day's
+planned notice when the expiry is known early enough. The same cloud task handles
+these read-only reminders for each account; no extra `OK` or automatic redemption.
+Read inventory once during setup, then use the saved expiries without daily checks.
+A verified new banked-grant email or your direct request can cause another inventory
+read. Reminders say when availability was last checked and are conditional on the
+reset still being unused.
+The dot must warn immediately if it discovers an expiry too late for one-day
+notice. See [reminder setup and checks](docs/SETUP.md#6-add-banked-reset-expiry-reminders).
+
 ### What it checks and records
 
 | Information | Meaning |
@@ -70,9 +86,10 @@ instant-alert guarantee.
 | Window length | Reads the actual duration, such as 300 minutes or 10,080 minutes |
 | Reset time | Reads the server's timestamp; time until reset can be calculated from it |
 | Spending controls | Checks included usage, purchased-credit balance and automatic reload before sending |
-| Banked resets, when requested | Optional `--inventory` reads available count, status, grant time and expiry when returned; unknown dates stay unknown |
+| Banked resets | One setup `--inventory` read records count, status, grant time and known expiry; refresh only after a verified new grant event or your request, with no daily checks |
 | Run result | Saves the request attempt, completed reply, two reset checks and exact-chat archive result |
 | Next check | Saves and verifies the next wake for each account |
+| Expiry reminders | Saves per-account banked expiry, warning times and notification status to avoid repeated alerts |
 | Email handling | Records handled events and available source, inbox and wake times to avoid duplicates and measure delivery delay |
 
 These checks do not measure an exact token cost or prove how much usage the
