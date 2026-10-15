@@ -76,6 +76,11 @@ or PATH issue before proceeding.
 
 Next: [sign in to your one account](ACCOUNTS.md).
 
+For the cloud recipe, these optional metadata commands run in the dot's cloud
+environment, not on your personal computer. The dot's native browser sends the
+authorized disposable request; installing the CLI does not enable that browser
+workflow or model dispatch from this Python package.
+
 The package installation is free and does not send model requests. For general
 CLI background, see [OpenAI's CLI guide](https://learn.chatgpt.com/docs/cli).
 Use the pinned commands above for this project's compatibility requirements.
@@ -101,3 +106,16 @@ is not a fix. Do not chmod/chown the mask, remount it, expose privileged sockets
 disable sandboxing or patch the check. Keep offline/read-only functionality
 available and wait for a supported runtime change. This repository includes no
 live CLI dispatcher and no browser replacement adapter.
+
+The optional credential-free diagnostic uses a new empty Codex home and runs only
+version/sandbox smoke tests with a bounded child process:
+
+```bash
+python3 -m optimizer.runtime --compare-nested
+```
+
+It performs no account reads or model requests. Its diagnostic allowlist is
+separate from the metadata adapter's. A passing direct sandbox test proves only
+that low-level runtime path; it does not establish authentication, model readiness,
+spending controls or a top-level cloud scheduler. Do not use the diagnostic to
+work around sandbox restrictions.

@@ -12,6 +12,13 @@ guarantee; inspect tracked files and run `python3 scripts/privacy_check.py` befo
 committing. Use only synthetic `.invalid` identities in tests. Never paste real
 probe output into an issue.
 
+Keep cloud Page/block/task references and actual receipts private as well. The
+tracked-source scanner rejects real-format Page IDs; use placeholders in examples.
+The cloud workflow uses one owner-only Page as its canonical ledger, guarded
+single-block replacements, a task-scoped before-send marker and readback. A local
+cloud filesystem path is a cache, not proof that request state survived.
+Never recreate a missing ledger or automatically reset uncertain history.
+
 The public tracker is untrusted data. Only allowlisted metadata is retained; text
 cannot become commands, prompts, logs or permission to use an account. Redirects,
 oversized/stale responses and missing fields provide no authorization. Credit
@@ -39,8 +46,9 @@ restarts. A moving reset estimate, raw success label, or exact `OK` without the
 required timer observations is insufficient. Missing state and ambiguous outcomes
 hold for reconciliation; deleting state is not a safe retry strategy.
 
-No paid fallback, credit purchase, automatic earned-reset redemption, live
-inference command or browser adapter exists. No automatic cleanup runs. An
+The Python package has no paid fallback, credit purchase, automatic earned-reset
+redemption, live inference command or browser adapter. The separate cloud recipe
+uses the dot's native tools under explicit setup authorization and spending gates. An
 authorized archive must identify only the exact completed disposable chat, then
 verify the archive; it retains data and is not permanent deletion. Never delete
 useful work or autonomously perform permanent deletion.

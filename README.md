@@ -1,18 +1,46 @@
 # Codex Usage & Reset Optimizer
 
-Monitor Codex usage windows, recognize public reset hints, and plan the next useful
-status check. This small Python project ships **dry-run planning and opt-in
-read-only account metadata**, with free tooling and no third-party dependencies.
-It does not grant extra quota or bypass subscription limits.
+Use a cloud dot to check one account, make one short `OK` request when eligible,
+verify the reset, and schedule the next check. The [cloud setup](docs/CLOUD_DOT_SETUP.md)
+uses a private guarded Page for state across scheduled runs. **Your laptop can be
+off; no external runner, API key or extra hosting is required within an existing
+eligible plan's included allowances.** Use a supported desktop browser or ChatGPT
+app on your device; the execution stays in the cloud.
+Routine checks reuse the saved reset time and keep the active window protected
+against redundant requests, even when the tiny request still rounds to 100% remaining.
 
-**Current stage:** a portable monitoring scaffold, not clone-and-forget autonomous
-inference. There is no live dispatch command, automatic reset redemption, paid
-fallback, or installed scheduler. `would_request` is a synthetic planning result;
-it never sends a model request. The opt-in remaining-percent heuristic is a
-planning policy, not proof of cross-device inactivity. See the
-[capability matrix](docs/CAPABILITIES.md) and [safety contract](docs/SAFETY_CONTRACT.md).
+This repository also ships a dependency-free Python **read-only planner**.
+Its `would_request` result never sends a request, and changing flags cannot enable
+CLI dispatch. The cloud workflow uses the dot's native tools, not a packaged
+browser adapter. It does not grant extra quota or bypass subscription limits.
 
-## Start here: one account, no login needed
+## Start here: one cloud account
+
+You need existing [eligible dot access](https://learn.chatgpt.com/docs/dots#access)
+and its cloud browser, private Pages and scheduling tools. **Plus alone is not
+currently listed as eligible for a dot**; it can be the single monitored account
+when you already have eligible dot access. Do not buy hosting or enable API billing
+for this setup. Work/Codex tasks consume their normal included allowances.
+
+1. Open **Your dot** in the ChatGPT mobile/desktop app or a desktop browser.
+   Mobile web is unsupported. No Git, Python or Node installation is needed on
+   your personal device for this route.
+2. Give it this repository URL and the copyable instruction in
+   [the cloud setup guide](docs/CLOUD_DOT_SETUP.md#start-with-one-account).
+3. Sign in privately in its **cloud** browser when needed, and confirm the one
+   intended identity. School MFA may need you during setup or after expiry.
+4. Require the guarded Page test and a later scheduled read/write canary before
+   one authorized initialization request. Then verify exact `OK`, two fixed reset
+   reads at least 60 seconds apart, that chat's archive, and a later state readback.
+5. Inspect the saved next cloud wake. Reuse the same task; preserve uncertain
+   submissions, and use read-only backoff instead of resending.
+
+Archiving keeps the sidebar tidy and **retains the chat's data**. The workflow
+minimizes request count and requested output; total task overhead is not a verified
+zero-usage or universally least-cost claim. See [validation](docs/VALIDATION.md)
+and [the safety contract](docs/SAFETY_CONTRACT.md).
+
+## Optional: offline Python planner, no login needed
 
 Prerequisites: Git and **Python 3.10+ on Linux**. Development and clean-clone tests
 run on Python 3.12.3. Windows users need WSL2 and run these commands inside Linux.
@@ -88,6 +116,8 @@ Remove that executable to uninstall. Updating source requires rerunning the inst
 | `probe --config FILE --alias plus` | Explicit official read-only metadata from that alias's isolated Codex home |
 | `probe ... --check-version-only` | Codex version discovery in an empty temporary home; no account reads |
 | `dry-run --read-accounts ...` | Connect official metadata directly to planning; live dispatch stays disabled |
+| `dry-run --read-accounts --due-only ...` | Honor persisted account-read deadlines, bounded failure backoff and change-only health alerts |
+| `python3 -m optimizer.runtime [--compare-nested]` | Credential-free Linux sandbox diagnostic; no auth or model-readiness claim |
 | `dry-run --fetch-feed --user-agent VALUE ...` | Opt-in keyless public tracker GET |
 
 Every command emits JSON. Global `--json` is accepted for scripting.
@@ -128,6 +158,7 @@ Once you have signed in and saved the account hash, run from the clone:
 python3 -m optimizer probe --config config.json --alias plus --check-version-only
 python3 -m optimizer probe --config config.json --alias plus
 python3 -m optimizer dry-run --config config.json --read-accounts
+python3 -m optimizer dry-run --config config.json --read-accounts --due-only
 ```
 
 Expected: read-only metadata, with `live_requests_enabled: false`. A `hold` can
@@ -164,10 +195,11 @@ minutes. Fresh target timers skip redundant requests. See the full
 The [heuristic example](examples/config.heuristic.json) is opt-in and keeps all
 live-request gates disabled; no scheduler or dispatcher is activated.
 
-One manual browser check on October 14 completed an exact `OK`, observed the same
-fixed five-hour reset twice, and verified archiving of that disposable chat.
-This is narrow environment-specific evidence. Later unattended-session execution
-is still pending, and no browser adapter or live CLI dispatch is shipped.
+The October 14 cloud recovery test completed one scheduled exact `OK`, verified
+the same fixed five-hour reset in reads 76.24 seconds apart, and archived that exact
+chat. The earlier scheduled attempt held when local receipts were missing;
+the recovery uses a guarded private Page. See [the evidence and limits](docs/VALIDATION.md).
+No browser adapter or live CLI dispatch is shipped in the Python package.
 
 ## Public reset hints and cloud options
 
@@ -182,14 +214,13 @@ Replace the example contact URL with your project's URL. Requests are bounded,
 reject redirects/stale data, honor caching/Retry-After, and retain only structured
 hints. Initial ingestion establishes a baseline. Polling defaults to four hours.
 
-[Optional scheduling and free cloud setup options](docs/DEPLOYMENT_DRAFT.md)
-describes an externally managed single-host tick. No timers or GitHub workflows
-are shipped or activated. Free hosting depends on provider/account eligibility;
-there is no guaranteed free always-on cloud service here. Never import subscription
-credentials into GitHub Actions. Browser Work execution is environment-specific
-and is not included as a portable dispatcher. Nested CLI model execution remains
-blocked on the examined cloud host by a fixed daemon-directory permission check;
-see the [verified blocker and safe boundary](docs/CLI_SETUP.md#nested-cloud-sandbox-blocker).
+[Cloud dot setup](docs/CLOUD_DOT_SETUP.md) is the cloud route. Its saved task uses
+the dot's environment and a private Page, so a personal device need not stay on.
+It requires existing eligible access rather than a guaranteed free standalone
+hosting service. The repository installs no schedules or GitHub workflows by
+itself. [Optional read-only scheduling](docs/DEPLOYMENT_DRAFT.md) covers the Python
+planner. Nested CLI model execution remains blocked on the examined cloud host;
+see [the diagnosis](docs/CLI_SETUP.md#nested-cloud-sandbox-blocker).
 
 ## Keep usage and storage small
 
@@ -199,11 +230,15 @@ verified least-cost model ranking or a promise of zero usage. Do not send repeat
 requests to establish a timer when the evidence is missing. Honor `next_check_at`
 and retain only the small state needed to prevent duplicate work.
 
-Local optimizer state and logs are bounded as described below. Codex's own caches
+Local optimizer state and logs are bounded as described below. Cloud Page state
+is separate; retain only current receipts and unresolved outcomes, and keep its
+private references out of Git. Service-side version history is not covered by
+the local file bounds. Codex's own caches
 and browser/server-side chats are separate and are not covered by those bounds.
 Only a completed, identified disposable chat may be archived in an authorized
 workflow. Archiving retains the chat; it does not delete it or prove disk space
-was freed. No automatic browser cleanup or permanent deletion is implemented.
+was freed. The cloud recipe verifies archive-only cleanup; the Python cleanup
+adapter remains disabled. Permanent deletion is never unattended.
 
 ## Privacy, storage, and contributions
 

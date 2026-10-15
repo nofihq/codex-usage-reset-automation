@@ -1,9 +1,9 @@
 # Activity, reset evidence, and cleanup contract
 
-This is the planning and fixture-testable request contract. The shipped CLI still
-has **no live dispatcher or browser adapter**. Changing profile flags does not
-enable a model request. Synthetic evidence must never be substituted for account
-measurements.
+This covers the read-only planner and the separate [cloud dot workflow](CLOUD_DOT_SETUP.md).
+The shipped CLI has **no live dispatcher or browser adapter**. Changing profile
+flags does not enable a request. The cloud recipe uses the dot's native browser,
+private Pages and scheduler; synthetic evidence never replaces account measurements.
 
 ## Choose the activity policy explicitly
 
@@ -64,6 +64,32 @@ expired timer cannot authorize a request for the target bucket. A future fixed
 target timer means wait; an empty account with no anchor does not bootstrap one
 by sending a request. Missing state means hold, not permission to start over.
 
+## Explicit cloud initialization and reconciliation
+
+The cloud recipe has a separate, directly authorized one-time initialization
+path. It is not a planning opportunity, ordinary expiration, or automatic reset
+of missing history. Record the owner's authorization and reconciliation provenance
+in the private ledger, including which old artifacts remain missing. Inspect
+the exact old disposable chat and actual no-send receipts when reconciling lost
+local files. A still-uncertain prior submission blocks initialization.
+
+Before this one request, require a later scheduled Page read/write canary, fresh
+identity, all allowance/spending/model gates, and current duplicate-safety evidence.
+100% alone is insufficient. A drifting idle estimate is only one part of this
+explicit initialization preflight; it never becomes a fixed anchor or routine
+automatic trigger.
+
+Save one expiring permit scoped to the exact account, target and saved task, with
+a request budget of one. The scheduled sender atomically consumes it into a unique
+before-send marker, then verifies that exact marker through a fresh Page read.
+Only that sender may proceed. Preserve uncertain writes and outcomes for
+reconciliation; never issue another permit automatically. The completed request
+must pass the same post-request checks and exact-chat archive below, followed by
+a later scheduled readback before declaring the setup verified.
+
+Subsequent automatic runs require the persisted fixed anchor to expire. They
+cannot reuse the initialization permit or discard state to manufacture eligibility.
+
 ## Gates that always apply
 
 Hold when any required fact is missing, invalid, stale, or from the future.
@@ -76,11 +102,17 @@ above. Public feed text never authorizes usage or redemption.
 
 ## Request and verification boundary
 
-A future supported executor must preserve this transaction contract:
+Any executor, including the native-tool cloud recipe, must preserve this contract:
 
 - Save an atomic **before-send inflight marker** before calling the model. If that
   write fails, do not send. Deduplicate durably for the account and exact window
-  across ticks and restarts; use one host and the same private state directory.
+  across ticks and restarts. The Python boundary uses one host/private directory.
+  The cloud recipe uses one canonical private Page block and its read-derived
+  hash guard, plus a sequence guard only when that read actually returns one.
+  Store exact private Page/block/task references in the saved task, not Git.
+  A missing Page, block, account binding or marker holds; local cloud files are
+  not an authoritative replacement. Inspect every write receipt and read back
+  unknown saves before further action; never replay an uncertain send.
   Recheck the real clock after saving and before sending; an expired decision
   must be refreshed. A changed expected account identity cannot reuse old state.
 - Send only the disposable exact-`OK` request using a verified included-usage
@@ -99,8 +131,9 @@ A future supported executor must preserve this transaction contract:
   another opportunity. Without upstream idempotency, exactly-once execution
   cannot be guaranteed.
 
-The implemented transaction checks are tested with fake adapters. They are not
-production executor validation or permission to activate an unattended schedule.
+The Python transaction checks use fake adapters. The separate cloud recipe's
+live evidence is recorded in [validation](VALIDATION.md). It does not validate a
+packaged executor, arbitrary hosts, forced container restarts or long-term operation.
 
 ## Minimal usage and retention
 
@@ -115,7 +148,7 @@ archive succeeded; an uncertain target or incomplete request holds cleanup.
 Pending or uncertain cleanup also holds another request, preserving the exact
 chat record until it is reconciled. An uncertain archive is checked read-only on
 later calls, never automatically repeated. The
-repository supplies only a disabled, fixture-testable cleanup boundary; there is
-no working browser cleanup implementation. Never delete a useful session
+Python package supplies only a disabled, fixture-testable cleanup boundary;
+the cloud recipe uses the dot's authorized native browser tools. Never delete a useful session
 or autonomously perform permanent deletion. **Archiving is retention, not deletion**
 and does not prove storage was reclaimed. This project has no zero-retention mode.
