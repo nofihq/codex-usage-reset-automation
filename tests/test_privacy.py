@@ -19,10 +19,10 @@ class Privacy(unittest.TestCase):
             shutil.copyfile(ROOT / '.gitignore', root / '.gitignore')
             subprocess.run(['git', 'init', '-q'], cwd=root, check=True, capture_output=True)
             names = ['auth-backup.json', 'nested/old-auth.json', 'plus.expected.json']
-            ignored = subprocess.run(['git', 'check-ignore', '--stdin'], cwd=root,
-                                     input='\n'.join(names)+'\n', text=True,
+            ignored = subprocess.run(['git', 'check-ignore', '-z', '--stdin'], cwd=root,
+                                     input=b'\0'.join(name.encode() for name in names)+b'\0',
                                      capture_output=True, check=True)
-            self.assertEqual(set(ignored.stdout.splitlines()), set(names))
+            self.assertEqual({name.decode() for name in ignored.stdout.split(b'\0') if name}, set(names))
             names.append('UPPER-AUTH.JSON')
             for name in names:
                 path = root/name
