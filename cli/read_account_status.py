@@ -141,7 +141,9 @@ class MetadataClient:
                     "OPENAI_ACCESS_TOKEN", "OPENAI_BASE_URL", "OPENAI_API_BASE",
                     "OPENAI_ORG_ID", "OPENAI_PROJECT_ID", "OPENAI_ORGANIZATION",
                     "OPENAI_PROJECT", "AZURE_OPENAI_API_KEY", "AZURE_OPENAI_ENDPOINT",
-                    "AZURE_OPENAI_AD_TOKEN"):
+                    "AZURE_OPENAI_AD_TOKEN", "OPENAI_FEDERATION_RULE_ID",
+                    "OPENAI_IDENTITY_TOKEN_FILE", "OPENAI_WORKLOAD_IDENTITY_CONTEXT",
+                    "CODEX_REFRESH_TOKEN_URL_OVERRIDE"):
             env.pop(key, None)
         env.update(CODEX_HOME=home, XDG_RUNTIME_DIR=runtime)
         # Inspect the installed binary without opening the selected credential store.
@@ -366,12 +368,20 @@ def collect(client, expected, inventory=False):
     legacy = usage.get("rateLimits")
     if isinstance(legacy, dict) and legacy.get("accountId", expected_binding) != expected_binding:
         raise Hold("usage_account_binding_mismatch")
+    if isinstance(legacy, dict) and legacy.get("limitId") not in (None, "codex"):
+        raise Hold("usage_limit_binding_mismatch")
     if inventory:
         sanitized["rateLimitResetCredits"] = sanitize_inventory(usage.get("rateLimitResetCredits"))
     models = client.call("model/list", {"includeHidden": False, "limit": 100})
     data = models.get("data")
-    if not isinstance(data, list):
+    if (not isinstance(data, list) or len(data) > 100
+            or any(not isinstance(row, dict) or not isinstance(row.get("model"), str)
+                   or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:/-]{0,255}", row["model"])
+                   for row in data)):
         raise Hold("invalid_model_list")
+    cursor = models.get("nextCursor")
+    if cursor is not None and (not nonempty(cursor) or len(cursor) > 8192):
+        raise Hold("invalid_model_cursor")
     listed = any(isinstance(row, dict) and row.get("model") == "gpt-6-luna" for row in data)
     return {
         "state": "metadata_verified", "eligibility": "unknown",

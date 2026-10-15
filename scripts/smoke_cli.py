@@ -2,6 +2,8 @@
 import json
 import platform
 from pathlib import Path
+import os
+import subprocess
 import sys
 import tempfile
 
@@ -31,10 +33,27 @@ def main():
                     raise
         finally:
             client.close()
+        # Exercise the actual beginner-facing entry point, not only imports.
+        entry = Path(__file__).resolve().parents[1]/'cli'/'read_account_status.py'
+        setup = subprocess.run([sys.executable, str(entry), '--init-private', str(root)],
+                               capture_output=True, text=True, timeout=30)
+        if setup.returncode or json.loads(setup.stdout).get('state') != 'private_directories_ready':
+            raise RuntimeError('Private-directory CLI setup failed')
+        expected = root/'expected.json'
+        descriptor = os.open(expected, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+        with os.fdopen(descriptor, 'w', encoding='utf-8') as stream:
+            json.dump({'expectedEmail': 'smoke@example.invalid'}, stream)
+        result = subprocess.run([sys.executable, str(entry), '--binary', binary,
+                                 '--home', str(root/'plus'), '--runtime', str(runtime),
+                                 '--expectations-file', str(expected)],
+                                capture_output=True, text=True, timeout=30)
+        if result.returncode != 2 or json.loads(result.stdout) != {
+                'state': 'hold', 'reason': 'missing_chatgpt_identity'}:
+            raise RuntimeError('CLI entry point must hold for an empty account')
     if methods != ['initialize', 'account/read']:
         raise RuntimeError('Unexpected method sequence')
     print(json.dumps({'ok': True, 'os': platform.system(), 'architecture': platform.machine(),
-                      'checks': ['native official binary', 'empty-home handshake',
+                      'checks': ['native official binary', 'private setup command', 'CLI entry point', 'empty-home handshake',
                       'unauthenticated identity hold'], 'model_requests': 0, 'sign_ins': 0}))
 
 

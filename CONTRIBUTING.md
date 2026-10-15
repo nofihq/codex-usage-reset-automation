@@ -7,6 +7,9 @@ Do not add account data, private run journals or claims based on unobserved outc
 Use placeholders in examples. Before submitting, review the diff and run these
 maintainer checks with Python 3 and Git:
 
+The clean-clone check tests your latest local commit. Commit intended changes
+locally before running it; uncommitted edits are not included.
+
 ```sh
 python3 scripts/verify_clean_clone.py
 ```

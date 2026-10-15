@@ -80,10 +80,15 @@ def main():
         run([sys.executable, "scripts/privacy_check.py"], clone, env)
         tests = run([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"], clone, env, test_output=True)
         count = re.search(r"Ran (\d+) tests", tests.stderr)
+        skipped = re.search(r"OK \(skipped=(\d+)\)", tests.stderr)
+        tests_run = int(count.group(1)) if count else None
+        tests_skipped = int(skipped.group(1)) if skipped else 0
         clean = not run(["git", "status", "--porcelain"], clone, env).stdout.strip()
         print(json.dumps({"ok": clean, "checks": ["fresh local clone", "internal Markdown links and headings",
               "tracked-source privacy scan", "repository check regression tests", "clean working tree"],
-              "internal_links": documents["internal_links"], "tests_passed": int(count.group(1)) if count else None,
+              "internal_links": documents["internal_links"], "tests_run": tests_run,
+              "tests_passed": tests_run - tests_skipped if tests_run is not None else None,
+              "tests_skipped": tests_skipped,
               "network_calls": 0, "account_reads": 0, "model_requests": 0}, indent=2))
         return 0 if clean else 2
 

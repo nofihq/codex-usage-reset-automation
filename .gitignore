@@ -5,6 +5,7 @@
 auth.json
 history.jsonl
 config.json
+*.expected.json
 .env.*
 private/
 accounts/

@@ -67,7 +67,7 @@ class IdentityGates(unittest.TestCase):
                 self.assertNotIn('account/rateLimits/read', client.methods)
 
     def test_usage_binding_failures_stop_before_model_catalog(self):
-        for change in ('missing', 'mismatch', 'nested', 'legacy', 'limit'):
+        for change in ('missing', 'mismatch', 'nested', 'legacy', 'limit', 'legacy_limit'):
             with self.subTest(change=change):
                 data = responses(); usage = data['account/rateLimits/read']
                 if change == 'missing': usage.pop('accountId')
@@ -75,6 +75,7 @@ class IdentityGates(unittest.TestCase):
                 if change == 'nested': usage['rateLimitsByLimitId']['codex']['accountId'] = 'wrong'
                 if change == 'legacy': usage['rateLimits'] = {'accountId': 'wrong'}
                 if change == 'limit': usage['rateLimitsByLimitId']['codex']['limitId'] = 'wrong'
+                if change == 'legacy_limit': usage['rateLimits'] = {'limitId': 'wrong'}
                 client = FakeClient(data)
                 with self.assertRaises(reader.Hold):
                     reader.collect(client, {'expectedEmail': 'test@example.invalid'})
@@ -100,6 +101,14 @@ class IdentityGates(unittest.TestCase):
         self.assertTrue(result['luna']['morePages'])
         self.assertEqual(result['eligibility'], 'unknown')
         self.assertNotIn('private-cursor', json.dumps(result))
+
+    def test_malformed_model_rows_and_cursor_hold(self):
+        for rows, cursor in (([None], None), ([{}], None), ([{'model': 1}], None),
+                             ([{'model': 'bad model'}], None), ([], {}), ([], ''), ([], 1)):
+            with self.subTest(rows=rows, cursor=cursor):
+                data = responses(); data['model/list'] = {'data': rows, 'nextCursor': cursor}
+                with self.assertRaises(reader.Hold):
+                    reader.collect(FakeClient(data), {'expectedEmail': 'test@example.invalid'})
 
     def test_non_metadata_method_rejected_before_io(self):
         client = object.__new__(reader.MetadataClient)
@@ -194,7 +203,10 @@ for line in sys.stdin:
             version = subprocess.CompletedProcess([], 0, stdout=b'codex-cli 0.159.2\n', stderr=b'')
             with patch.object(reader.subprocess, 'run', return_value=version), \
                  patch.object(reader.subprocess, 'Popen', side_effect=launch), \
-                 patch.dict(os.environ, {'OPENAI_API_KEY': 'secret-fixture', 'CODEX_ACCESS_TOKEN': 'secret-fixture'}):
+                 patch.dict(os.environ, {key: 'secret-fixture' for key in (
+                     'OPENAI_API_KEY', 'CODEX_ACCESS_TOKEN', 'OPENAI_FEDERATION_RULE_ID',
+                     'OPENAI_IDENTITY_TOKEN_FILE', 'OPENAI_WORKLOAD_IDENTITY_CONTEXT',
+                     'CODEX_REFRESH_TOKEN_URL_OVERRIDE')}):
                 client = reader.MetadataClient(str(root/'native-codex'), str(home), str(runtime), 1 if variant=='timeout' else 3)
                 try:
                     try: result = reader.collect(client, {'expectedEmail':'test@example.invalid'})
@@ -212,6 +224,9 @@ for line in sys.stdin:
         self.assertTrue(calls[0]['params']['capabilities']['experimentalApi'])
         self.assertNotIn('OPENAI_API_KEY', observed[0][1])
         self.assertNotIn('CODEX_ACCESS_TOKEN', observed[0][1])
+        for key in ('OPENAI_FEDERATION_RULE_ID', 'OPENAI_IDENTITY_TOKEN_FILE', 'OPENAI_WORKLOAD_IDENTITY_CONTEXT',
+                    'CODEX_REFRESH_TOKEN_URL_OVERRIDE'):
+            self.assertNotIn(key, observed[0][1])
         self.assertIn('forced_login_method="chatgpt"', observed[0][0])
 
     def test_errors_auth_requests_and_timeouts_stop_without_retry(self):
