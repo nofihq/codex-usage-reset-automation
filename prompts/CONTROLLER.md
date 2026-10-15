@@ -51,7 +51,9 @@ prompt and next wake. Do not count a proposed time as a completed rearm.
 
 For each account independently:
 
-1. Confirm the selected identity, target duration and fresh included-usage status.
+1. Confirm the selected identity, target duration and fresh included-usage status,
+   including backend `ordinaryUsageAllowed=true`; percentages or reset times
+   cannot substitute for an unavailable or false permission.
    Prove zero purchased credits and reload off. Unknown values, exhaustion in any
    bucket, explicit active work or unresolved cleanup hold.
 2. Respect the chosen activity policy. The 100%-remaining heuristic must be explicit;

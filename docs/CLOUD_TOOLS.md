@@ -98,6 +98,12 @@ Match the configured target by duration, not by `primary`/`secondary` position o
 plan name. Unknown or malformed data holds. `model/list` is a catalog, not proof
 that a model is included or a permission to submit a request.
 
+Require `ordinaryUsageAllowed=true` before using included allowance. This is a
+separate backend permission; `false` or `null` holds even when the display shows
+100% remaining or a reset time has passed. The pinned
+[response contract](https://github.com/openai/codex/blob/rust-v0.159.2/codex-rs/app-server-protocol/schema/typescript/v2/GetAccountRateLimitsResponse.ts)
+explicitly says percentages and reset times cannot replace that permission.
+
 The dot must still inspect visible credits, automatic reload, account selection
 and model/effort settings in its cloud browser. A successful metadata read alone
 does not authorize an `OK`. Save durable results and schedules in the guarded
