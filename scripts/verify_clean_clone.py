@@ -12,10 +12,13 @@ import unicodedata
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def run(command, cwd, env=None):
+def run(command, cwd, env=None, test_output=False):
     result = subprocess.run(command, cwd=cwd, env=env, capture_output=True,
                             text=True, encoding="utf-8", timeout=60)
     if result.returncode:
+        if test_output:
+            # This suite uses synthetic identities and empty homes only.
+            print(result.stderr[-12000:], file=sys.stderr)
         raise RuntimeError("Repository check failed: " + Path(command[0]).name)
     return result
 
@@ -75,7 +78,7 @@ def main():
             print(json.dumps({"ok": False, **documents}, indent=2))
             return 2
         run([sys.executable, "scripts/privacy_check.py"], clone, env)
-        tests = run([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"], clone, env)
+        tests = run([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"], clone, env, test_output=True)
         count = re.search(r"Ran (\d+) tests", tests.stderr)
         clean = not run(["git", "status", "--porcelain"], clone, env).stdout.strip()
         print(json.dumps({"ok": clean, "checks": ["fresh local clone", "internal Markdown links and headings",
