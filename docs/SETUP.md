@@ -60,6 +60,10 @@ Before any model request, require the dot to:
 Use one saved timer for this account. The task-owning controller must verify each
 schedule update; a worker's suggested next time is not a saved schedule.
 
+To review it in ChatGPT on the web, open **Scheduled** and expand **Your dot** in
+the sidebar. Open the account task and check its enabled state and next run.
+The general Upcoming list may be empty while the dot's tasks are listed separately.
+
 ## 4. Verify one eligible request
 
 Authorize one initialization only after confirming the intended account and no
