@@ -51,7 +51,8 @@ account/window duplicate protection. Local cloud files are only a cache.
 
 Before any model request, require the dot to:
 
-1. Read the block and use the returned hash for a guarded replacement.
+1. Read the block and use its returned hash for narrow edits that preserve all
+   other state.
 2. Verify a stale writer is rejected without changing the winning content.
 3. Perform a separate scheduled read/write canary against that same Page.
 4. Save and freshly read back an account/window reservation before sending.

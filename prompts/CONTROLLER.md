@@ -19,7 +19,9 @@ redaction. Missing or conflicting fields hold. The model catalog is informationa
 not proof of entitlement or permission to spend. Browser checks remain necessary.
 
 Use one owner-only Page with one canonical JSON block. Read its hash and guard
-replacements with that exact hash; use a sequence guard only when returned.
+narrow edits with that exact hash; use a sequence guard only when returned.
+Patch only the intended uniquely matched values from the fresh read, preserving
+every unrelated or unknown field.
 Inspect edit receipts and freshly read back the exact account/window claim before
 sending. A conflicting writer, missing ledger, unknown save or uncertain request
 holds. Never recreate state, renew consumed permits or clear uncertainty to retry.
