@@ -1,8 +1,0 @@
-{
-  "profiles": [
-    {"account_id": "plus", "plan_label": "Plus", "assumed_windows_minutes": [300, 10080]},
-    {"account_id": "pro", "plan_label": "Pro", "assumed_windows_minutes": [10080]}
-  ],
-  "policy": {"status_max_age_seconds": 300, "safety_margin_seconds": 60, "unknown_recheck_seconds": 3600, "retry_delay_seconds": 60},
-  "feed": {"endpoint": "https://codex-reset.com/api/timeline", "enabled": false, "min_interval_seconds": 14400}
-}
