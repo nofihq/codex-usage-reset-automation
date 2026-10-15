@@ -18,6 +18,17 @@ authenticated `workspaceRouting.chatgptAccountId` to usage `accountId` before
 redaction. Missing or conflicting fields hold. The model catalog is informational,
 not proof of entitlement or permission to spend. Browser checks remain necessary.
 
+Save a verified installation manifest in the private Page: immutable public source
+commit, reader/companion hashes, native CLI version, installed paths and existing
+private account-binding references, without credentials. Before usage reads,
+verify those files, version and private ownership/permissions. Missing or changed
+files hold model requests; never silently fall back to another wrapper. Follow
+[tool recovery](../docs/CLOUD_TOOLS.md#restore-tools-after-a-cloud-environment-change)
+to restore and test public code atomically. Preserve the same account homes and
+all durable request/reminder state. Recover only an existing known binding;
+unavailable credentials or identity evidence remain a hold. Recovery probes are
+ordinary metadata reads without inventory or model requests, not periodic polling.
+
 Use one owner-only Page with one canonical JSON block. Read its hash and guard
 narrow edits with that exact hash; use a sequence guard only when returned.
 Patch only the intended uniquely matched values from the fresh read, preserving

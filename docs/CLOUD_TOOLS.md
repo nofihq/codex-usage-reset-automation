@@ -5,12 +5,21 @@ Ask the dot to perform them in a private cloud working directory. The official
 Codex CLI reads authenticated account metadata; the small reader validates and
 redacts it. The cloud browser separately sends `OK` and checks spending controls.
 
+Cloud working files can disappear or change between runs. Save the installation
+record described below in the private Page; a successful installation alone is
+not proof the same files will still be present at the next wake.
+
 ## Install
 
 The cloud computer needs Python 3.10+, Node.js and npm. The pinned CLI package
 requires Node.js 16 or newer; use an available supported Node release. Have the
 dot check these prerequisites first. A missing runtime is a setup blocker, not a
 reason to use your personal computer or a paid runner.
+
+Place the checkout and its sibling private-data directory inside a working area
+the cloud execution tool is permitted to write. Verify that access before signing
+in. An existing account directory outside the tool's permitted workspace cannot
+be repaired by moving credentials or weakening the sandbox.
 
 From the repository checkout on the cloud computer:
 
@@ -100,3 +109,53 @@ and [the pinned protocol source](https://github.com/openai/codex/tree/rust-v0.15
 
 For optional native use outside the dot, see [Windows/macOS/Linux CLI setup](CLI.md).
 The cloud workflow does not require that local installation.
+
+## Restore tools after a cloud environment change
+
+After a verified installation, save a small installation record in your private
+Page: repository URL, exact Git commit, SHA-256 hashes of the reader and its
+`windows_security.py` companion, supported CLI version, installed paths and each
+account's existing private binding references. This record must not contain tokens
+or copied credential files. Pin a verified commit rather than downloading an
+unreviewed latest version during recovery.
+
+Before a scheduled usage read, have the dot check that the expected code exists,
+its hashes match, the native CLI reports the pinned version, and the selected
+account home, runtime directory and expectations file still satisfy the private
+ownership/permission checks. A different wrapper is not an interchangeable reader.
+
+If those checks fail, keep model requests on hold and repair in this order:
+
+1. Restore missing public code from the recorded immutable commit into a temporary
+   directory. Check its hashes and run credential-free validation before replacing
+   the installed files atomically. Preserve the previous files for diagnosis;
+   never silently execute an older or changed wrapper as a fallback.
+2. Reinstall the pinned official CLI only if it is missing or the wrong version.
+   Reuse the same authorized account home; do not copy credentials, create a new
+   account binding, change login methods or substitute an API key.
+3. If a bound POSIX directory has broader permissions, first confirm its exact
+   path, current owner and that it is a real directory, not a symlink. Tighten
+   only that existing directory to owner-only access when authorized. Never use
+   recursive permission changes or change ownership as a shortcut. On Windows,
+   retain the private ACL requirements in [native setup](CLI.md).
+4. Restore an expectations file only from the already-saved private account
+   binding, never from the usage response being checked. Missing credentials or
+   missing independent identity evidence require sign-in/reconciliation; they
+   must not be guessed or replaced.
+5. Verify an ordinary authenticated metadata read for the same account, without
+   `--inventory`. Preserve all normal deadlines, completed/uncertain requests,
+   consumed permits, reminder history and exact-chat cleanup evidence.
+
+Save and read back the recovery result, then verify the existing task's next
+read-only or normal wake. Recovery itself sends no `OK`. A later normal run still
+needs every account, allowance and duplicate check. Test restoration with missing
+files in a disposable directory; do not remove a working production installation
+just to simulate a failure. A later scheduled pass verifies cross-run recovery,
+not guaranteed survival of every future cloud refresh.
+
+If the supported execution tool cannot start or cannot access a required existing
+directory, record the exact platform failure and keep submissions on hold. Use a
+supported scoped-permission request when one exists; an approval cannot fix a
+broken sandbox launcher. Do not disable isolation or switch interfaces to bypass
+a filesystem restriction. Keep bounded read-only recovery and known expiry
+reminders, and distinguish an infrastructure block from expired authentication.

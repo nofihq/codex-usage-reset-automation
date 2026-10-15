@@ -17,6 +17,10 @@ macOS or Linux in a supported desktop browser; no terminal or local runtime is n
 - A later scheduled canary reads and updates that same Page without local receipts.
 - The saved account task is enabled, names the intended account and private ledger,
   and its actual next wake is visible in a native task receipt or settings.
+- The private Page retains the pinned source commit, reader/companion hashes and
+  CLI version. Test restoring missing code in a disposable directory, rejecting a
+  changed file and preserving existing account bindings. A later scheduled read
+  must verify the installation before using it; a changed legacy wrapper holds.
 
 ## Account-run checks
 
