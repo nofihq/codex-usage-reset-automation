@@ -428,9 +428,12 @@ def main():
         if args.expectations_file:
             path = Path(args.expectations_file)
             info = path.lstat()
-            if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400:
+            if not stat.S_ISREG(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400:
                 raise Hold("unsafe_expectations_file")
-            fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+            # A path can change after lstat; a substituted FIFO must not block
+            # before read_expectations validates the opened descriptor again.
+            fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+                         | getattr(os, "O_NONBLOCK", 0))
             try:
                 expected = read_expectations(fd)
             finally:

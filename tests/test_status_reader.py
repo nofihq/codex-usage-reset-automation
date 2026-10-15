@@ -117,6 +117,32 @@ class IdentityGates(unittest.TestCase):
 
 
 class PrivateStorage(unittest.TestCase):
+    def test_special_expectation_paths_hold_before_cli_start(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            entry = Path(reader.__file__).resolve()
+            arguments = ['--binary', sys.executable, '--home', temp,
+                         '--runtime', temp, '--expectations-file', temp]
+            cases = [[sys.executable, str(entry), *arguments]]
+            if os.name == 'posix':
+                fifo = root/'identity-fifo'
+                os.mkfifo(fifo, 0o600)
+                arguments[-1] = str(fifo)
+                cases.append([sys.executable, str(entry), *arguments])
+                # Simulate a regular file being replaced by a FIFO after lstat.
+                race = ('from pathlib import Path\nfrom types import SimpleNamespace\n'
+                        'import stat,sys\nsys.path.insert(0, sys.argv.pop(1))\n'
+                        'from cli import read_account_status as reader\n'
+                        'Path.lstat=lambda self: SimpleNamespace(st_mode=stat.S_IFREG|0o600)\n'
+                        'sys.exit(reader.main())\n')
+                cases.append([sys.executable, '-c', race, str(entry.parents[1]), *arguments])
+            for command in cases:
+                with self.subTest(case=cases.index(command)):
+                    result = subprocess.run(command, capture_output=True, text=True, timeout=3)
+                    self.assertEqual(result.returncode, 2, result.stderr)
+                    self.assertEqual(json.loads(result.stdout), {
+                        'state': 'hold', 'reason': 'unsafe_expectations_file'})
+
     @unittest.skipUnless(os.name == 'nt', 'Native Windows DACL check')
     def test_windows_public_acl_is_rejected(self):
         with tempfile.TemporaryDirectory() as temp:

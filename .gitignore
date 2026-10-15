@@ -3,6 +3,7 @@
 .codex/
 .cloud-tools/
 auth.json
+*auth*.json
 history.jsonl
 config.json
 *.expected.json
