@@ -11,6 +11,7 @@
 | First offline alias to account binding | Supported before observed/operational state | Identity provenance retained; established/ambiguous account changes hold |
 | Normalized snapshot replay | Supported | Explicit synthetic fixtures; not an auth mechanism |
 | Public reset timeline | Supported, opt-in | Previously verified keyless REST GET; cache/freshness/size bounds |
+| Immediate global-event wake | Not implemented | Source MCP advertises read tools only; MCP Events discovery returned method-not-found. Direct site alerts to the owner do not establish a dot trigger |
 | Official read-only account adapter | Implemented, version gated | Direct probe-to-planner path; fake-executable protocol tests |
 | Actual 0.159.2 account reads | Previously verified on a separate cloud host | Does not validate every host or model execution |
 | Local 0.158.0 account startup | Environment dependent | Schema inspected; earlier restricted startup failed |
@@ -24,12 +25,12 @@
 | Model requests | CLI disabled | No portable executor or live command |
 | Nested cloud CLI model execution | Blocked on examined host | Fixed daemon root is masked by outer sandbox; stable 0.162.1 has the same check |
 | Linux runtime diagnostic | Credential-free, bounded | Empty home; version/sandbox tests only; no auth/model-readiness guarantee |
-| Browser Work Luna Light, fast off | Narrow manual verification on October 14 | One completed exact-`OK` request, two matching fixed five-hour reset reads, archive verified |
-| Post-request success checks | Fixture-testable contract | Completed exact `OK` plus two matching fixed-timer reads near request + duration |
+| Browser Work Luna Light, fast off | Scheduled initialization and normal cycle verified October 14–15 | Each completed one exact `OK`, two matching fixed five-hour reset reads and verified archive |
+| Post-request success checks | Cloud-observed and fixture-tested | Completed exact `OK` plus two matching fixed-timer reads at least 60 seconds apart near request + duration |
 | Banked-reset redemption | Unsupported | No consume endpoint allowed; no real reset inventory committed |
 | Scheduled cloud recovery request | Observed on October 14 | One completed exact OK; two fixed 300-minute reset reads 76.24 seconds apart; exact archive |
 | Guarded cloud Page state | Native-tool recipe, not Python transport | Single-block hash test and later scheduled read/write; no forced-restart or months-long guarantee |
-| Routine next-window recurrence | Same-task normal-due rearming saved/read back | Subsequent cycles remain unobserved; cloning the repo installs no job |
+| Routine next-window recurrence | First normal cycle verified October 15 | Expired prior anchor, fresh gates, guarded reservation/readback, one completed OK, fixed reset pair, exact archive and same-task next wake; cloning installs no job |
 | Distributed multi-executor dispatch | Unsupported | Python lock covers one host; cloud recipe designates one sender; no fleet validation |
 | Chat cleanup | CLI boundary disabled; cloud archive observed | Only the exact completed disposable chat; archive retains data; no unattended permanent deletion |
 

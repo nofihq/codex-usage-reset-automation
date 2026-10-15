@@ -1,19 +1,97 @@
-# Validation evidence — October 14, 2026
+# Validation evidence
 
-The repository contains a cloud dot setup recipe and a separate read-only Python
-planner. The recipe uses the dot's native browser, private Pages and scheduler;
-there is no bundled browser executor or live CLI command. Evidence below separates
-real cloud behavior from offline code checks.
+Verified October 15, 2026. The cloud dot recipe passed scheduled initialization,
+later durable-state checks, and the following normal five-hour cycle. The Python
+package is a separate read-only planner; it ships no browser executor or live
+model command.
 
-## Repository checks
+## Scheduled cloud operation
 
-The updated suite passes **106 tests on Linux with Python 3.12.3**. It covers the
-91-test planning/protocol/fixed-reset baseline plus persisted metadata cadence,
-real process restart and probe skipping, bounded runtime diagnostics, first-account
-binding/provenance and private Page reference scanning. Native Windows/macOS
-Python runtimes and other Python minor versions were not validated by these runs.
+The single-account workflow used the dot's cloud browser, one private Page with
+a guarded canonical JSON block, and one saved cloud task. No connected personal
+computer, external runner, API-key billing or additional hosting was used.
 
-Relevant checks are:
+| Check | Scheduled initialization | Following normal cycle |
+|---|---|---|
+| Date, America/New_York | October 14 | October 15 |
+| Request | One exact `OK` completed | One exact `OK` completed |
+| Model/settings | GPT-6 Luna, Light, fast off; no requested tools/files/project | Same |
+| Spending gates | Included allowance available, zero credits, reload off | Same; intended Plus identity confirmed fresh |
+| Durable reservation | Guarded Page write and matching readback before send | New window marker; exact readback 56.41 seconds before send |
+| Fixed reset | Same 300-minute target in two reads 76.24 seconds apart | Same target/reset in two reads 69.98 seconds apart |
+| Window timing | Implied start within send-to-observed-completion interval | Same |
+| Cleanup | Exact completed disposable chat archived and verified | Same |
+| Next wake | Same saved task, verified reset plus two minutes | Same; enabled schedule update confirmed by task-owning controller |
+| Duplicate protection | Initialization permit consumed | Permit stayed consumed; one new per-window attempt, no automatic retry |
+
+The normal check was saved for 2:37:23 a.m. Eastern. Its preflight observations
+began at 2:38:44 a.m.; it sent at 2:41:25 a.m. and observed completed `OK` at
+2:42:10 a.m. Cloud wakes and browser work are not exact-time execution guarantees.
+The two reset reads were at 2:42:12 and 2:43:22 a.m.; both identified a fixed
+7:41:42 a.m. reset. Exact archive verification completed at 2:44:07 a.m.
+The same enabled task was saved for 7:43:42 a.m., two minutes after that reset.
+These timestamps describe the completed verification, not a permanently current
+schedule or a claim that the later wake has already run.
+
+A fresh audit at 4:31 a.m. Eastern read the canonical Page and confirmed the normal
+result, matching reservation proof, consumed initialization permit, reset pair,
+archive evidence and next schedule receipt. It sent no new model request.
+The saved scheduler receipt records that the schedule-owning controller handled
+the delegated worker's update restriction. A worker's proposed next time alone
+would not have counted as a successful rearm.
+
+## Durable-state and failure checks
+
+- Correct-hash single-block replacements applied and read back exactly.
+- An isolated synthetic Page test used only the expected block hash: a stale
+  writer received `edit_conflict`, the winning content stayed unchanged, and the
+  same candidate applied after refreshing the expected hash. No sequence guard
+  was claimed when the editing read did not return one.
+- A separate scheduled wake read, guardedly updated and read back the same Page.
+  Later scheduled read-only checks preserved the completed result, consumed permit,
+  original before-send proof and cleanup record without another model request.
+- An earlier scheduled attempt held without sending when local receipt files
+  were missing. The authoritative ledger was moved to the private Page. The exact
+  filesystem-loss cause and missing historical raw receipts remain unproven;
+  old history is explicitly labeled rather than reconstructed as raw evidence.
+- The initialization audit detected an omitted readback timestamp. The original
+  retained tool result supplied matching hash/revision/time, 18.24 seconds before
+  send; a later scheduled check verified the corrected provenance. The normal
+  cycle persisted its fresh readback proof directly.
+
+## Global reset notifications
+
+The normal Plus cycle above verified timer-driven operation. It did not verify
+an immediate public-reset trigger or delivery of a phone/desktop push alert.
+An operational audit found a public-feed schedule with an overnight gap; it must
+not be described as an immediate notification service. Shortening polling does
+not establish event-driven delivery.
+
+The source [documents direct browser push, Telegram, Discord and email alerts](https://codex-reset.com/developers).
+Those are notifications to their subscribers, not proof that a dot wakes. The
+source also states that ingestion can lag; exact-minute delivery is not promised.
+
+On October 15, a credential-free metadata test of the source's documented MCP
+endpoint returned protocol `2025-06-18` and only `tools` capabilities. Both
+`server/discover` and `events/list` returned JSON-RPC `-32601` method-not-found.
+These tests sent no model requests and created no subscription. The source's
+private POST/push routes are explicitly outside its public API contract.
+
+OpenAI [supports dot triggers through MCP Events](https://developers.openai.com/plugins/build/mcp-events),
+which requires source-side MCP 2.0 event discovery, subscriptions and signed
+webhook delivery. That source support was absent in the endpoint tested here.
+No source-alert-to-dot bridge or device-push delivery is claimed as verified.
+An event, if received through a supported route, would still require fresh
+account-specific verification and must never authorize another request in an
+active verified window or repeat an uncertain submission.
+
+## Repository verification
+
+The suite passes **106 tests on Linux with Python 3.12.3**, covering planning,
+protocol handling, fixed resets, uncertain requests, persisted metadata cadence,
+process-restart probe skipping, bounded runtime diagnostics, first-account binding
+and privacy scanning. Native Windows/macOS Python and other minor versions were
+not validated by these runs.
 
 ```bash
 python3 -m unittest discover -s tests -v
@@ -22,101 +100,44 @@ python3 scripts/verify_clean_clone.py
 gitleaks git --redact --no-banner .
 ```
 
-The clean-clone verifier uses the **committed** tree. Run it after committing the
-reviewed changes so it exercises config copy, doctor/check, dry-run, synthetic
-replay, privacy scan and installed zipapp behavior against that exact source.
-These checks use synthetic inputs and send no account/model requests.
+The clean-clone verifier exercises the committed source: config copy, doctor/check,
+dry-run, synthetic replay, privacy scan and an installed zipapp outside the clone.
+These checks send no account/model requests. The tracked-source scan and redacted
+Git-history scan found no credentials; scanners cannot prove absence of every
+possible secret. Real identities, Page references, chat URLs and private receipts
+are excluded from the repository.
 
-A real subprocess setup smoke test reproduced the old offline-demo-to-first-hash
-failure. The fix completes the first binding and still rejects later hash changes,
-removed established bindings, operational state migration and ambiguous state.
-A fresh process also honors a saved metadata deadline and makes zero account-probe
-attempts before it is due. These checks do not validate live dispatch.
+## Optional CLI verification
 
-The tracked-source scanner rejects private/generated paths, likely credentials,
-non-synthetic emails and real-format cloud Page IDs. A synthetic Git-index test
-verifies that private Page references are rejected without printing their values.
-The scanner assists review; it is not proof that every possible secret is detected.
+The isolated official `@openai/codex@0.159.2` installation and version-only probe
+were smoke-tested. The installation used Node.js 24.15.0/npm 12.0.2; other Node
+versions were not individually tested. Official account, rate-limit and model
+reads were previously verified on the separate cloud host.
 
-## Real cloud observations
+The credential-free runtime diagnostic was exercised with official 0.159.2 and
+0.162.1 in empty private homes. Direct local Linux sandbox smoke passed; nested
+execution failed with the daemon-directory category. The examined dot host's tool
+process was already nested, and both checks failed there. Version 0.162.1 is
+diagnostic-only, outside the account-adapter allowlist. These diagnostics made no
+account/model requests and introduced no sandbox bypass.
 
-The first scheduled attempt held when locally saved request/reset receipts were
-missing. The Plus browser login survived and account usage was readable; no OK
-was sent by that held run. File timestamps suggested restored/copied state, but
-the exact cause of the missing files was not established. Local cloud files were
-therefore removed from the role of authoritative request ledger.
+See [CLI setup](CLI_SETUP.md#nested-cloud-sandbox-blocker). The experimental
+app-server environment option remains execution-disabled because startup warm-up
+quota behavior was not verified. It is not needed for the tested cloud route.
 
-A private Page with one canonical JSON block was tested through the native Pages
-tool. Correct-hash replacements applied and read back exactly. A separate synthetic
-single-block test used no title or sequence guard: a stale hash returned
-`edit_conflict`, the winning state remained unchanged, and the identical candidate
-applied after refreshing only its expected hash. The backend did not provide a
-precise conflict diagnostic. No sequence guard was claimed when the read omitted it.
+## Scope
 
-A separate scheduled cloud wake read, guardedly updated and exactly read back the
-same private Page. This verified a later scheduled wake, not a forced fresh-container
-restart. The old disposable chat was independently found completed with exact OK
-and still archived. Missing historical raw reset receipts remained explicitly
-missing; a controller report was labeled as chat-reported evidence.
+Existing eligible dot access, private Pages, scheduling and a cloud browser are
+required. Plus alone is not currently listed as dot-eligible. A supported app or
+desktop browser can control the cloud workflow without local Python/Node or an
+always-on personal device. Cloning the repo creates no job: authorize setup,
+sign in privately and inspect the saved result.
 
-A single task-scoped, expiring initialization permit was saved and read back. The
-same saved Plus task then performed one scheduled recovery request using the
-visible GPT-6 Luna model, lowest Light effort and fast mode off. The completed
-response was exactly OK with no tools used. Two distinct numeric observations
-**76.24 seconds apart** identified the same 300-minute target and unchanged reset.
-The implied window start was within the send-to-completion observation interval.
-Included allowance was available, credits were zero and automatic reload was off.
-Only the exact new disposable chat was archived, and the permit remained consumed.
-
-The later scheduled read-only wake retained that consumed permit, single-request
-result, reset pair and archive evidence. It detected an omitted pre-send readback
-timestamp. The original retained execution result supplied the actual matching
-readback, 18.24 seconds before submission; the write/readback hashes and revisions
-agreed. That provenance was persisted, and a further scheduled read-only wake
-verified the corrected record with every required check passing and zero new model
-requests. Missing old raw history stayed labeled missing; it was not fabricated.
-The recovery therefore passed as a bounded unattended run with later durable-state
-verification. The same task's enabled normal-due schedule was saved and read back
-for the recorded reset plus two minutes, with the initialization permit consumed
-and current-window submission blocked. Future routine checks require all fresh gates and an expired
-verified anchor; long-term recurrence remains a separate observation.
-
-These are environment-specific observations. They do not establish the universally
-cheapest model, zero usage, all accounts' timer behavior, forced-restart recovery,
-months of uninterrupted operation or exactly-once behavior under every failure.
-Archiving retains data; it does not establish storage deletion.
-
-## CLI installation and sandbox diagnosis
-
-The official pinned `@openai/codex@0.159.2` installation was smoke-tested in an
-isolated user-owned prefix. Its version-only probe reported reviewed true and
-zero account reads. The earlier installation used Node.js 24.15.0/npm 12.0.2;
-other Node versions were not individually tested. Official 0.159.2 cloud account,
-rate-limit and model reads were previously verified on the separate cloud host.
-
-The new credential-free runtime diagnostic was exercised with official 0.159.2
-and 0.162.1 in empty private homes on the local Linux host. Direct sandbox smoke
-passed; a nested sandbox failed with the daemon-directory category. Both direct
-and nested checks failed on the examined dot host because its direct tool process
-was already nested. These diagnostics read no account and sent no model request.
-Version 0.162.1 is diagnostic-only, not added to the account-adapter allowlist.
-
-See [CLI setup](CLI_SETUP.md#nested-cloud-sandbox-blocker) for the upstream issue
-and official source. No permission change, sandbox bypass or supported top-level
-CLI execution route was introduced. The experimental app-server environment option
-was schema-inspected but remains execution-disabled because startup warm-up quota
-behavior was not verified.
-
-## Setup boundaries
-
-Existing eligible dot access, private Pages, scheduling and the cloud browser are
-prerequisites. Plus alone is not currently listed as dot-eligible. The client may
-be a supported desktop browser or ChatGPT app; no Python/Node installation or
-always-on personal computer is required for the cloud recipe. This does not
-validate native Python on every OS or make new hosting/API billing free.
-
-The repository creates no job merely by being cloned. The owner must authorize
-setup, sign in privately and inspect the saved cloud task/result. Future routine
-runs must keep the initialization permit consumed, use only expired verified
-anchors, preserve uncertain submissions and honor all fresh spending/identity gates.
-See [the cloud guide](CLOUD_DOT_SETUP.md) and [safety contract](SAFETY_CONTRACT.md).
+The observed autonomous recurrence passed. This does not establish months of
+uninterrupted operation, forced fresh-container recovery, every account/OS timer
+behavior, universally cheapest model choice, zero usage or exactly-once execution
+under every failure. Archive keeps chats out of Recents while retaining their
+data. Routine checks still require expired verified anchors, fresh identity and
+spending gates, durable deduplication and reconciliation of uncertain outcomes.
+See [setup](CLOUD_DOT_SETUP.md), [capabilities](CAPABILITIES.md) and the
+[safety contract](SAFETY_CONTRACT.md).

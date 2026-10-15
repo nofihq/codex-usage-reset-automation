@@ -8,6 +8,10 @@ eligible plan's included allowances.** Use a supported desktop browser or ChatGP
 app on your device; the execution stays in the cloud.
 Routine checks reuse the saved reset time and keep the active window protected
 against redundant requests, even when the tiny request still rounds to 100% remaining.
+**Verified in scheduled cloud operation:** one initialization and the following
+normal five-hour cycle each completed exactly one `OK`, verified the fixed reset,
+archived the exact chat, and saved the next wake. See [validation](docs/VALIDATION.md)
+for the tested scope.
 
 This repository also ships a dependency-free Python **read-only planner**.
 Its `would_request` result never sends a request, and changing flags cannot enable
@@ -195,10 +199,11 @@ minutes. Fresh target timers skip redundant requests. See the full
 The [heuristic example](examples/config.heuristic.json) is opt-in and keeps all
 live-request gates disabled; no scheduler or dispatcher is activated.
 
-The October 14 cloud recovery test completed one scheduled exact `OK`, verified
-the same fixed five-hour reset in reads 76.24 seconds apart, and archived that exact
-chat. The earlier scheduled attempt held when local receipts were missing;
-the recovery uses a guarded private Page. See [the evidence and limits](docs/VALIDATION.md).
+The October 14–15 cloud tests verified scheduled initialization and the following
+normal cycle. Each completed one exact `OK`, confirmed a fixed five-hour reset in
+reads at least 60 seconds apart, and archived its exact chat. The normal cycle
+reused the guarded private Page, kept initialization consumed, and rearmed the
+same saved task. See [the evidence and limits](docs/VALIDATION.md).
 No browser adapter or live CLI dispatch is shipped in the Python package.
 
 ## Public reset hints and cloud options
@@ -214,11 +219,19 @@ Replace the example contact URL with your project's URL. Requests are bounded,
 reject redirects/stale data, honor caching/Retry-After, and retain only structured
 hints. Initial ingestion establishes a baseline. Polling defaults to four hours.
 
+**Public-feed polling is not an immediate reset alert.** For direct notifications,
+the [source site documents browser push, Telegram, Discord and email alerts](https://codex-reset.com/developers).
+Receiving a site alert does not automatically wake this workflow's dot. The
+source's MCP server was tested as read-only, without event-subscription support;
+no automatic site-alert-to-dot connection is shipped or verified here. A normal
+scheduled cycle is verified separately from global-event triggering. See
+[validation](docs/VALIDATION.md#global-reset-notifications).
+
 [Cloud dot setup](docs/CLOUD_DOT_SETUP.md) is the cloud route. Its saved task uses
 the dot's environment and a private Page, so a personal device need not stay on.
 It requires existing eligible access rather than a guaranteed free standalone
 hosting service. The repository installs no schedules or GitHub workflows by
-itself. [Optional read-only scheduling](docs/DEPLOYMENT_DRAFT.md) covers the Python
+itself. [Optional read-only scheduling](docs/DEPLOYMENT.md) covers the Python
 planner. Nested CLI model execution remains blocked on the examined cloud host;
 see [the diagnosis](docs/CLI_SETUP.md#nested-cloud-sandbox-blocker).
 
