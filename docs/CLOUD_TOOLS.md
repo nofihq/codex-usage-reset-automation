@@ -64,8 +64,11 @@ keeps this CLI home separate from other accounts; only the official CLI reads it
 
 Use the same home and credential-store setting for metadata reads. Compare the
 CLI's returned email/plan with the intended private account binding and verify
-the cloud browser selects that identity too. Expiry or account switching requires
-supported sign-in recovery and a new identity check before continuing.
+the cloud browser selects that identity too. The official CLI normally renews its
+ChatGPT session automatically when possible; the adapter's `refreshToken=false`
+does not disable that internal renewal. If the session cannot be renewed, hold
+requests and complete supported sign-in recovery privately. Recheck identity
+after recovery or account switching. See [official session behavior](https://learn.chatgpt.com/docs/auth).
 
 ## Read and validate
 
