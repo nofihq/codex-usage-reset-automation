@@ -45,7 +45,10 @@ required.
 ## Sign in
 
 Browser sign-in and CLI sign-in are separate. Use one private CLI home per
-monitored account. For the first account, the dot starts the official device flow:
+monitored account. Before starting a device flow, check that device-code login is
+enabled in that account's **Security** settings, or permitted by its workspace
+administrator, as described in the [official sign-in guide](https://learn.chatgpt.com/docs/auth#login-on-headless-devices).
+For the first account, the dot starts the official device flow:
 
 ```sh
 CODEX_HOME="$PWD/../codex-reset-private/plus" .cloud-tools/node_modules/.bin/codex \

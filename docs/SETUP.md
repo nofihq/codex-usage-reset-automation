@@ -29,6 +29,11 @@ A saved browser login does not sign in the CLI. Verify that both contexts identi
 the intended account, and that the reader binds authenticated routing identity
 to the usage response before reporting numeric data.
 
+Complete email or SMS verification privately in **Open computer**, then return
+control to the dot. If the website asks for a **code from the terminal**, the dot
+generates and enters that code from its own CLI process. You do not need a local
+terminal, and should not paste verification codes into chat.
+
 Have the dot verify the selected identity, included allowance, zero purchased
 credits and automatic reload off. It must select the intended account again on
 every wake. Never paste credentials into chat or copy cookies or auth files.
@@ -47,7 +52,8 @@ accepting that limitation. Unknown identity, allowance or spending controls hold
 The dot creates one owner-only Page with a canonical JSON block. The saved task
 keeps its private Page/block references and account binding. State must include
 completed and uncertain requests, fixed reset anchors, cleanup targets and
-account/window duplicate protection. Local cloud files are only a cache.
+account/window duplicate protection. Keep this authoritative state in the Page
+instead of relying on local cloud files.
 
 Before any model request, require the dot to:
 
