@@ -35,6 +35,11 @@ If a default editing read exceeds the Page tool's size limit, request a full rea
 or the already-known canonical block using the supported selector. Require a
 complete, successful read and its current hash before editing. A size-limit or
 no-content error is a hold, never evidence of an empty or missing ledger.
+Where supported, retain the complete fresh block and hash inside tool orchestration
+and return only needed current fields and exact edit spans to the model, including
+every relevant duplicate lock and unresolved outcome. Keep the full state intact;
+a compact summary must never replace the canonical block or authorize a decision
+with missing inputs.
 Patch only the intended uniquely matched values from the fresh read, preserving
 every unrelated or unknown field.
 Inspect edit receipts and freshly read back the exact account/window claim before
