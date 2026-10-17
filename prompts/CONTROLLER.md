@@ -52,6 +52,14 @@ private references in their saved prompts. The task-owning controller handles
 schedule updates that a worker cannot perform and verifies enabled state, saved
 prompt and next wake. Do not count a proposed time as a completed rearm.
 
+Keep timestamped current health for each task separate from historical success.
+Record a new infrastructure hold even when an earlier run passed; unavailable
+execution is not evidence of expired authentication. A foreground recovery read
+proves only that read. Verify a later scheduled read before restoring normal
+requests, and record a completed normal cycle separately from metadata recovery.
+Report actual dispatch delay and unresolved delivery evidence without promising
+exact-minute execution or permanent availability. These records add no probes.
+
 ## Account timer or verified reset event
 
 For each account independently:

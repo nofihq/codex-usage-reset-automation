@@ -18,6 +18,10 @@ macOS or Linux in a supported desktop browser; no terminal or local runtime is n
   read recovers the complete state and current hash; it never recreates the ledger
   or clears reservations, uncertainty or reminder history.
 - A later scheduled canary reads and updates that same Page without local receipts.
+- Current health is timestamped and separate from prior success. An infrastructure
+  failure remains a hold until its recovery is verified; a foreground read alone
+  does not qualify unattended execution. Preserve earlier receipts and distinguish
+  metadata recovery from a completed normal cycle.
 - The saved account task is enabled, names the intended account and private ledger,
   and its actual next wake is visible in a native task receipt or settings.
 - The private Page retains the pinned source commit, reader/companion hashes and
