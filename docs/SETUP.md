@@ -38,6 +38,9 @@ Saved sign-ins can still require verification later. Recovery must use the same
 account's supported sign-in flow and hold requests until its identity is verified
 again. This setup runs in the cloud, but it cannot guarantee permanent sign-in
 without your involvement.
+When adding another account, enter its intended email explicitly. A default SSO
+button can reuse the other account. After verification, check the actual signed-in
+identity and saved account selector before claiming recovery succeeded.
 
 Have the dot verify the selected identity, included allowance, zero purchased
 credits and automatic reload off. It must select the intended account again on
