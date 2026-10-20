@@ -38,6 +38,7 @@ Saved sign-ins can still require verification later. Recovery must use the same
 account's supported sign-in flow and hold requests until its identity is verified
 again. This setup runs in the cloud, but it cannot guarantee permanent sign-in
 without your involvement.
+
 When adding another account, enter its intended email explicitly. A default SSO
 button can reuse the other account. After verification, check the actual signed-in
 identity and saved account selector before claiming recovery succeeded.
@@ -57,19 +58,16 @@ accepting that limitation. Unknown identity, allowance or spending controls hold
 
 ## 3. Create durable state and the account timer
 
-The dot creates one owner-only Page with a canonical JSON block. The saved task
-keeps its private Page/block references and account binding. State must include
-completed and uncertain requests, fixed reset anchors, cleanup targets and
-account/window duplicate protection. Keep this authoritative state in the Page
-instead of relying on local cloud files.
+The dot creates a private Page to remember completed requests, reset times,
+unfinished cleanup and reminders. Each account task uses that same saved record
+to avoid duplicate requests, including after a restart or cloud environment change.
+Cloud working files are not the authoritative record.
 
 Before any model request, require the dot to:
 
-1. Read the block and use its returned hash for narrow edits that preserve all
-   other state.
-2. Verify a stale writer is rejected without changing the winning content.
-3. Perform a separate scheduled read/write canary against that same Page.
-4. Save and freshly read back an account/window reservation before sending.
+1. Check that Page updates preserve existing records and reject conflicting edits.
+2. Test that a scheduled wake can read and update the same Page.
+3. Save and read back a reservation for the account's window before sending.
 
 Use one saved timer for this account. The task-owning controller must verify each
 schedule update; a worker's suggested next time is not a saved schedule.
@@ -154,13 +152,13 @@ then record permission for at most one request per account for that reset. Previ
 history stays saved; a sent or uncertain request in the new reset period blocks
 another send. The dot must verify the new fixed reset time afterward. A forecast
 or an idle timer alone cannot start it.
+
 The email task records the event and account checks; each account's existing task
 handles any eligible request. Accounts sharing the browser take turns.
 
-The first real global-reset email may verify automatic delivery and continue to
-the account checks in that same run; the handler must not remain permanently in
-setup-only mode. Banked-reset, forecast and confirmation emails never authorize
-an `OK`.
+Keep ordinary account timers independent of email delivery. A genuine global-reset
+email can verify the trigger and begin account checks in the same run. Banked-reset,
+forecast and confirmation emails never authorize an `OK`.
 
 The source batches email delivery, so this is not an instant-alert guarantee.
 Ask the dot to record source, inbox and wake times where available and distinguish

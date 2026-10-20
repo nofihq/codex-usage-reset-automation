@@ -4,6 +4,10 @@ A cloud-dot setup for checking Codex usage, sending one short `OK` when eligible
 and keeping the next reset check scheduled. It runs on the dot's cloud computer,
 so your own device can be off.
 
+After setup, saved cloud tasks handle usage checks, eligible requests and reminders
+automatically. No always-on device, extra hosting or API key is required. Duplicate
+events stay quiet; meaningful results, failures and required actions are reported.
+
 The goal is to start an eligible new usage window with a tiny request rather
 than wait until you next need to work. The dot checks the reset time returned by
 your account; it does not create extra allowance or reset usage itself.
@@ -134,8 +138,9 @@ git clone https://github.com/nofihq/codex-usage-reset-automation.git
 cd codex-usage-reset-automation
 ```
 
-Cloning downloads the guides and prompts. Each person must configure their own dot,
-logins, private Page and cloud tasks; none of the owner's account state is included.
+Cloning downloads the reader, guides and controller instructions. Follow the setup
+guide to connect your own accounts and create your private Page and cloud tasks.
+Personal account state and credentials are not included.
 
 ## How it is organized
 
@@ -147,8 +152,3 @@ logins, private Page and cloud tasks; none of the owner's account state is inclu
 | [Verify](docs/VERIFY.md) | Check your own setup, scheduled run and email-trigger delivery |
 | [Controller prompt](prompts/CONTROLLER.md) | Instructions for the cloud coordinator and account checks |
 | [Security](SECURITY.md) | Credentials, private state and request safeguards |
-
-Email is event-driven after delivery, but the source can delay emails. An enabled
-trigger is not proof of live delivery. Keep ordinary account timers independent
-of the email trigger. The included reader runs inside the dot's cloud computer;
-it does not schedule tasks or send `OK` itself.

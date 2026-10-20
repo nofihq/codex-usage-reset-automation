@@ -5,9 +5,8 @@ Ask the dot to perform them in a private cloud working directory. The official
 Codex CLI reads authenticated account metadata; the small reader validates and
 redacts it. The cloud browser separately sends `OK` and checks spending controls.
 
-Cloud working files can disappear or change between runs. Save the installation
-record described below in the private Page; a successful installation alone is
-not proof the same files will still be present at the next wake.
+Save the installation record described below in the private Page so the dot can
+check and restore its tools after cloud working files disappear or change.
 
 ## Install
 
@@ -39,8 +38,8 @@ behavior must be reviewed before changing the supported version.
 
 The `.cloud-tools` installation is ignored by Git. Account homes and private
 expectations live in the sibling `codex-reset-private` directory, outside the
-checkout. Never commit, upload or copy account data between users or accounts. No local Python package, optimizer installer or background daemon is
-required.
+checkout. Never commit, upload or copy account data between users or accounts.
+No local Python package or background daemon is required.
 
 ## Sign in
 
@@ -122,7 +121,7 @@ and [the pinned protocol source](https://github.com/openai/codex/tree/rust-v0.15
 For optional native use outside the dot, see [Windows/macOS/Linux CLI setup](CLI.md).
 The cloud workflow does not require that local installation.
 
-## Restore tools after a cloud environment change
+## Automatic tool checks and recovery
 
 After a verified installation, save a small installation record in your private
 Page: repository URL, exact Git commit, SHA-256 hashes of the reader and its

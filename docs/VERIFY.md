@@ -1,7 +1,7 @@
 # Verify your setup
 
-Use this checklist for your own dot. Ask it for evidence of each completed step,
-not a general “everything works” statement. You can run these checks from Windows,
+Use this checklist to confirm your dot's account setup, scheduled runs and optional
+email trigger. You can run these checks from Windows,
 macOS or Linux in a supported desktop browser; no terminal or local runtime is needed.
 
 ## Setup checks
@@ -27,12 +27,12 @@ macOS or Linux in a supported desktop browser; no terminal or local runtime is n
 - The private Page retains the pinned source commit, reader/companion hashes and
   CLI version. Test restoring missing code in a disposable directory, rejecting a
   changed file and preserving existing account bindings. A later scheduled read
-  must verify the installation before using it; a changed legacy wrapper holds.
+  must verify the installation before using it; unexpected code changes hold.
 
 ## Account-run checks
 
-Wait for an eligible opportunity; do not create another request just to test an
-already active window. For a completed run, require:
+Use the next eligible window for this check; do not send an extra request into an
+already active window. A completed run must meet these conditions:
 
 | Evidence | Pass condition |
 |---|---|
@@ -78,9 +78,9 @@ Subscription, task configuration and live delivery are separate checks:
 6. A verified reset event checks each account's fresh identity, allowance and timer.
    An active fixed window remains protected even if usage rounds to 100%.
 
-The first genuine reset after enablement verifies the live delivery path. Until
-then, report configuration as enabled with delivery unmeasured. Device push
-notifications require separate notification settings and actual delivery proof.
+Task enablement, automatic email delivery and device notifications are separate
+checks. Record each result accurately; a saved trigger alone does not establish
+delivery. Device notifications also require your ChatGPT notification settings.
 
 ## Banked-expiry reminder checks
 

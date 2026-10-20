@@ -23,7 +23,7 @@ commit, reader/companion hashes, native CLI version, installed paths and existin
 private account-binding references, without credentials. Before usage reads,
 verify those files, version and private ownership/permissions. Missing or changed
 files hold model requests; never silently fall back to another wrapper. Follow
-[tool recovery](../docs/CLOUD_TOOLS.md#restore-tools-after-a-cloud-environment-change)
+[tool recovery](../docs/CLOUD_TOOLS.md#automatic-tool-checks-and-recovery)
 to restore and test public code atomically. Preserve the same account homes and
 all durable request/reminder state. Recover only an existing known binding;
 unavailable credentials or identity evidence remain a hold. Recovery probes are
