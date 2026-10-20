@@ -84,6 +84,8 @@ permit with a budget of one. It stays consumed after use; lost state never renew
 Do not initialize in an already active fixed window or to repair missing history.
 
 Select an included model, minimum available reasoning effort and fast mode off.
+Verify these settings again in each new chat; its default model can differ from
+the one used previously.
 Use a fresh disposable chat, no files, project, search or requested tools, and ask:
 
 > Reply with only OK.

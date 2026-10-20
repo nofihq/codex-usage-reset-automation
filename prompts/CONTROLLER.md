@@ -69,6 +69,15 @@ metadata reports available allowance. Correct contradictory saved instructions
 through the normal guarded update and review path before a fresh recovery check;
 never evade a denied action through another interface.
 
+Check model availability in the current composer. A fresh chat can select a
+different default: explicitly select and verify the authorized included model,
+minimum reasoning and Fast off on each wake when its controls are enabled.
+Associate a restriction with the model or effort it actually applies to. Hidden
+accessibility text, an aria-hidden menu section or an unavailable Power preset
+alone does not establish that every model is blocked. Inspect visible controls
+and the selected model after selection; never force disabled controls, dismiss a
+real access restriction or infer included permission from the model catalog alone.
+
 ## Account timer or verified reset event
 
 For each account independently:

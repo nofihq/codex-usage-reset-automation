@@ -37,6 +37,7 @@ already active window. A completed run must meet these conditions:
 | Evidence | Pass condition |
 |---|---|
 | Before-send proof | A guarded account/window reservation and exact fresh readback before submission |
+| Model selection | The fresh composer selects the authorized included model, minimum reasoning and Fast off; real restrictions hold, while hidden accessibility text alone is not a global lock |
 | Request count | One attempt; no automatic retry or renewed initialization permit |
 | Completion | Response exactly `OK`, visibly completed |
 | Reset | Two read-only CLI status checks at least 60 seconds apart; same duration and reset, with no second prompt |
@@ -51,6 +52,11 @@ Verify that saved recovery permissions allow bounded read-only inspection of the
 recorded blocker, while reminder-only wakes make no account or browser probes.
 A later scheduled recovery must respect any remaining model lock without sending
 a test prompt, even when the metadata reports available usage.
+Check recovery from a different enabled model in an empty composer, not only from
+settings left by a foreground test. If preparing that starting state deliberately,
+label it a test fixture; do not change account-wide defaults or fabricate a lock.
+The scheduled check must verify the selected model and actual visible control state
+without generating a request.
 For an authorized global-reset start, verify independent reset confirmation,
 personal refill and a new single-use account/event permit. Old uncertainty must
 remain recorded, and any send or unresolved request after the reset blocks a
