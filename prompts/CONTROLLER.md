@@ -60,6 +60,15 @@ requests, and record a completed normal cycle separately from metadata recovery.
 Report actual dispatch delay and unresolved delivery evidence without promising
 exact-minute execution or permanent availability. These records add no probes.
 
+Define wake permissions explicitly. A reminder-only wake uses saved Page data and
+performs no account, browser, CLI or inventory probes. An eligibility-recovery
+wake may make bounded ordinary metadata reads and inspect the existing authorized
+cloud browser to resolve its recorded blocker; it sends no model or warm-up
+request and reads no inventory. A visible usage/access lock still holds even when
+metadata reports available allowance. Correct contradictory saved instructions
+through the normal guarded update and review path before a fresh recovery check;
+never evade a denied action through another interface.
+
 ## Account timer or verified reset event
 
 For each account independently:
@@ -73,8 +82,18 @@ For each account independently:
    rounded usage does not prove inactivity. Never treat an event or plan label as
    account-specific proof.
 3. Reconcile changed account timers without inventing a cause. A public announcement
-   is only a hint. Active verified fixed windows receive no extra request; routine
-   requests require an expired verified anchor for that same target.
+   is only a hint. Active verified fixed windows receive no extra request in the
+   same reset period; routine requests require an expired verified target anchor.
+   An owner-authorized global-reset start is a separate path: require independent
+   reset corroboration, a verified personal refill and no sent or unresolved request
+   for that account after the reset. Use a new short-lived account/task/target/event
+   permit with one designated owner and one attempt, consumed and read back before
+   sending. Preserve every older attempt, uncertainty and consumed permit; never
+   renew them or treat a single idle estimate as the new fixed anchor. Keep the old
+   deadline as fallback until a new fixed reset pair is verified. If existing
+   activity already started that window, save its provenance, send nothing and
+   schedule from the verified active anchor instead.
+   Serialize account workers that share a browser. All other request gates apply.
 4. When eligible, atomically reserve that account/window and read the exact marker
    back before any send. Only its designated worker may submit. An initial baseline
    additionally requires an unexpired scoped single-use permit consumed before send.
@@ -124,6 +143,9 @@ another account probe. Include its original verification time and say "if still
 unused"; never imply that old availability was refreshed. Stop warnings only for
 grants known redeemed/removed from actual later evidence. Preserve a known deadline
 through routine backoff. Group grants sharing an expiry when useful.
+An owner's redemption report can stop warnings for a uniquely matching account
+and grant expiry. Label it owner-reported, not backend-verified; do not guess
+between multiple matching grants or refresh inventory merely to record the report.
 Bind notification claims to the account, grant evidence, expiry and warning stage;
 preserve multiplicity when grants share timestamps. Guard and read back each claim,
 save its send receipt, and preserve uncertainty without blind resend. Repeated
@@ -167,6 +189,10 @@ account check or model request. A genuine first reset event may establish its li
 wake proof and continue to account checks in the same run; do not leave future
 reset handling permanently setup-only. Every account still passes its own gates.
 Never resend an uncertain submission or replace a completed account/window claim.
+The email handler performs no model generation. It records the verified event
+and account reconciliation, then arranges any authorized request through the
+existing account tasks with fresh claims and eligibility checks. Serialize those
+tasks when they share a browser, preserving their ordinary deadlines.
 
 Record source/inbox/wake times when available. Email can be delayed; do not promise
 instant delivery. Notify the owner once on a meaningful reset/result, failure or

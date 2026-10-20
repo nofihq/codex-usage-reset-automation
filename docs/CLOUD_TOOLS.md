@@ -131,6 +131,12 @@ account's existing private binding references. This record must not contain toke
 or copied credential files. Pin a verified commit rather than downloading an
 unreviewed latest version during recovery.
 
+Bind the reader to the verified pinned CLI installation in your cloud working
+directory. A shared platform-provided CLI can change independently of your setup.
+Check the selected binary's fingerprint before executing version or account commands.
+If that selection was a changed platform copy, restore the official pin separately
+and verify the new binding instead of trusting the replacement.
+
 Before a scheduled usage read, have the dot check that the expected code exists,
 its hashes match, the native CLI reports the pinned version, and the selected
 account home, runtime directory and expectations file still satisfy the private

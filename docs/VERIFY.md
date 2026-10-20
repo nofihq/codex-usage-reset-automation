@@ -47,6 +47,14 @@ already active window. For a completed run, require:
 
 Unknown completion, missing state, changed identity or ambiguous cleanup must
 produce a hold. Do not clear the record to make a retry possible.
+Verify that saved recovery permissions allow bounded read-only inspection of the
+recorded blocker, while reminder-only wakes make no account or browser probes.
+A later scheduled recovery must respect any remaining model lock without sending
+a test prompt, even when the metadata reports available usage.
+For an authorized global-reset start, verify independent reset confirmation,
+personal refill and a new single-use account/event permit. Old uncertainty must
+remain recorded, and any send or unresolved request after the reset blocks a
+duplicate. Accounts sharing a browser must run serially.
 
 ## Email-trigger checks
 

@@ -34,6 +34,11 @@ control to the dot. If the website asks for a **code from the terminal**, the do
 generates and enters that code from its own CLI process. You do not need a local
 terminal, and should not paste verification codes into chat.
 
+Saved sign-ins can still require verification later. Recovery must use the same
+account's supported sign-in flow and hold requests until its identity is verified
+again. This setup runs in the cloud, but it cannot guarantee permanent sign-in
+without your involvement.
+
 Have the dot verify the selected identity, included allowance, zero purchased
 credits and automatic reload off. It must select the intended account again on
 every wake. Never paste credentials into chat or copy cookies or auth files.
@@ -140,6 +145,15 @@ both are configured; one email task serves all monitored accounts. Each account
 still needs its own identity, allowance and duplicate checks. Do not assume a
 public announcement proves a refill reached your particular account.
 
+If you want one eligible `OK` after a confirmed global reset, tell the dot which
+accounts are authorized. It must first confirm the reset and each account's refill,
+then record permission for at most one request per account for that reset. Previous
+history stays saved; a sent or uncertain request in the new reset period blocks
+another send. The dot must verify the new fixed reset time afterward. A forecast
+or an idle timer alone cannot start it.
+The email task records the event and account checks; each account's existing task
+handles any eligible request. Accounts sharing the browser take turns.
+
 The first real global-reset email may verify automatic delivery and continue to
 the account checks in that same run; the handler must not remain permanently in
 setup-only mode. Banked-reset, forecast and confirmation emails never authorize
@@ -195,6 +209,10 @@ another authorized read the dot cannot know whether you redeemed it elsewhere.
 Suppress reminders for grants already known redeemed or removed. This is a
 reminder for you to decide whether to use the reset: **no automatic redemption,
 new inventory probe or `OK` prompt**.
+
+If you redeem one yourself, tell the dot which account and expiry date. It can
+stop warnings for a uniquely matching saved grant and record your report without
+another inventory check. Ambiguous matches need clarification.
 
 Verify the actual saved wake and warning policy, not just the dot's promise to
 remember. Test due-time and duplicate handling with simulated dates; never change
