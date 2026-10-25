@@ -45,12 +45,20 @@ every unrelated or unknown field.
 Inspect edit receipts and freshly read back the exact account/window claim before
 sending. A conflicting writer, missing ledger, unknown save or uncertain request
 holds. Never recreate state, renew consumed permits or clear uncertainty to retry.
-Keep only current results, anchors, cleanup targets, dedup and unresolved outcomes.
+Keep current results, anchors, cleanup targets, dedup and unresolved outcomes easy
+to locate. Update current health fields in place; never embed the entire previous
+health record or ledger inside each new result. Preserve existing history and
+request locks in place, and add only compact new receipts. Any later history
+migration needs its own preservation checks before applying it.
 
 Use one account timer per binding and one source-email event task. Persist exact
 private references in their saved prompts. The task-owning controller handles
 schedule updates that a worker cannot perform and verifies enabled state, saved
 prompt and next wake. Do not count a proposed time as a completed rearm.
+Keep the saved prompt limited to durable policy, private bindings and one current
+wake mode. Replace obsolete run-specific headers instead of prepending a new dated
+instruction on every run; store completion evidence in the Page. Verify that an
+instruction cleanup preserves the current hold, gates, task binding and schedule.
 
 Keep timestamped current health for each task separate from historical success.
 Record a new infrastructure hold even when an earlier run passed; unavailable
@@ -68,6 +76,13 @@ request and reads no inventory. A visible usage/access lock still holds even whe
 metadata reports available allowance. Correct contradictory saved instructions
 through the normal guarded update and review path before a fresh recovery check;
 never evade a denied action through another interface.
+
+An explicit review denial is a separate hold from a transport or sign-in failure.
+Backoff, a restored service or a reset email does not clear it. While unresolved,
+limit recovery to permitted service/control checks and saved reminders; do not
+repeat the denied action, route it through another task or interface, or weaken
+review settings. Resume execution only through a supported correction or approval
+path, then verify a later scheduled run. Prompt cleanup alone is not that proof.
 
 Check model availability in the current composer. A fresh chat can select a
 different default: explicitly select and verify the authorized included model,

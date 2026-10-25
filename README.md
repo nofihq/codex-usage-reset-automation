@@ -4,9 +4,15 @@ A cloud-dot setup for checking Codex usage, sending one short `OK` when eligible
 and keeping the next reset check scheduled. It runs on the dot's cloud computer,
 so your own device can be off.
 
-After setup, saved cloud tasks handle usage checks, eligible requests and reminders
-automatically. No always-on device, extra hosting or API key is required. Duplicate
-events stay quiet; meaningful results, failures and required actions are reported.
+After setup, saved cloud tasks are configured to handle usage checks, eligible
+requests and reminders automatically. No always-on device, extra hosting or API
+key is required. Duplicate events stay quiet; meaningful results, failures and
+required actions are reported.
+
+Execution is best effort: expired sign-in, unavailable cloud services or a denied
+action can stop requests. Some failures require private sign-in or a platform
+repair. A saved schedule or successful past run does not prove the next run will
+work; use the [verification checklist](docs/VERIFY.md) to check actual outcomes.
 
 The goal is to start an eligible new usage window with a tiny request rather
 than wait until you next need to work. The dot checks the reset time returned by

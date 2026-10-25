@@ -18,6 +18,9 @@ macOS or Linux in a supported desktop browser; no terminal or local runtime is n
   read recovers the complete state and current hash; it never recreates the ledger
   or clears reservations, uncertainty or reminder history.
 - A later scheduled canary reads and updates that same Page without local receipts.
+- Repeated state-only updates do not nest full previous health/ledger snapshots.
+  Existing history, claims and uncertainty stay intact. The task prompt has one
+  current wake mode rather than accumulated obsolete run instructions.
 - Current health is timestamped and separate from prior success. An infrastructure
   failure remains a hold until its recovery is verified; a foreground read alone
   does not qualify unattended execution. Preserve earlier receipts and distinguish
@@ -52,6 +55,12 @@ Verify that saved recovery permissions allow bounded read-only inspection of the
 recorded blocker, while reminder-only wakes make no account or browser probes.
 A later scheduled recovery must respect any remaining model lock without sending
 a test prompt, even when the metadata reports available usage.
+
+An explicit review denial stays unresolved until a supported correction or approval
+path clears it. Service recovery, prompt cleanup and another saved wake are not
+execution recovery. Check that blocked wakes preserve reminders without retrying
+the denied action or sending duplicate unchanged-blocker notifications.
+
 Check recovery from a different enabled model in an empty composer, not only from
 settings left by a foreground test. If preparing that starting state deliberately,
 label it a test fixture; do not change account-wide defaults or fabricate a lock.
