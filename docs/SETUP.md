@@ -120,7 +120,7 @@ banked-reset updates and high-confidence forecasts. Their meanings differ:
 
 | Email type | What it means | What the dot does |
 |---|---|---|
-| Confirmed global reset | A usage refill was reported as applied, rather than merely promised | Verify the source, then check every configured account's actual usage and reset time. An eligible account may proceed through the normal one-request checks; active windows remain protected. |
+| Confirmed global reset | A usage refill was reported as applied, rather than merely promised | Authenticate the trusted sender, then check every configured account's actual usage and reset time. No second public announcement is needed. An eligible account may proceed through the normal one-request checks; active windows remain protected. |
 | Banked-reset update | A reset was announced or saved for later redemption; receiving it is not a usage refill | Keep it separate from a global reset. An account inventory read can check available count and expiry. Never automatically redeem it or send an `OK` because of this email. |
 | Forecast, promise or “arriving soon” | A reset may happen later | Do not treat it as completed or send an `OK`. |
 | Signup confirmation or welcome | Subscription setup, not a usage event | Verify the subscription only; send no `OK`. |
@@ -147,6 +147,9 @@ A genuine global-reset email can prompt fresh checks of both Plus and Pro when
 both are configured; one email task serves all monitored accounts. Each account
 still needs its own identity, allowance and duplicate checks. Do not assume a
 public announcement proves a refill reached your particular account.
+Once its sender and message provenance are verified, a completed-reset email
+supplies the source confirmation. The dot does not wait for a second website or
+social post. Ambiguous, unauthenticated or merely predicted resets stay on hold.
 
 If you want one eligible `OK` after a confirmed global reset, tell the dot which
 accounts are authorized. It must first confirm the reset and each account's refill,

@@ -66,7 +66,7 @@ settings left by a foreground test. If preparing that starting state deliberatel
 label it a test fixture; do not change account-wide defaults or fabricate a lock.
 The scheduled check must verify the selected model and actual visible control state
 without generating a request.
-For an authorized global-reset start, verify independent reset confirmation,
+For an authorized global-reset start, verify authenticated source confirmation,
 personal refill and a new single-use account/event permit. Old uncertainty must
 remain recorded, and any send or unresolved request after the reset blocks a
 duplicate. Accounts sharing a browser must run serially.
@@ -92,6 +92,10 @@ Subscription, task configuration and live delivery are separate checks:
    model request. Confirmation/watch/banked mail must never send an `OK`.
 6. A verified reset event checks each account's fresh identity, allowance and timer.
    An active fixed window remains protected even if usage rounds to 100%.
+7. An authenticated completed-reset email from the trusted source must not wait
+   for a second public announcement. It still cannot substitute for personal
+   account checks or clear an unresolved review denial. Ambiguous or forged
+   messages stay on hold.
 
 Task enablement, automatic email delivery and device notifications are separate
 checks. Record each result accurately; a saved trigger alone does not establish
