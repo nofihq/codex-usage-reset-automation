@@ -43,9 +43,16 @@ When adding another account, enter its intended email explicitly. A default SSO
 button can reuse the other account. After verification, check the actual signed-in
 identity and saved account selector before claiming recovery succeeded.
 
+If a saved browser entry is missing during an authorized account check, the dot
+may use **Add account** once with the configured email and reuse an existing
+sign-in if offered. Keep any required private verification on hold until you
+complete it. Verify the actual restored identity and spending controls before
+continuing. Reminder-only and saved-state checks perform no sign-in probes.
+
 Have the dot verify the selected identity, included allowance, zero purchased
 credits and automatic reload off. It must select the intended account again on
-every wake. Never paste credentials into chat or copy cookies or auth files.
+each browser-based account check or request. Never paste credentials into chat
+or copy cookies or auth files.
 
 Choose the target by its observed duration. A Plus five-hour target is **300
 minutes**; a weekly target is **10,080 minutes**. Confirm the account actually
@@ -75,6 +82,26 @@ schedule update; a worker's suggested next time is not a saved schedule.
 To review it in ChatGPT on the web, open **Scheduled** and expand **Your dot** in
 the sidebar. Open the account task and check its enabled state and next run.
 The general Upcoming list may be empty while the dot's tasks are listed separately.
+
+### Save the workflow's standing permission
+
+In a desktop browser, open **Settings > Personalization > Custom rules > Add**.
+In the ChatGPT mobile app, open the sidebar, then **Customize > Custom rules > Add**.
+Choose **Take action without asking** for this specific workflow. Replace
+`ACCOUNT_EMAIL` below with your monitored account's email in the private settings:
+
+> For this cloud Codex-reset workflow on ACCOUNT_EMAIL: verify all saved identity, usage, model, spending and claim gates; submit 'Reply with only OK.' to OpenAI at https://chatgpt.com once per eligible window/reset. Archive only that completed test chat and rearm. Keep durable deduplication, unknown-outcome no-retry and normal safety review.
+
+Save the rule and verify its account, exact destination and selected behavior.
+The form allows 400 characters. If the dot saves it for you, approve that specific
+permission change when requested. Keep **OpenAI at https://chatgpt.com** explicit
+as the prompt's destination when editing the rule.
+
+[Custom rules](https://learn.chatgpt.com/docs/dots/controls#set-custom-rules)
+record standing permission; browser sign-in and normal action review still apply.
+If your workspace disables custom rules, resolve the supported permission path
+before continuing. A saved rule alone does not verify unattended execution;
+complete the actual scheduled checks below.
 
 ## 4. Verify one eligible request
 
@@ -231,6 +258,8 @@ cloud or notification delays can still prevent timely delivery.
 Keep the first account's state and timer. Sign in privately to the second identity,
 verify its actual windows and spending controls, and assign a different nickname.
 For example, a verified weekly Pro target uses 10,080 minutes.
+Update the scoped rule to cover the second configured account, keeping its OpenAI
+destination and all existing gates, and verify the saved change.
 
 Add a separate account binding and timer to the same guarded Page. Reuse the one
 Gmail event handler to check both accounts, with separate account/window claims.

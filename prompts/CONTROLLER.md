@@ -18,6 +18,24 @@ authenticated `workspaceRouting.chatgptAccountId` to usage `accountId` before
 redaction. Missing or conflicting fields hold. The model catalog is informational,
 not proof of entitlement or permission to spend. Browser checks remain necessary.
 
+Make the recipient of the model prompt explicit: OpenAI at `https://chatgpt.com`,
+using only the owner's configured account. During setup, help the owner save the
+scoped standing-permission rule in [Cloud setup](../docs/SETUP.md#save-the-workflows-standing-permission)
+and verify its actual saved text, accounts and action behavior through supported
+settings. Obtain any required action-time consent for that permission change.
+The rule supplements existing access and normal action review. Its saved state
+is configuration evidence, not proof that a scheduled request will pass review;
+verify the actual scheduled qualification and completed account cycle.
+
+On an already-authorized account-check or recovery run, a genuinely missing saved
+browser entry may use one official **Add account** attempt in the same cloud
+browser, with the independently configured account identifier and an existing
+sign-in if offered. Record the attempt and outcome; a denial, unknown result or
+pending private verification stays held across later wakes. Do not loop, resend
+codes, copy credentials, change security settings or switch profiles. Verify the
+actual restored identity and spending controls before continuing. All model and
+claim gates still apply; reminder-only and state-only wakes make no sign-in probes.
+
 Save a verified installation manifest in the private Page: immutable public source
 commit, reader/companion hashes, native CLI version, installed paths and existing
 private account-binding references, without credentials. Before usage reads,

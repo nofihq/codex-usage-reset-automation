@@ -12,6 +12,10 @@ macOS or Linux in a supported desktop browser; no terminal or local runtime is n
   reader checks the authenticated routing ID against the usage ID; missing or
   mismatched identities hold. A real read-only result passes before enabling sends.
 - Included allowance is available, purchased credits are zero and reload is off.
+- The saved scoped rule names the configured account and OpenAI at
+  `https://chatgpt.com`, with the intended action behavior. Its text and behavior
+  are read back from actual settings; a copied rule or save receipt does not
+  replace normal review or a successful scheduled request.
 - Guarded Page writes change only intended fields, preserve unrelated state and
   read back exactly; a stale write fails without overwriting.
 - A Page size-limit/no-content error holds. A supported full or canonical-block
