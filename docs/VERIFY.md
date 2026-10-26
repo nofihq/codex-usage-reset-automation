@@ -45,7 +45,8 @@ already active window. A completed run must meet these conditions:
 |---|---|
 | Before-send proof | A guarded account/window reservation and exact fresh readback before submission |
 | Task fallback | Before reservation, the same task has a non-overlapping future state-only fallback, with enabled state, instructions, destination and schedule independently read back |
-| Model selection | The fresh composer selects the authorized included model, minimum reasoning and Fast off; real restrictions hold, while hidden accessibility text alone is not a global lock |
+| Model selection | The fresh composer selects the authorized included model, minimum reasoning and Fast off; exact control/label relationships and rendered evidence distinguish real restrictions from unreferenced hidden text |
+| Submit readiness | Settings popovers are closed normally, the intended header and exact prompt are verified, and Send is enabled; unfinished-tab continuity preserves the original claim/proof |
 | Request count | One attempt; no automatic retry or renewed initialization permit |
 | Completion | Response exactly `OK`, visibly completed |
 | Reset | Two read-only CLI status checks at least 60 seconds apart; same duration and reset, with no second prompt |

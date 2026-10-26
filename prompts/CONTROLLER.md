@@ -110,6 +110,16 @@ accessibility text, an aria-hidden menu section or an unavailable Power preset
 alone does not establish that every model is blocked. Inspect visible controls
 and the selected model after selection; never force disabled controls, dismiss a
 real access restriction or infer included permission from the model catalog alone.
+Capture restriction text with its control relationships and rendered state:
+selected model, effort and Fast controls, relevant ancestors, linked labels and
+descriptions, and visibility. An unreferenced, clipped shared label does not by
+itself establish a restriction on the selected control. Keep the unaltered evidence
+available to normal review; an actual or unclear restriction still holds.
+
+After preserving model-setting evidence, close popovers through the normal UI.
+Verify the selected header, exact automation-owned prompt and unobstructed enabled
+Send before submitting. Preserve an unfinished disposable tab across turn boundaries
+using the browser's documented handoff mechanism; retain its original claim/proof.
 
 ## Account timer or verified reset event
 
