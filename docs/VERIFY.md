@@ -44,6 +44,7 @@ already active window. A completed run must meet these conditions:
 | Evidence | Pass condition |
 |---|---|
 | Before-send proof | A guarded account/window reservation and exact fresh readback before submission |
+| Task fallback | Before reservation, the same task has a non-overlapping future state-only fallback, with enabled state, instructions, destination and schedule independently read back |
 | Model selection | The fresh composer selects the authorized included model, minimum reasoning and Fast off; real restrictions hold, while hidden accessibility text alone is not a global lock |
 | Request count | One attempt; no automatic retry or renewed initialization permit |
 | Completion | Response exactly `OK`, visibly completed |
@@ -120,6 +121,10 @@ delivery. Device notifications also require your ChatGPT notification settings.
   they cannot send `OK` or redeem anything.
 - Reminder-only wakes use saved expiry evidence, make no account probe, and label
   availability with its last verification time and "if still unused" wording.
+- A permitted inventory refresh updates the current counts, verification times
+  and grant statuses actually consumed by reminders. A result stored only in run
+  history is insufficient. Absent grants suppress future warnings, with removal
+  reason unknown; accepted receipts and owner-reported redemption stay intact.
 - Simulate before/at/after warning boundaries, late discovery, unknown expiry,
   redeemed/removed grants, two accounts, repeated wakes and unknown notification
   outcomes. Accepted stages must not cause another alert or a wake scheduled in

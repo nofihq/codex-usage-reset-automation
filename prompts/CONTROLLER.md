@@ -115,6 +115,14 @@ real access restriction or infer included permission from the model catalog alon
 
 For each account independently:
 
+Before reserving a request on an already-authorized account run, rearm that same
+task to a bounded future state-only fallback. Independently read back its enabled
+state, exact instructions, destination and schedule before proceeding. Prevent an
+overlapping dispatch; after completion, replace the fallback with the verified
+next deadline. Do not infer authorization from a disabled task, resume work the
+owner stopped, or let this step clear a review hold. State-only and reminder-only
+wakes retain their zero-account-probe scope.
+
 1. Confirm the selected identity, target duration and fresh included-usage status,
    including backend `ordinaryUsageAllowed=true`; percentages or reset times
    cannot substitute for an unavailable or false permission.
@@ -166,6 +174,15 @@ must exclude reset-credit details; reminder-only wakes perform no inventory prob
 Use only authenticated available inventory and exact returned expiry timestamps;
 never guess a 30-day lifetime from a public announcement. Unknown availability
 or expiry must be reported as unknown, not turned into a made-up reminder date.
+
+After each permitted refresh, reconcile the current inventory used by reminders:
+update its verification time, available count and exact grant presence/status.
+Saving a result only in run history leaves stale reminders active. Retain prior
+grant evidence and accepted notices, but suppress future warnings for a grant
+absent from a fresh verified inventory. Record its removal reason as unknown
+unless separately established. Preserve owner-reported redemption suppression.
+Read back these current fields and recompute the next warning without another
+account query.
 
 Plan an early warning at expiry minus72hours and a follow-up around minus24hours.
 The first warning's planned deadline must be no later than expiry minus24hours.
