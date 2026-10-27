@@ -21,6 +21,11 @@ macOS or Linux in a supported desktop browser; no terminal or local runtime is n
 - A Page size-limit/no-content error holds. A supported full or canonical-block
   read recovers the complete state and current hash; it never recreates the ledger
   or clears reservations, uncertainty or reminder history.
+- A denied ledger read blocks account work. Any retry requires a fresh supported
+  permission check confirming the same caller's access to that exact Page and
+  normal review, with no applicable review denial. It is limited to one retry
+  of that read; unclear access or another failure stays held. No sharing change,
+  cached ledger or alternate reader is substituted.
 - A later scheduled canary reads and updates that same Page without local receipts.
 - Repeated state-only updates do not nest full previous health/ledger snapshots.
   Existing history, claims and uncertainty stay intact. The task prompt has one

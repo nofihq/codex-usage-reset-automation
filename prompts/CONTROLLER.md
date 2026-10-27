@@ -85,6 +85,14 @@ browser, CLI, model or inventory probes. Never use an overdue marker as catch-up
 permission. Verify retained enablement after an actual scheduled dispatch,
 before any manual rearm; a saved recurrence alone is not execution proof.
 
+Ledger-read recovery never authorizes account work on stale state. If a read is
+forbidden, preserve the error and inspect only a supported permission check for
+that exact Page and the same caller. Freshly confirmed read access, with no
+applicable review denial, may justify one normally reviewed retry of the same
+read. Unclear or denied access, a repeated failure or review refusal holds. Do
+not change sharing, sessions or routes, substitute a cached copy, or extend this
+exception to reservations, notifications or model requests.
+
 Keep the saved prompt limited to durable policy, private bindings and one current
 wake mode. Replace obsolete run-specific headers instead of prepending a new dated
 instruction on every run; store completion evidence in the Page. Verify that an
