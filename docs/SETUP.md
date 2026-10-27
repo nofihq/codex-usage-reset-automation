@@ -79,6 +79,14 @@ Before any model request, require the dot to:
 Use one saved timer for this account. The task-owning controller must verify each
 schedule update; a worker's suggested next time is not a saved schedule.
 
+Ask it to keep a sparse repeat, such as every 12 hours, on that same timer so a
+failed attempt to save the next wake cannot leave a completed one-time task with
+no future run. Keep the next run scheduled for the verified reset plus two
+minutes; the repeat is a recovery fallback. Later fallback occurrences only
+check saved state and service availability; they do not poll your account or
+inventory or send another `OK`. Verify after an actual scheduled test that the
+timer remains enabled before manually rescheduling it.
+
 To review it in ChatGPT on the web, open **Scheduled** and expand **Your dot** in
 the sidebar. Open the account task and check its enabled state and next run.
 The general Upcoming list may be empty while the dot's tasks are listed separately.
@@ -96,6 +104,11 @@ Save the rule and verify its account, exact destination and selected behavior.
 The form allows 400 characters. If the dot saves it for you, approve that specific
 permission change when requested. Keep **OpenAI at https://chatgpt.com** explicit
 as the prompt's destination when editing the rule.
+
+If dot asks for permission to access `chatgpt.com`, check that the request covers
+the ongoing account workflow. Approval limited to reading a page or one
+diagnostic does not establish ongoing access for eligible requests and archiving.
+The saved rule does not grant browser access or override normal review.
 
 [Custom rules](https://learn.chatgpt.com/docs/dots/controls#set-custom-rules)
 record standing permission; browser sign-in and normal action review still apply.

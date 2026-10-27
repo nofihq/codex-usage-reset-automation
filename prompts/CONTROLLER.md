@@ -73,6 +73,18 @@ Use one account timer per binding and one source-email event task. Persist exact
 private references in their saved prompts. The task-owning controller handles
 schedule updates that a worker cannot perform and verifies enabled state, saved
 prompt and next wake. Do not count a proposed time as a completed rearm.
+
+Keep a sparse native recurrence on each existing account timer as a fallback
+if a run cannot save its next wake. For example, retain a 12-hour recurrence
+starting at the exact next dynamic deadline, and move that start when the next
+deadline is verified. Before fragile ledger reads, confirm the same task's
+identity, destination, enabled state and retained recurrence. Respect an owner
+pause. Missing state, an early or fallback occurrence, uncertain provenance or
+an unresolved hold permits saved-state/service work only, with no account,
+browser, CLI, model or inventory probes. Never use an overdue marker as catch-up
+permission. Verify retained enablement after an actual scheduled dispatch,
+before any manual rearm; a saved recurrence alone is not execution proof.
+
 Keep the saved prompt limited to durable policy, private bindings and one current
 wake mode. Replace obsolete run-specific headers instead of prepending a new dated
 instruction on every run; store completion evidence in the Page. Verify that an
@@ -101,6 +113,13 @@ limit recovery to permitted service/control checks and saved reminders; do not
 repeat the denied action, route it through another task or interface, or weaken
 review settings. Resume execution only through a supported correction or approval
 path, then verify a later scheduled run. Prompt cleanup alone is not that proof.
+
+Record whether an approval covers a diagnostic, one qualification or the ongoing
+ordinary workflow. A successful exception does not resolve a hold outside that
+scope. Before restoring ordinary operation, verify that its actual scope is
+accepted through the supported path and test the saved ordinary controller,
+without a temporary qualification override. Keep prior denials and claims intact;
+every future action still receives normal review and fresh eligibility checks.
 
 Check model availability in the current composer. A fresh chat can select a
 different default: explicitly select and verify the authorized included model,

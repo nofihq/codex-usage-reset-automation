@@ -31,6 +31,12 @@ macOS or Linux in a supported desktop browser; no terminal or local runtime is n
   metadata recovery from a completed normal cycle.
 - The saved account task is enabled, names the intended account and private ledger,
   and its actual next wake is visible in a native task receipt or settings.
+- Each existing account timer retains a sparse native recurrence if saving its
+  next wake fails. After a real scheduled state-only dispatch, verify that it
+  stays enabled with the same recurrence before manually rearming it. A fallback
+  occurrence with missing state, uncertain provenance or a hold makes no account,
+  browser, CLI, model or inventory calls; it cannot treat an old deadline as
+  permission to send.
 - The private Page retains the pinned source commit, reader/companion hashes and
   CLI version. Test restoring missing code in a disposable directory, rejecting a
   changed file and preserving existing account bindings. A later scheduled read
@@ -66,6 +72,12 @@ An explicit review denial stays unresolved until a supported correction or appro
 path clears it. Service recovery, prompt cleanup and another saved wake are not
 execution recovery. Check that blocked wakes preserve reminders without retrying
 the denied action or sending duplicate unchanged-blocker notifications.
+
+Check the scope of the accepted correction: diagnostic access and a one-time
+qualification are not proof of permission for ordinary recurring operation.
+Verify an actual scheduled ordinary run using its saved production instructions,
+without a temporary qualification override, and its later durable readback.
+Preserve all historical denials and every fresh-run gate.
 
 Check recovery from a different enabled model in an empty composer, not only from
 settings left by a foreground test. If preparing that starting state deliberately,
