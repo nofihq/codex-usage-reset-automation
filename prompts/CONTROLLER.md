@@ -85,6 +85,18 @@ browser, CLI, model or inventory probes. Never use an overdue marker as catch-up
 permission. Verify retained enablement after an actual scheduled dispatch,
 before any manual rearm; a saved recurrence alone is not execution proof.
 
+Once a fallback obtains a complete fresh ledger and verifies native scheduled
+provenance, task binding and exclusive ownership, it may schedule a separate
+future read-only eligibility recovery on that same timer. Require no applicable
+review hold or unresolved request, preserve the failed occurrence and all claims,
+and read back the guarded mode, due time and actual native schedule. Respect a
+known active window: defer recovery until its verified boundary plus two minutes,
+and process any earlier saved reminder without account probes. Leave at least
+three minutes before a newly staged wake. The fallback itself sends nothing.
+Only the later recovery's actual fresh eligibility evidence can stage a separate
+future ordinary run under every normal gate. Missing provenance or an uncertain
+save stays held with the recurrence intact.
+
 Ledger-read recovery never authorizes account work on stale state. If a read is
 forbidden, preserve the error and inspect only a supported permission check for
 that exact Page and the same caller. Freshly confirmed read access, with no

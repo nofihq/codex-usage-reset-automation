@@ -42,6 +42,12 @@ macOS or Linux in a supported desktop browser; no terminal or local runtime is n
   occurrence with missing state, uncertain provenance or a hold makes no account,
   browser, CLI, model or inventory calls; it cannot treat an old deadline as
   permission to send.
+- Verify that a genuine fallback with recovered ledger access can save and
+  independently read back a separate future read-only recovery on the same timer.
+  A known active window defers that recovery until its verified reset plus two
+  minutes. Check the later recovery and ordinary run separately: a staged wake
+  alone does not prove either executed. Preserve review holds, claims and reminders;
+  the fallback makes no account or model calls.
 - The private Page retains the pinned source commit, reader/companion hashes and
   CLI version. Test restoring missing code in a disposable directory, rejecting a
   changed file and preserving existing account bindings. A later scheduled read

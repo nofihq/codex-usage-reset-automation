@@ -86,6 +86,9 @@ minutes; the repeat is a recovery fallback. Later fallback occurrences only
 check saved state and service availability; they do not poll your account or
 inventory or send another `OK`. Verify after an actual scheduled test that the
 timer remains enabled before manually rescheduling it.
+After saved-state access recovers, the fallback can schedule a separate read-only
+eligibility check. It waits for a known active window to end and preserves any
+review hold. Normal requests resume only after fresh eligibility checks pass.
 
 To review it in ChatGPT on the web, open **Scheduled** and expand **Your dot** in
 the sidebar. Open the account task and check its enabled state and next run.
