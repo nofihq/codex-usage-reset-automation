@@ -306,3 +306,27 @@ label public reports as unconfirmed for the account until an authorized inventor
 read confirms them. Never redeem a banked reset automatically or use a banked
 message to authorize an `OK`.
 Keep duplicate and unchanged events quiet. Verify device push separately.
+
+For this workflow's routine OK, reset, remaining-usage and expiry notifications,
+use one short line, normally no more than 25 words; use up to three short lines
+when reporting both accounts. Keep technical evidence in the private ledger.
+State the account, actual outcome and useful next time or required action.
+Examples:
+
+- `Plus: OK sent. Next check: 4:08 p.m.`
+- `Pro: OK not sent — model-access check blocked.`
+- `Pro: OK skipped — 45% weekly usage remaining.`
+- `Plus: OK status unknown. No retry sent.`
+- `Plus: OK sent; reset verification pending.`
+- `Tibo reports a global reset. Account checks pending.`
+- `Plus: reset verified. 100% remaining.`
+- `Plus: one saved reset expires tomorrow at 2:38 p.m., if unused; last checked Monday.`
+
+Use each wording only when supported by the saved result. A source report alone
+cannot establish a personal refill. Say checks are pending only when they really
+are; otherwise state the short blocker. Unknown submission is different from a
+known unsent request. Do not call an OK sent or recorded without completion
+evidence. Keep precise timestamps, time zone and original evidence in private
+state; mention the last inventory check briefly when relevant to availability.
+This wording preference changes neither
+notification frequency nor any eligibility, review, retry or reminder rule.

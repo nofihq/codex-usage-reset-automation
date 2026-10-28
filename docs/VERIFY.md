@@ -124,6 +124,13 @@ Task enablement, automatic email delivery and device notifications are separate
 checks. Record each result accurately; a saved trigger alone does not establish
 delivery. Device notifications also require your ChatGPT notification settings.
 
+Check routine notification wording against completed, skipped, blocked and unknown
+request outcomes, plus source-only reset reports and saved expiry reminders.
+Alerts should be short and identify the account and actual result; technical
+evidence stays private. A source report must not say a personal reset was verified,
+and an unknown submission must not say the request was definitely unsent. These
+wording checks need no extra model requests or duplicate device notifications.
+
 ## Banked-expiry reminder checks
 
 - Read actual available inventory and exact expiry for every configured account.
