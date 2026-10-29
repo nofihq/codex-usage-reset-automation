@@ -162,9 +162,13 @@ accepted through the supported path and test the saved ordinary controller,
 without a temporary qualification override. Keep prior denials and claims intact;
 every future action still receives normal review and fresh eligibility checks.
 
-Check model availability in the current composer. A fresh chat can select a
-different default: explicitly select and verify the authorized included model,
-minimum reasoning and Fast off on each wake when its controls are enabled.
+Check model availability in the exact fresh automation-owned composer. Another
+chat's selection does not carry over reliably. Complete a separate read-only
+inspection before requesting any selection; return its evidence before the
+mutation call. Resolve the intended control uniquely and use its ordinary
+enabled action under normal review. If the model is already correct, verify it
+without a redundant selection. After any accepted change, freshly verify the
+authorized included model, minimum reasoning and Fast off in that same tab.
 Associate a restriction with the model or effort it actually applies to. Hidden
 accessibility text, an aria-hidden menu section or an unavailable Power preset
 alone does not establish that every model is blocked. Inspect visible controls
@@ -180,6 +184,8 @@ After preserving model-setting evidence, close popovers through the normal UI.
 Verify the selected header, exact automation-owned prompt and unobstructed enabled
 Send before submitting. Preserve an unfinished disposable tab across turn boundaries
 using the browser's documented handoff mechanism; retain its original claim/proof.
+Recreating the composer requires fresh control checks; never carry another tab's
+selection evidence forward or treat a changed call shape as review clearance.
 
 ## Account timer or verified reset event
 

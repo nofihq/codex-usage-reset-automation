@@ -109,6 +109,11 @@ settings left by a foreground test. If preparing that starting state deliberatel
 label it a test fixture; do not change account-wide defaults or fabricate a lock.
 The scheduled check must verify the selected model and actual visible control state
 without generating a request.
+Inspection completes in a separate read-only call before any selection. The exact
+fresh composer is verified again after an accepted change and retained through
+submission; another chat's model settings cannot qualify it. An already-correct
+selection needs verification rather than another click. Every action still passes
+normal review, and a refusal or unclear restriction holds.
 For an authorized global-reset start, verify authenticated source confirmation,
 personal refill and a new single-use account/event permit. Old uncertainty must
 remain recorded, and any send or unresolved request after the reset blocks a
