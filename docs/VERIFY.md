@@ -36,6 +36,20 @@ macOS or Linux in a supported desktop browser; no terminal or local runtime is n
   metadata recovery from a completed normal cycle.
 - The saved account task is enabled, names the intended account and private ledger,
   and its actual next wake is visible in a native task receipt or settings.
+- A mode change updates its deadline and read-only/send flags together. Use the
+  same consistency check on a contradictory in-memory copy and confirm it is
+  rejected without account work or changes to saved state. Read back the real
+  state before the next wake. Ordinary-run flags do not waive fresh eligibility
+  or permit warm-ups; superseded failed deadlines remain in history.
+- An active run and its future fallback retain separate scopes. A state-only
+  fallback has zero-request flags even while the original ordinary run remains
+  active under its own provenance, gates, ownership and claim.
+- Check the existing verified-reset event mode too: its contract retains its
+  opportunity key and event deadline separately from the ordinary deadline.
+  In-memory event fixtures never establish a real email, refill or send permission.
+- After updating a native prompt or schedule, its authoritative current binding
+  matches the latest actual native readback. Original run receipts remain
+  historical; a new maintenance receipt does not leave a stale current hash.
 - Each existing account timer retains a sparse native recurrence if saving its
   next wake fails. After a real scheduled state-only dispatch, verify that it
   stays enabled with the same recurrence before manually rearming it. A fallback

@@ -97,6 +97,27 @@ Only the later recovery's actual fresh eligibility evidence can stage a separate
 future ordinary run under every normal gate. Missing provenance or an uncertain
 save stays held with the recurrence intact.
 
+Keep the active dispatch's original scope separate from the next scheduled wake.
+Rearming a future state-only fallback neither authorizes a send nor replaces the
+active run's original provenance, gates, ownership and claim. Treat the next
+wake's mode, due time and execution flags as one control state: update and read
+back all coupled fields in one guarded write, with a strict Boolean consistency
+check before staging and before dependent account work. A future ordinary run has
+`read_only=false`, conditional `model_requests_allowed=true` and a matching
+`normal_due_at`; these flags never replace fresh gates or a claim. Existing
+verified-reset event modes retain their original opportunity key, event deadline,
+expiry, personal-refill and other gates, with conditional send flags and the
+ordinary deadline preserved separately. A valid event shape is not event
+authorization. Read-only
+wakes have `read_only=true` and `model_requests_allowed=false`, even while a
+separately scoped ordinary run is active. Keep model warm-ups forbidden and
+superseded failed deadlines in history. Contradictory next-wake fields hold that
+wake's dependent account work until normal guarded reconciliation succeeds.
+After a native prompt or schedule change, reconcile the authoritative current
+binding to its actual full native readback, including revision, prompt hash,
+schedule, destination and enablement. Keep original run receipts as history;
+a nested maintenance receipt must not leave the current binding stale.
+
 Ledger-read recovery never authorizes account work on stale state. If a read is
 forbidden, preserve the error and inspect only a supported permission check for
 that exact Page and the same caller. Freshly confirmed read access, with no
