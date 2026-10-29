@@ -27,6 +27,12 @@ macOS or Linux in a supported desktop browser; no terminal or local runtime is n
   of that read; unclear access or another failure stays held. No sharing change,
   cached ledger or alternate reader is substituted.
 - A later scheduled canary reads and updates that same Page without local receipts.
+- If enabling the optional delayed service retry, qualify each account task with
+  its own scheduled zero-account canary. Verify native deadline restoration
+  before the single 15-minute wait, retained cell data and the later original
+  full Page read. Do not inject an outage or treat one account's proof as another
+  account's qualification. This does not establish restart durability or prove
+  the two-error branch has executed during a real outage.
 - Repeated state-only updates do not nest full previous health/ledger snapshots.
   Existing history, claims and uncertainty stay intact. The task prompt has one
   current wake mode rather than accumulated obsolete run instructions.

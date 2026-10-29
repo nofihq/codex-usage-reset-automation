@@ -82,17 +82,28 @@ owner. An event delivered to the existing controller does not establish a separa
 account worker; distinguish helper children by their actual purpose. A helper's
 execution failure does not establish that the account controller failed. Missing
 run status alone cannot establish either ownership or completion.
+Dispatch bookkeeping can update native observation timestamps without changing
+the saved prompt or schedule. Verify the actual original event and functional
+binding before reconciling those observations; timestamps alone grant no authority.
 
 Keep a sparse native recurrence on each existing account timer as a fallback
 if a run cannot save its next wake. For example, retain a 12-hour recurrence
 starting at the exact next dynamic deadline, and move that start when the next
 deadline is verified. Before fragile ledger reads, confirm the same task's
 identity, destination, enabled state and retained recurrence. Respect an owner
-pause. Missing state, an early or fallback occurrence, uncertain provenance or
+pause. Missing state, a fallback occurrence, uncertain provenance or
 an unresolved hold permits saved-state/service work only, with no account,
 browser, CLI, model or inventory probes. Never use an overdue marker as catch-up
 permission. Verify retained enablement after an actual scheduled dispatch,
 before any manual rearm; a saved recurrence alone is not execution proof.
+Where supported, use an explicit UTC `DTSTART` for the absolute deadline and
+verify it in the native readback; keep the owner's display timezone separately.
+For a positively verified intended occurrence delivered early, wait until its
+saved deadline using supported cloud controls, with service-only scope. Then
+recheck the fresh native binding, Page, original run scope and gates for that wake.
+Do not classify that occurrence from arrival time alone or begin account work
+early. Missing provenance, a substantive binding/mode change, a pause or an
+unavailable wait stays held.
 
 Once a fallback obtains a complete fresh ledger and verifies native scheduled
 provenance, task binding and exclusive ownership, it may schedule a separate
@@ -134,6 +145,34 @@ applicable review denial, may justify one normally reviewed retry of the same
 read. Unclear or denied access, a repeated failure or review refusal holds. Do
 not change sharing, sessions or routes, substitute a cached copy, or extend this
 exception to reservations, notifications or model requests.
+
+For temporary service failure, qualify each account task separately before
+enabling this optional recovery. After exactly two consecutive original full
+content reads of the same Page by the same controller return
+`page_freshness_unavailable` with `retryable=true`, keep
+the native schedule unchanged and permit one `functions.exec` cell that only
+awaits a 900,000 ms timer and emits start/end correlation data. Resume only its
+actual returned cell ID with
+`functions.wait`, using waits of at most 60 seconds. After confirmed elapsed
+time, honor intervening stops or denials; only when still permitted make one
+original full Page read. Denied reads and unknown saves or submissions do not
+qualify as temporary service errors.
+A failed, cancelled or unknown timer is never restarted. Another read failure
+leaves the retained recurrence intact. No account, browser, CLI or inventory
+probes, model requests or sign-ins belong in this branch. Fresh state still
+requires the existing control reconciliation before a separate future eligibility
+recovery.
+
+Qualify this with a genuine scheduled service-only canary on that account's
+existing task. Preserve an already verified future ordinary deadline with enough
+time to finish the test, and leave at least four minutes of verified staging lead.
+Before waiting, restore and independently verify its ordinary
+native deadline, then reconcile the future Page contract; keep the active canary
+read-only and release account/schedule ownership. Verify one timer, retained
+data, at least 15 minutes elapsed and one later original full Page read.
+Scheduling an earlier canary temporarily replaces the ordinary occurrence until
+restoration; a saved deadline alone does not preserve the native wake. A passed
+canary proves one wait/read instance, not restart survival or every future outage.
 
 Keep the saved prompt limited to durable policy, private bindings and one current
 wake mode. Replace obsolete run-specific headers instead of prepending a new dated
