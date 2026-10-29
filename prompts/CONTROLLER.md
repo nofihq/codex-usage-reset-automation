@@ -59,7 +59,11 @@ every relevant duplicate lock and unresolved outcome. Keep the full state intact
 a compact summary must never replace the canonical block or authorize a decision
 with missing inputs.
 Patch only the intended uniquely matched values from the fresh read, preserving
-every unrelated or unknown field.
+every unrelated or unknown field. Every replacement matches the same original
+block; its original range must not overlap another replacement. Include only
+enough unchanged context to make each literal unique. Do not replace a whole
+health or scheduling object to change a few values. Reconstruct the candidate
+from the original ranges and verify unrelated bytes remain unchanged before saving.
 Inspect edit receipts and freshly read back the exact account/window claim before
 sending. A conflicting writer, missing ledger, unknown save or uncertain request
 holds. Never recreate state, renew consumed permits or clear uncertainty to retry.
@@ -73,6 +77,11 @@ Use one account timer per binding and one source-email event task. Persist exact
 private references in their saved prompts. The task-owning controller handles
 schedule updates that a worker cannot perform and verifies enabled state, saved
 prompt and next wake. Do not count a proposed time as a completed rearm.
+Trace the incoming scheduled event and actual tool order before identifying its
+owner. An event delivered to the existing controller does not establish a separate
+account worker; distinguish helper children by their actual purpose. A helper's
+execution failure does not establish that the account controller failed. Missing
+run status alone cannot establish either ownership or completion.
 
 Keep a sparse native recurrence on each existing account timer as a fallback
 if a run cannot save its next wake. For example, retain a 12-hour recurrence

@@ -171,8 +171,13 @@ just to simulate a failure. A later scheduled pass verifies cross-run recovery,
 not guaranteed survival of every future cloud refresh.
 
 If the supported execution tool cannot start or cannot access a required existing
-directory, record the exact platform failure and keep submissions on hold. Use a
-supported scoped-permission request when one exists; an approval cannot fix a
+directory, record the exact platform failure and keep submissions on hold. For an
+unavailable environment, use that caller's supported wait/resume control for its
+existing cloud workspace, then verify a harmless command before checking the
+installation again. A browser's Ready badge or another worker's result does not
+establish that this caller can run the reader. Do not reinstall working code or
+request another sign-in merely because the execution connection is unavailable.
+Use a supported scoped-permission request when one exists; an approval cannot fix a
 broken sandbox launcher. Do not disable isolation or switch interfaces to bypass
 a filesystem restriction. Keep bounded read-only recovery and known expiry
 reminders, and distinguish an infrastructure block from expired authentication.
