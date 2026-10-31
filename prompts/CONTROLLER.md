@@ -313,9 +313,13 @@ wakes retain their zero-account-probe scope.
    additionally requires an unexpired scoped single-use permit consumed before send.
 5. Use a fresh disposable chat, an included model, minimum reasoning and fast off.
    No project, files, requested search or tools. Ask only `Reply with only OK.`
-6. Require completed exact `OK`, then two read-only CLI status checks at least
-   60 seconds apart with matching numeric target/reset values. Send no second
-   prompt for this verification. Require window timing consistent with that request.
+6. Require completed exact `OK`, then invoke the read-only reader twice within
+   one owned, bounded execution, with captures at least 60 seconds apart. Await
+   that same process through tool yields and preserve its actual results and
+   cleanup; do not end the workflow after the first read. Any helper has a pinned,
+   verified source and a safe code-restoration recipe. Require matching numeric
+   target/reset values. Send no second prompt for this verification.
+   Require window timing consistent with that request.
    A moving reset estimate is not success. Preserve uncertain results without retrying.
 7. Archive only that exact completed chat and verify its archived state. Record
    one attempt and its proofs. Archive retains data; never permanently delete.

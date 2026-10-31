@@ -102,7 +102,7 @@ already active window. A completed run must meet these conditions:
 | Submit readiness | Settings popovers are closed normally, the intended header and exact prompt are verified, and Send is enabled; unfinished-tab continuity preserves the original claim/proof |
 | Request count | One attempt; no automatic retry or renewed initialization permit |
 | Completion | Response exactly `OK`, visibly completed |
-| Reset | Two read-only CLI status checks at least 60 seconds apart; same duration and reset, with no second prompt |
+| Reset | One owned, bounded execution completes both read-only CLI checks at least 60 seconds apart; same duration and reset, with no second prompt |
 | Timing | Reset minus duration falls within the send-to-completion observation interval |
 | Cleanup | That exact disposable chat is archived and can be identified as the completed chat |
 | Next wake | Same account timer enabled for the verified reset plus two minutes, or an earlier read-only expiry reminder that preserves that normal deadline |
@@ -131,6 +131,9 @@ qualification are not proof of permission for ordinary recurring operation.
 Verify an actual scheduled ordinary run using its saved production instructions,
 without a temporary qualification override, and its later durable readback.
 Preserve all historical denials and every fresh-run gate.
+A cycle that needs a coordinator's message to resume after the first status read
+does not qualify as unattended completion, even if its eventual reset and archive
+proofs pass. Verify the repaired whole cycle without that intervention.
 
 Check recovery from a different enabled model in an empty composer, not only from
 settings left by a foreground test. If preparing that starting state deliberately,
