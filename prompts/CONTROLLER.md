@@ -191,6 +191,19 @@ wake mode. Replace obsolete run-specific headers instead of prepending a new dat
 instruction on every run; store completion evidence in the Page. Verify that an
 instruction cleanup preserves the current hold, gates, task binding and schedule.
 
+Keep the live ledger small. Store full raw evidence in private, hash-verified
+Files references rather than copying every prior packet into each update. A
+compact ledger may reference immutable source layers only when complete source
+reads and deterministic reconstruction preserve every claim, unknown field,
+consumed permit, original proof, event, notification, anchor and reminder.
+Missing or changed source blocks dependent work. Set a conservative working-size
+budget and rotate only closed records after exact copy/readback verification;
+keep active, reserved and unknown outcomes live and protected against duplicates.
+A size-limit error is not fixed by splitting the same growth into smaller edits.
+For migration, fence all affected tasks, retain the old source intact, verify
+owner-only access and every new binding, then activate the replacement. Partial
+cutover stays held; never delete history or reset claims to make room.
+
 Keep timestamped current health for each task separate from historical success.
 Keep current descriptions consistent with the typed run contract and actual
 review receipts; an old deadline, mode or hold description must not become
@@ -242,6 +255,8 @@ selected model, effort and Fast controls, relevant ancestors, linked labels and
 descriptions, and visibility. When warning text appears, capture its current
 DOM-derived IDs, computed clipping styles, numerical geometry and every actual
 ARIA label/description reference across the document, with an unaltered screenshot.
+Read relevant controls and composer banners without collecting unrelated chat
+text; a reference census does not require the entire page's text.
 Include the complete relevant source evidence in the reservation/review packet,
 not only a conclusion. An unreferenced, clipped shared label does not by itself
 establish a restriction on the selected control; an actual or unclear restriction

@@ -36,6 +36,13 @@ macOS or Linux in a supported desktop browser; no terminal or local runtime is n
 - Repeated state-only updates do not nest full previous health/ledger snapshots.
   Existing history, claims and uncertainty stay intact. The task prompt has one
   current wake mode rather than accumulated obsolete run instructions.
+- Live storage has a working-size budget and verified private evidence references.
+  If using source layers, exact reconstruction preserves all original fields;
+  missing or hash-mismatched source holds. A migration retains the old source,
+  keeps all affected tasks held through partial cutover, verifies access and
+  current bindings, and preserves claims, unknowns and pending reminders.
+  Closed-record rotation is verified before live duplicates are removed; a
+  smaller Page alone does not prove that cold scheduled reads now succeed.
 - Current health is timestamped and separate from prior success. An infrastructure
   failure remains a hold until its recovery is verified; a foreground read alone
   does not qualify unattended execution. Preserve earlier receipts and distinguish
