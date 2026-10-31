@@ -137,6 +137,10 @@ acceptance. Record the actual returned action result before any dependent change
 an accepted inspection does not resolve a different refused action. A missing
 review endpoint must not become an invented clearance token or an endless demand
 for the same owner approval.
+Where the actual rejection permits factual re-evaluation, verify the new evidence
+against its precise reason and the submitted payload before another normal review.
+An account-scoped patch must leave other accounts' controls unchanged. Retain
+closed scopes, unknown outcomes and the original total request budget throughout.
 
 For human sign-in handoffs, verify that holds and safe schedules were saved before
 waiting. Distinguish native wake delivery from actual account execution during

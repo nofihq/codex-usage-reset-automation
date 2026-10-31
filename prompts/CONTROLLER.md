@@ -258,9 +258,15 @@ never evade a denied action through another interface.
 An explicit review denial is a separate hold from a transport or sign-in failure.
 Backoff, a restored service or a reset email does not clear it. While unresolved,
 limit recovery to permitted service/control checks and saved reminders; do not
-repeat the denied action, route it through another task or interface, or weaken
-review settings. Resume execution only through a supported correction or approval
+blindly repeat the denied action, route it through another task or interface,
+or weaken review settings. Resume execution only through a supported correction or approval
 path, then verify a later scheduled run. Prompt cleanup alone is not that proof.
+If the actual rejection explicitly permits re-evaluation after further checks,
+retain its exact payload and result, establish materially new factual evidence,
+and present that evidence to the same caller's normal review. Check structural
+account boundaries and the actual patch fragments when the reason alleges
+cross-account changes. This is not permission to reopen a closed occurrence,
+retry an uncertain submission or infer acceptance before the action returns.
 
 Record whether an approval covers a diagnostic, one qualification or the ongoing
 ordinary workflow. A successful exception does not resolve a hold outside that
