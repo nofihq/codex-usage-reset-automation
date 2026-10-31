@@ -269,6 +269,15 @@ accepted through the supported path and test the saved ordinary controller,
 without a temporary qualification override. Keep prior denials and claims intact;
 every future action still receives normal review and fresh eligibility checks.
 
+Keep temporary diagnostic restrictions tied to their named occurrence. A later
+separately authorized repair does not inherit an expired observation-only scope,
+but it still requires its own normal action review. Record a proposed correction
+as pending, with existing holds intact; never assert that review accepted an
+action inside the write that requests that acceptance. Use only an actually
+supported correction or approval path and record the returned result afterward.
+A permitted inspection resolves only its own scope, not a model-selection or
+submission refusal. Do not invent a separate review endpoint or clearance token.
+
 Check model availability in the exact fresh automation-owned composer. Another
 chat's selection does not carry over reliably. Complete a separate read-only
 inspection before requesting any selection; return its evidence before the

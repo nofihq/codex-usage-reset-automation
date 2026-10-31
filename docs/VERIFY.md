@@ -131,6 +131,13 @@ path clears it. Service recovery, prompt cleanup and another saved wake are not
 execution recovery. Check that blocked wakes preserve reminders without retrying
 the denied action or sending duplicate unchanged-blocker notifications.
 
+Check that temporary diagnostic limits remain scoped to their occurrence. A
+pending correction must retain existing holds and cannot declare its own review
+acceptance. Record the actual returned action result before any dependent change;
+an accepted inspection does not resolve a different refused action. A missing
+review endpoint must not become an invented clearance token or an endless demand
+for the same owner approval.
+
 For human sign-in handoffs, verify that holds and safe schedules were saved before
 waiting. Distinguish native wake delivery from actual account execution during
 that wait. After a timeout, check fresh signed-in identity, the original caller's
