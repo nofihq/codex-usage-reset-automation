@@ -102,6 +102,28 @@ class IdentityGates(unittest.TestCase):
         self.assertEqual(result['eligibility'], 'unknown')
         self.assertNotIn('private-cursor', json.dumps(result))
 
+    def test_expected_model_is_distinct_from_legacy_luna_check(self):
+        for models, selected_present, legacy_present in (
+                (['fixture-alternate'], True, False), (['gpt-6-luna'], False, True)):
+            with self.subTest(models=models):
+                data = responses()
+                data['model/list']['data'] = [{'model': model} for model in models]
+                result = reader.collect(FakeClient(data), {
+                    'expectedEmail': 'test@example.invalid', 'expectedModel': 'fixture-alternate'})
+                self.assertEqual(result['modelCatalog'], {'expectedModel': 'fixture-alternate',
+                    'listedOnFirstPage': selected_present, 'morePages': False})
+                self.assertEqual(result['luna']['listedOnFirstPage'], legacy_present)
+                self.assertEqual(result['eligibility'], 'unknown')
+
+    def test_invalid_expected_model_prevents_all_rpc(self):
+        for model in (None, '', True, 1, 'bad model', 'x' * 257):
+            with self.subTest(model=model):
+                client = FakeClient()
+                with self.assertRaises(reader.Hold):
+                    reader.collect(client, {'expectedEmail': 'test@example.invalid',
+                                            'expectedModel': model})
+                self.assertEqual(client.methods, [])
+
     def test_malformed_model_rows_and_cursor_hold(self):
         for rows, cursor in (([None], None), ([{}], None), ([{'model': 1}], None),
                              ([{'model': 'bad model'}], None), ([], {}), ([], ''), ([], 1)):

@@ -73,6 +73,14 @@ identity produces `state: metadata_verified` with `eligibility: unknown`.
 Missing, mismatched or unsafe data produces `state: hold` and exit code 2.
 Neither result submits a request. See [field mappings and browser gates](CLOUD_TOOLS.md#read-and-validate).
 
+The private expectations file may also contain `expectedModel`, set to the exact
+catalog ID verified for the owner's chosen model. `modelCatalog` reports that ID
+and whether it appears on the first catalog page. Missing catalog entries and
+pagination remain informational; they never prove browser access, included usage
+or quota attribution. Without this field the reader retains its legacy
+`gpt-6-luna` default. The older `luna` output always refers to that legacy model;
+do not use it as evidence for a different configured model.
+
 For another account, create a separate private CLI home and expectations file;
 never reuse a binding or credential cache. Keep the normal cloud timer and Page
 workflow for autonomous execution while your personal computer is off.

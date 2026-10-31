@@ -61,6 +61,9 @@ def validate_expectations(value):
         raise Hold("invalid_expectations")
     if not nonempty(value.get("expectedEmail")):
         raise Hold("missing_expected_identity")
+    if "expectedModel" in value and (not isinstance(value["expectedModel"], str)
+            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:/-]{0,255}", value["expectedModel"])):
+        raise Hold("invalid_expected_model")
     return value
 
 
@@ -383,6 +386,8 @@ def collect(client, expected, inventory=False):
     if cursor is not None and (not nonempty(cursor) or len(cursor) > 8192):
         raise Hold("invalid_model_cursor")
     listed = any(isinstance(row, dict) and row.get("model") == "gpt-6-luna" for row in data)
+    expected_model = expected.get("expectedModel", "gpt-6-luna")
+    expected_listed = any(row["model"] == expected_model for row in data)
     return {
         "state": "metadata_verified", "eligibility": "unknown",
         "checkedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -390,6 +395,8 @@ def collect(client, expected, inventory=False):
         "planType": plan(account.get("planType")),
         "usage": sanitized,
         "luna": {"listedOnFirstPage": listed, "morePages": bool(models.get("nextCursor"))},
+        "modelCatalog": {"expectedModel": expected_model,
+                         "listedOnFirstPage": expected_listed, "morePages": bool(cursor)},
     }
 
 
