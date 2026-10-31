@@ -74,6 +74,16 @@ If a default editing read exceeds the Page tool's size limit, request a full rea
 or the already-known canonical block using the supported selector. Require a
 complete, successful read and its current hash before editing. A size-limit or
 no-content error is a hold, never evidence of an empty or missing ledger.
+For a known large canonical block, use the supported full view on the first read
+in every mode, including ordinary runs. Retain the exact request arguments and
+raw response before accessing content; check actual errors and every nested
+field before reading blocks. A documented read-shape correction can finish within
+the unchanged valid scope before dependent actions. Do not turn an expected size
+response into a content-access exception or endless recovery loop, or label it
+a freshness failure. An unretained old response remains unknown; genuine service
+failures, review denials and changed scopes retain their existing recovery rules.
+Strip only the outer canonical JSON fence; delimiter text inside a JSON string
+is data and must not truncate the payload.
 Where supported, retain the complete fresh block and hash inside tool orchestration
 and return only needed current fields and exact edit spans to the model, including
 every relevant duplicate lock and unresolved outcome. Keep the full state intact;

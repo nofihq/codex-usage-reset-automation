@@ -43,6 +43,11 @@ macOS or Linux in a supported desktop browser; no terminal or local runtime is n
   current bindings, and preserves claims, unknowns and pending reminders.
   Closed-record rotation is verified before live duplicates are removed; a
   smaller Page alone does not prove that cold scheduled reads now succeed.
+- Known large-ledger reads start with the supported full view in every mode.
+  Exact request arguments and raw errors survive before content parsing; a missing
+  content object cannot become a misleading exception or empty-state inference.
+  Check the real size-error/full-read pair without assigning a new error code to
+  an earlier unretained response. A read-shape correction grants no wider scope.
 - Current health is timestamped and separate from prior success. An infrastructure
   failure remains a hold until its recovery is verified; a foreground read alone
   does not qualify unattended execution. Preserve earlier receipts and distinguish
