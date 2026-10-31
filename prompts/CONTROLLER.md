@@ -192,6 +192,9 @@ instruction on every run; store completion evidence in the Page. Verify that an
 instruction cleanup preserves the current hold, gates, task binding and schedule.
 
 Keep timestamped current health for each task separate from historical success.
+Keep current descriptions consistent with the typed run contract and actual
+review receipts; an old deadline, mode or hold description must not become
+standing policy. Preserve prior facts in their historical receipts.
 Record a new infrastructure hold even when an earlier run passed; unavailable
 execution is not evidence of expired authentication. A foreground recovery read
 proves only that read. Verify a later scheduled read before restoring normal
@@ -236,11 +239,18 @@ and the selected model after selection; never force disabled controls, dismiss a
 real access restriction or infer included permission from the model catalog alone.
 Capture restriction text with its control relationships and rendered state:
 selected model, effort and Fast controls, relevant ancestors, linked labels and
-descriptions, and visibility. An unreferenced, clipped shared label does not by
-itself establish a restriction on the selected control. Keep the unaltered evidence
-available to normal review; an actual or unclear restriction still holds.
+descriptions, and visibility. When warning text appears, capture its current
+DOM-derived IDs, computed clipping styles, numerical geometry and every actual
+ARIA label/description reference across the document, with an unaltered screenshot.
+Include the complete relevant source evidence in the reservation/review packet,
+not only a conclusion. An unreferenced, clipped shared label does not by itself
+establish a restriction on the selected control; an actual or unclear restriction
+still holds. Never conceal warnings or reuse another observation's IDs or proof.
 
 After preserving model-setting evidence, close popovers through the normal UI.
+Capture the same composer's current header, remaining warnings, linked descriptions
+and rendered banners. Report any restored draft honestly; do not claim an empty
+composer or completed request from an old draft.
 Verify the selected header, exact automation-owned prompt and unobstructed enabled
 Send before submitting. Preserve an unfinished disposable tab across turn boundaries
 using the browser's documented handoff mechanism; retain its original claim/proof.
@@ -262,7 +272,10 @@ wakes retain their zero-account-probe scope.
 1. Confirm the selected identity, target duration and fresh included-usage status,
    including backend `ordinaryUsageAllowed=true`; percentages or reset times
    cannot substitute for an unavailable or false permission.
-   Prove zero purchased credits and reload off. Unknown values, exhaustion in any
+   Prove zero purchased credits and reload off using the read-only Usage view,
+   reached through Settings when needed. Viewing these values is part of the
+   account preflight; it does not authorize billing, purchase or settings changes.
+   Unknown values, exhaustion in any
    bucket, explicit active work or unresolved cleanup hold.
 2. Respect the chosen activity policy. The 100%-remaining heuristic must be explicit;
    rounded usage does not prove inactivity. Never treat an event or plan label as

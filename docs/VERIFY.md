@@ -101,6 +101,12 @@ already active window. A completed run must meet these conditions:
 | Next wake | Same account timer enabled for the verified reset plus two minutes, or an earlier read-only expiry reminder that preserves that normal deadline |
 | Persistence | A later scheduled wake retains the result, reservation proof, anchor and cleanup |
 
+An owner may separately authorize a bounded live test with an explicit exception
+to the activity heuristic. Record its single-use scope and actual outcome apart
+from ordinary operation; access, spending, review and duplicate protection still
+apply. An unchanged active-window reset can verify the test's status reads, but
+does not prove that the test started a new window or that production works.
+
 Unknown completion, missing state, changed identity or ambiguous cleanup must
 produce a hold. Do not clear the record to make a retry possible.
 Verify that saved recovery permissions allow bounded read-only inspection of the
@@ -129,6 +135,12 @@ fresh composer is verified again after an accepted change and retained through
 submission; another chat's model settings cannot qualify it. An already-correct
 selection needs verification rather than another click. Every action still passes
 normal review, and a refusal or unclear restriction holds.
+When accessibility text contains a lock warning, verify current computed clipping,
+geometry and whole-document ARIA references alongside the selected control and
+unaltered screenshot. After normal menu closure, check the same composer's header,
+warnings and banners again. The current review packet retains this source evidence,
+not just a summary or a previous diagnostic. A restored draft is not an empty
+composer or a completed request.
 For an authorized global-reset start, verify authenticated source confirmation,
 personal refill and a new single-use account/event permit. Old uncertainty must
 remain recorded, and any send or unresolved request after the reset blocks a
