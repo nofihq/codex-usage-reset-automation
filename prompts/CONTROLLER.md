@@ -285,6 +285,10 @@ mutation call. Resolve the intended control uniquely and use its ordinary
 enabled action under normal review. If the model is already correct, verify it
 without a redundant selection. After any accepted change, freshly verify the
 authorized included model, minimum reasoning and Fast off in that same tab.
+Finish Settings and Usage navigation before this final configuration. Returning
+from those views or creating a composer can reset its model; retain any mismatch
+and repeat the final configuration check rather than inheriting an earlier manual
+selection. Recheck the exact chosen model in the final composer before Send.
 Associate a restriction with the model or effort it actually applies to. Hidden
 accessibility text, an aria-hidden menu section or an unavailable Power preset
 alone does not establish that every model is blocked. Inspect visible controls

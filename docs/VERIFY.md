@@ -156,6 +156,10 @@ Check the scope of the accepted correction: diagnostic access and a one-time
 qualification are not proof of permission for ordinary recurring operation.
 Verify an actual scheduled ordinary run using its saved production instructions,
 without a temporary qualification override, and its later durable readback.
+
+Check the model after returning from Settings or Usage, as navigation can reset
+the composer selection. Finish those reads before final model configuration;
+an earlier manual selection is not proof of the final composer used for Send.
 Preserve all historical denials and every fresh-run gate.
 A cycle that needs a coordinator's message to resume after the first status read
 does not qualify as unattended completion, even if its eventual reset and archive
