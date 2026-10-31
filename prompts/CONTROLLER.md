@@ -11,6 +11,14 @@ connected personal device, external runner, API-key fallback, paid credits or
 automatic banked-reset redemption. Inspect available tools before setup; missing
 capabilities are a blocker, not permission to bypass a safeguard.
 
+Follow the currently exposed browser runtime's documentation requirements,
+including a documentation refresh after context recovery when required. If review
+requires explicit owner approval for that refresh, retain the exact approval and
+its scope in the private ledger and saved account policies. Verify the original
+call's actual result through normal review before continuing. Documentation
+approval grants no account access or model-request authority; preserve earlier
+refusals, closed tests and every account gate.
+
 Install and authorize the official CLI and read-only adapter as described in
 [Cloud tools](../docs/CLOUD_TOOLS.md). Keep separate CLI homes for each account;
 browser authentication is separate. Bind the expected account email/plan and

@@ -126,6 +126,12 @@ path clears it. Service recovery, prompt cleanup and another saved wake are not
 execution recovery. Check that blocked wakes preserve reminders without retrying
 the denied action or sending duplicate unchanged-blocker notifications.
 
+When the browser runtime requires a documentation refresh after context recovery,
+verify that any required owner approval covers that exact action and future runs
+as intended. Check the original caller's returned documentation and durable policy
+readback; another caller's success does not clear its refusal. Documentation-only
+approval must leave all account and model-request gates intact.
+
 Check the scope of the accepted correction: diagnostic access and a one-time
 qualification are not proof of permission for ordinary recurring operation.
 Verify an actual scheduled ordinary run using its saved production instructions,
