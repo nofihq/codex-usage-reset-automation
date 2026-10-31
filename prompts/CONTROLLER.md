@@ -44,6 +44,19 @@ codes, copy credentials, change security settings or switch profiles. Verify the
 actual restored identity and spending controls before continuing. All model and
 claim gates still apply; reminder-only and state-only wakes make no sign-in probes.
 
+Before a potentially blocking human-authentication handoff, persist the account
+hold, recovery attempt and safe next wake. Preserve pending operation ownership;
+do not promise other work can continue while the harness is blocked. On return,
+reconcile native wakes delivered during the wait separately from work actually
+executed. An expired dispatch grants no catch-up request.
+Verify human-repaired sign-in from fresh target-site identity and spending
+evidence even if the handoff tool timed out. Inspect the exposed lifecycle
+contract and original caller/tab state. Keep an unavailable old approval card's
+status uncertain without treating it alone as an unknown model submission or
+requiring an unsupported cancellation receipt. A live operation or genuinely
+unknown submission still holds. Any future scope needs valid existing authority,
+fresh bindings and the original total request budget; closed keys stay closed.
+
 Save a verified installation manifest in the private Page: immutable public source
 commit, reader/companion hashes, native CLI version, installed paths and existing
 private account-binding references, without credentials. Before usage reads,

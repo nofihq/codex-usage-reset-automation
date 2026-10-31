@@ -126,6 +126,14 @@ path clears it. Service recovery, prompt cleanup and another saved wake are not
 execution recovery. Check that blocked wakes preserve reminders without retrying
 the denied action or sending duplicate unchanged-blocker notifications.
 
+For human sign-in handoffs, verify that holds and safe schedules were saved before
+waiting. Distinguish native wake delivery from actual account execution during
+that wait. After a timeout, check fresh signed-in identity, the original caller's
+terminal state and its tab against the exposed authentication lifecycle. Preserve
+unavailable approval-card status without inventing cancellation or an unknown
+model request. Closed scopes stay closed; future work retains the same authorized
+total budget, and any live operation or unknown submission remains blocking.
+
 When the browser runtime requires a documentation refresh after context recovery,
 verify that any required owner approval covers that exact action and future runs
 as intended. Check the original caller's returned documentation and durable policy
