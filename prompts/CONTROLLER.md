@@ -85,6 +85,12 @@ run status alone cannot establish either ownership or completion.
 Dispatch bookkeeping can update native observation timestamps without changing
 the saved prompt or schedule. Verify the actual original event and functional
 binding before reconciling those observations; timestamps alone grant no authority.
+Use task readers actually exposed in the current run. If a suggested `peek`
+reader is unavailable, a supported full-list reader can provide independent
+readbacks when its actual tool contract permits the required reads. A returned
+usage suggestion does not establish a new access restriction. Preserve real
+tool restrictions, API errors, rate limits, pauses and review denials; never
+invent an unavailable reader or missing run fields.
 
 Keep a sparse native recurrence on each existing account timer as a fallback
 if a run cannot save its next wake. For example, retain a 12-hour recurrence
@@ -160,8 +166,14 @@ qualify as temporary service errors.
 A failed, cancelled or unknown timer is never restarted. Another read failure
 leaves the retained recurrence intact. No account, browser, CLI or inventory
 probes, model requests or sign-ins belong in this branch. Fresh state still
-requires the existing control reconciliation before a separate future eligibility
-recovery.
+requires complete native/Page, original-event, scope, ownership, claim, hold,
+budget and next-wake reconciliation. A positively bound original
+eligibility-recovery run may then finish its remaining authorized read-only
+checks in the same controller; do not schedule another identical recovery merely
+because state access recovered. It still sends nothing. A failed ordinary wake
+or recurrence fallback instead stages a separate future eligibility recovery
+under the existing rules. An elapsed timer, coordination message, denied action
+or uncertain claim never grants additional scope.
 
 Qualify this with a genuine scheduled service-only canary on that account's
 existing task. Preserve an already verified future ordinary deadline with enough

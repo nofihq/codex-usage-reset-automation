@@ -56,6 +56,10 @@ macOS or Linux in a supported desktop browser; no terminal or local runtime is n
 - After updating a native prompt or schedule, its authoritative current binding
   matches the latest actual native readback. Original run receipts remain
   historical; a new maintenance receipt does not leave a stale current hash.
+- A real scheduled wake can use an exposed task reader for repeated full
+  configuration checks. An unavailable suggested reader is not a capability
+  failure if another supported reader's contract permits those checks. Actual
+  access restrictions, API errors and review denials still hold.
 - Each existing account timer retains a sparse native recurrence if saving its
   next wake fails. After a real scheduled state-only dispatch, verify that it
   stays enabled with the same recurrence before manually rearming it. A fallback
@@ -68,6 +72,11 @@ macOS or Linux in a supported desktop browser; no terminal or local runtime is n
   minutes. Check the later recovery and ordinary run separately: a staged wake
   alone does not prove either executed. Preserve review holds, claims and reminders;
   the fallback makes no account or model calls.
+- After a transient read failure, an original read-only eligibility run can
+  finish its remaining authorized checks after full fresh control reconciliation,
+  without repeatedly scheduling the same recovery. It sends no prompt. A fallback
+  or failed ordinary wake still needs a separate future eligibility run; changed
+  scope, holds and uncertain claims remain blocking.
 - The private Page retains the pinned source commit, reader/companion hashes and
   CLI version. Test restoring missing code in a disposable directory, rejecting a
   changed file and preserving existing account bindings. A later scheduled read
