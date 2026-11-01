@@ -461,7 +461,7 @@ reporting a completed global reset supplies source confirmation; do not wait for
 a second public announcement. If authenticity or completed-reset wording is
 unclear, hold rather than guessing. Source confirmation still does not establish
 any personal account's refill or clear a review hold.
-Confirmation, welcome/setup, watch/forecast, promise and banked-reset messages
+Subscription confirmation, welcome/setup, watch/forecast, promise and banked-reset messages
 cannot authorize model requests. A new relevant banked-grant event may request
 one read-only inventory check under the reminder policy. Unknown state holds.
 
@@ -481,7 +481,11 @@ instant delivery. Notify the owner once on a meaningful reset/result, failure or
 required action, identifying which accounts ran or held and their next checks.
 Notify once for each verified new global-reset event even if an account's personal
 change remains unknown; clearly separate the public report from each account's
-observed status. Forecasts are not confirmed global-reset alerts.
+observed status. Notify once for a meaningful new authenticated forecast, clearly
+labeling it as a possible future reset. Keep forecast and completed-reset dedup
+keys separate even when they refer to the same event: a forecast notice must not
+suppress the later authenticated confirmation. Neither stage alone proves a
+personal refill. Forecasts are not confirmed global-reset alerts.
 Include meaningful new banked-reset availability as a distinct notification;
 label public reports as unconfirmed for the account until an authorized inventory
 read confirms them. Never redeem a banked reset automatically or use a banked

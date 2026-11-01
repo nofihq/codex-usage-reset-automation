@@ -208,7 +208,11 @@ Subscription, task configuration and live delivery are separate checks:
 4. Record receipt/wake times. Do not claim zero delay or exact-minute delivery when
    the source batches emails or timestamps are missing.
 5. Replay a handled event: it must not repeat an alert, account reconciliation or
-   model request. Confirmation/watch/banked mail must never send an `OK`.
+   model request. Subscription-confirmation/watch/banked mail must never send an `OK`.
+   Verify a meaningful new authenticated forecast produces one clearly labeled
+   heads-up, and a later authenticated completed-reset message produces its own
+   confirmation notice. Separate phase keys must suppress same-stage repeats
+   without letting the forecast consume the confirmed-reset notice.
 6. A verified reset event checks each account's fresh identity, allowance and timer.
    An active fixed window remains protected even if usage rounds to 100%.
 7. An authenticated completed-reset email from the trusted source must not wait

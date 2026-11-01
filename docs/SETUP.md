@@ -165,7 +165,7 @@ banked-reset updates and high-confidence forecasts. Their meanings differ:
 |---|---|---|
 | Confirmed global reset | A usage refill was reported as applied, rather than merely promised | Authenticate the trusted sender, then check every configured account's actual usage and reset time. No second public announcement is needed. An eligible account may proceed through the normal one-request checks; active windows remain protected. |
 | Banked-reset update | A reset was announced or saved for later redemption; receiving it is not a usage refill | Keep it separate from a global reset. An account inventory read can check available count and expiry. Never automatically redeem it or send an `OK` because of this email. |
-| Forecast, promise or “arriving soon” | A reset may happen later | Do not treat it as completed or send an `OK`. |
+| Forecast, promise or “arriving soon” | A reset may happen later | Send one clearly labeled heads-up for a meaningful new authenticated forecast. Do not treat it as completed or send an `OK`. Preserve a separate notice for a later confirmed reset. |
 | Signup confirmation or welcome | Subscription setup, not a usage event | Verify the subscription only; send no `OK`. |
 
 Follow these steps to connect the emails:
@@ -206,7 +206,11 @@ handles any eligible request. Accounts sharing the browser take turns.
 
 Keep ordinary account timers independent of email delivery. A genuine global-reset
 email can verify the trigger and begin account checks in the same run. Banked-reset,
-forecast and confirmation emails never authorize an `OK`.
+forecast and subscription-confirmation emails never authorize an `OK`.
+
+Track forecasts and completed resets as separate notification stages, even when
+they refer to the same event. A forecast notice suppresses repeated forecasts,
+not the later authenticated reset confirmation.
 
 The source batches email delivery, so this is not an instant-alert guarantee.
 Ask the dot to record source, inbox and wake times where available and distinguish
