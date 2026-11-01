@@ -305,6 +305,12 @@ selected model, effort and Fast controls, relevant ancestors, linked labels and
 descriptions, and visibility. When warning text appears, capture its current
 DOM-derived IDs, computed clipping styles, numerical geometry and every actual
 ARIA label/description reference across the document, with an unaltered screenshot.
+Preserve that full raw packet and also return a compact factual report of the
+target, its clipping ancestors and every warning's actual associations before
+requesting selection. Include a fresh center-point hit test for the visible row;
+an overlay or clipped target requires inspection or normal scrolling first.
+Keep all warning text and uncertainty in the report. A concise report helps
+review the relationships; it never grants clearance or replaces normal review.
 Read relevant controls and composer banners without collecting unrelated chat
 text; a reference census does not require the entire page's text.
 Include the complete relevant source evidence in the reservation/review packet,

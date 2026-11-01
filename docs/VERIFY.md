@@ -181,7 +181,10 @@ selection needs verification rather than another click. Every action still passe
 normal review, and a refusal or unclear restriction holds.
 When accessibility text contains a lock warning, verify current computed clipping,
 geometry and whole-document ARIA references alongside the selected control and
-unaltered screenshot. After normal menu closure, check the same composer's header,
+unaltered screenshot. Keep the complete raw evidence and a compact target/ancestor/
+warning association report, including all warning text and a fresh row-center hit
+test. Confirm that this report does not hide uncertainty or claim review clearance.
+After normal menu closure, check the same composer's header,
 warnings and banners again. The current review packet retains this source evidence,
 not just a summary or a previous diagnostic. A restored draft is not an empty
 composer or a completed request.
