@@ -74,8 +74,9 @@ a new verified ordinary wake; it does not inherit authority to submit.
    Guard and read back one claim for this account and opportunity and consume any
    applicable permit. If accounts share a browser, serialize their request runs. A
    competing claim, unknown write or unknown submission holds. Never renew an old permit.
-4. In a fresh disposable ChatGPT chat, finish identity and spending checks before
-   configuring the exact final composer. Verify an authorized included model, minimum
+4. Reuse the bound cloud browser session. In a fresh disposable ChatGPT **Work**
+   chat that uses the target Codex allowance, finish identity and spending checks
+   before configuring the exact final composer. Verify an authorized included model, minimum
    reasoning, Fast off, and no real or ambiguous restriction. Use fresh visible evidence
    tied to the actual controls, through normal review. Inspect before any model change
    and recheck after; Settings navigation can reset the selection. Respect the browser's

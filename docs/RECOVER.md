@@ -33,6 +33,25 @@ This repair needs no access to your Linux, Windows or Mac files.
 6. Verify saved expiry reminders with simulated dates and check real notification
    delivery separately. No fake live grant, changed expiry or banked redemption.
 
+## Isolate the cloud runtime
+
+If the original timer cannot be edited safely, a single standalone native Dot
+test can distinguish a broken cloud runtime from a broken account workflow.
+Schedule it once, with the result in the Dot conversation. Do not reuse the
+account's schedule, Page, browser session or CLI credentials. At the actual
+scheduled wake, have the task confirm it is on Dot's cloud computer, print a
+harmless marker using the terminal, and check only for Python and the pinned CLI
+entry point. No sign-in, model request or account read. Preserve the actual
+error if execution fails, and do not report a saved schedule as a passed test.
+If the saved task inherits its execution environment and the run cannot verify
+that it is cloud-only, stop before executing a command.
+
+If the test passes, return to the original account timer and verify its own
+read-only execution and private account binding. A standalone test does not
+inherit the account timer's permissions or clear an earlier refusal.
+
+## Repair request
+
 A practical repair request to paste into Dot:
 
 > Use the recovery guide from the reviewed repository revision to inspect my

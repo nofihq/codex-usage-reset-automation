@@ -31,13 +31,19 @@ supported.
 | Part | Job |
 |---|---|
 | Official CLI + Python reader | Read and validate account identity, usage and numeric reset times |
-| Dot's cloud browser | Verify the selected account and spending controls, send the eligible `OK`, then archive its exact chat |
+| Dot's cloud browser | Reuse the saved ChatGPT Work session, verify the selected account and spending controls, and send one eligible `OK` |
 | Private Pages + cloud tasks | Preserve request and alert receipts independently; schedule the next check |
 | [Read-only planner](docs/PLANNER.md) | Calculate wake scope, fixed window verification and warning times |
 
 The CLI is used only for reads in this workflow. Browser and CLI sign-in are
 separate; follow the private authorization steps for each. If a session expires,
 the dot must stop and request sign-in instead of guessing or retrying a request.
+
+The normal loop is one scheduled Dot task per account: read the timing, use the
+saved Work session for one eligible request, confirm the new timing, then rearm.
+The private Page only needs enough current state to preserve the window, a send
+reservation and its result, and any pending reminders. A scheduled timestamp
+alone cannot tell whether a browser submit happened before a run stopped.
 
 ### One prompt, then two usage checks
 
