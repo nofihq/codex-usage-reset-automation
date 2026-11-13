@@ -80,6 +80,7 @@ pagination remain informational; they never prove browser access, included usage
 or quota attribution. Without this field the reader retains its legacy
 `gpt-6-luna` default. The older `luna` output always refers to that legacy model;
 do not use it as evidence for a different configured model.
+Use `--skip-model-catalog` for a usage-only read. Inventory reads always skip it.
 
 For another account, create a separate private CLI home and expectations file;
 never reuse a binding or credential cache. Keep the normal cloud timer and Page

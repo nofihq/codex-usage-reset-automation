@@ -85,12 +85,13 @@ python3 cli/read_account_status.py --tools .cloud-tools \
 
 `metadata_verified` means the identity binding passed; `eligibility` remains
 `unknown`. A `hold` exits with code 2 and a fixed, redacted reason. Never treat
-null fields as zero or as permission to send. The optional `--inventory` reads
-banked-reset metadata when due and never redeems it.
+null fields as zero or as permission to send. Use `--skip-model-catalog` for
+timer status and post-send verification. `--inventory` reads banked metadata
+without loading the unrelated model catalog and never redeems anything.
 
 
 The adapter calls only `initialize`, `account/read` with `refreshToken=false`,
-`account/rateLimits/read`, and `model/list`. It never starts a thread, warms up a
+`account/rateLimits/read`, and optionally `model/list`. It never starts a thread, warms up a
 model, sends a turn, consumes a banked reset or signs in automatically.
 
 Bind root-level authenticated `workspaceRouting.chatgptAccountId` from
@@ -120,6 +121,8 @@ and [the pinned protocol source](https://github.com/openai/codex/tree/rust-v0.15
 
 For optional native use outside the dot, see [Windows/macOS/Linux CLI setup](CLI.md).
 The cloud workflow does not require that local installation.
+Pin and verify [the planner](PLANNER.md) with the reader; its SHA-256 belongs
+in the same private installation record.
 
 ## Automatic tool checks and recovery
 

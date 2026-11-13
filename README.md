@@ -4,15 +4,16 @@ A cloud-dot setup for checking Codex usage, sending one short `OK` when eligible
 and keeping the next reset check scheduled. It runs on the dot's cloud computer,
 so your own device can be off.
 
-After setup, saved cloud tasks are configured to handle usage checks, eligible
-requests and reminders automatically. No always-on device, extra hosting or API
-key is required. Duplicate events stay quiet; meaningful results, failures and
-required actions are reported.
+Start with one account and choose its five-hour or weekly window. Add public
+reset alerts and personal expiry reminders independently. No always-on device,
+extra hosting or API key is required.
 
 Execution is best effort: expired sign-in, unavailable cloud services or a denied
 action can stop requests. Some failures require private sign-in or a platform
 repair. A saved schedule or successful past run does not prove the next run will
 work; use the [verification checklist](docs/VERIFY.md) to check actual outcomes.
+Already seeing “ledger unavailable” or repeated fallback wakes? Start with
+[repairing an existing setup](docs/RECOVER.md).
 
 The goal is to start an eligible new usage window with a tiny request rather
 than wait until you next need to work. The dot checks the reset time returned by
@@ -31,7 +32,8 @@ supported.
 |---|---|
 | Official CLI + Python reader | Read and validate account identity, usage and numeric reset times |
 | Dot's cloud browser | Verify the selected account and spending controls, send the eligible `OK`, then archive its exact chat |
-| Private Page + cloud tasks | Preserve duplicate protection and schedule the next check |
+| Private Pages + cloud tasks | Preserve request and alert receipts independently; schedule the next check |
+| [Read-only planner](docs/PLANNER.md) | Calculate wake scope, fixed window verification and warning times |
 
 The CLI is used only for reads in this workflow. Browser and CLI sign-in are
 separate; follow the private authorization steps for each. If a session expires,
@@ -71,8 +73,9 @@ not emails sent directly by Tibo or OpenAI.
 
 Your normal account timer still works without these emails. See
 [email setup and message types](docs/SETUP.md#5-add-tibo-reset-email-alerts)
-for signup, Gmail and notification details. Email can arrive late; it is not an
-instant-alert guarantee.
+for signup, Gmail and notification details. Public Dot notices use a separate
+alerts Page so an account-ledger failure does not hold them. Email can arrive
+late or be missed; the source's direct alerts are an independent fallback.
 
 ### Banked-reset expiry reminders
 
@@ -156,5 +159,6 @@ Personal account state and credentials are not included.
 | [Cloud tools](docs/CLOUD_TOOLS.md) | Install and sign in to the usage reader inside the dot's computer |
 | [Native CLI](docs/CLI.md) | Optional Windows, macOS and Linux usage-reader commands |
 | [Verify](docs/VERIFY.md) | Check your own setup, scheduled run and email-trigger delivery |
+| [Recovery](docs/RECOVER.md) | Diagnose a stuck task and preserve existing state |
 | [Controller prompt](prompts/CONTROLLER.md) | Instructions for the cloud coordinator and account checks |
 | [Security](SECURITY.md) | Credentials, private state and request safeguards |

@@ -328,7 +328,7 @@ def sanitize_inventory(value):
     return output
 
 
-def collect(client, expected, inventory=False):
+def collect(client, expected, inventory=False, skip_model_catalog=False):
     expected = validate_expectations(expected)
     client.call("initialize", {
         "clientInfo": {"name": "status_metadata_reader", "title": "Read-only usage check", "version": "1.0"},
@@ -375,6 +375,14 @@ def collect(client, expected, inventory=False):
         raise Hold("usage_limit_binding_mismatch")
     if inventory:
         sanitized["rateLimitResetCredits"] = sanitize_inventory(usage.get("rateLimitResetCredits"))
+    result = {
+        "state": "metadata_verified", "eligibility": "unknown",
+        "checkedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "identityMatchesExpected": True, "usageBindingMatchesExpected": True,
+        "planType": plan(account.get("planType")), "usage": sanitized,
+    }
+    if inventory or skip_model_catalog:
+        return result
     models = client.call("model/list", {"includeHidden": False, "limit": 100})
     data = models.get("data")
     if (not isinstance(data, list) or len(data) > 100
@@ -389,11 +397,7 @@ def collect(client, expected, inventory=False):
     expected_model = expected.get("expectedModel", "gpt-6-luna")
     expected_listed = any(row["model"] == expected_model for row in data)
     return {
-        "state": "metadata_verified", "eligibility": "unknown",
-        "checkedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "identityMatchesExpected": True, "usageBindingMatchesExpected": True,
-        "planType": plan(account.get("planType")),
-        "usage": sanitized,
+        **result,
         "luna": {"listedOnFirstPage": listed, "morePages": bool(models.get("nextCursor"))},
         "modelCatalog": {"expectedModel": expected_model,
                          "listedOnFirstPage": expected_listed, "morePages": bool(cursor)},
@@ -417,6 +421,7 @@ def main():
     identity.add_argument("--expectations-file")
     parser.add_argument("--timeout", type=float, default=45)
     parser.add_argument("--inventory", action="store_true")
+    parser.add_argument("--skip-model-catalog", action="store_true")
     client = None
     code = 2
     try:
@@ -451,7 +456,7 @@ def main():
             raise Hold("missing_expected_identity")
         binary = str(Path(args.binary).absolute()) if args.binary else native_binary(args.tools)
         client = MetadataClient(binary, str(Path(args.home).absolute()), str(Path(args.runtime).absolute()), args.timeout)
-        output = collect(client, expected, args.inventory)
+        output = collect(client, expected, args.inventory, args.skip_model_catalog)
         code = 0
     except Hold as error:
         output = {"state": "hold", "reason": str(error)}

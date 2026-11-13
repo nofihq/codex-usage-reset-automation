@@ -1,9 +1,13 @@
 # Cloud setup
 
-Start with one account. You will create one private Page, one account timer and,
-optionally, one Gmail event task. All execution stays on the dot's cloud computer.
+Start with one account. Create one private account Page and one account timer.
+Public alerts optionally add one Gmail event task and its own private alerts Page.
+All execution stays on the dot's cloud computer.
 Windows, macOS and Linux use the same steps in a supported desktop browser;
 the ChatGPT mobile app can be used too.
+
+Already have tasks? Use [the recovery guide](RECOVER.md) to preserve their history
+and avoid a second initialization.
 
 ## 1. Check the dot's tools
 
@@ -89,6 +93,9 @@ timer remains enabled before manually rescheduling it.
 After saved-state access recovers, the fallback can schedule a separate read-only
 eligibility check. It waits for a known active window to end and preserves any
 review hold. Normal requests resume only after fresh eligibility checks pass.
+Use the [planner](PLANNER.md) to distinguish the intended wake from a stale,
+early or fallback occurrence; a retryable Page read can be retried once under
+the [controller](../prompts/CONTROLLER.md). A missing or denied Page stays held.
 
 To review it in ChatGPT on the web, open **Scheduled** and expand **Your dot** in
 the sidebar. Open the account task and check its enabled state and next run.
@@ -181,10 +188,13 @@ Follow these steps to connect the emails:
    without limiting it to the signup email's subject. The dot identifies the
    message type after waking, using the [controller instructions](../prompts/CONTROLLER.md).
 4. Keep this event task separate from account timers: an event task cannot also
-   have a time schedule. If replacing a poller, verify the replacement is enabled
-   and its prompt is saved before disabling the old poller.
+   have a time schedule. Store its public-event notice claims in its own owner-only
+   alerts Page, separate from the account Page. If replacing a poller, verify the
+   replacement is enabled and its prompt is saved before disabling the old poller.
 5. Verify a genuine email arriving after enablement causes an automatic wake.
    Reading mail manually or pressing Run now does not prove event delivery.
+   Keep a direct source alert channel if timely public heads-ups matter; its
+   delivery does not rely on Gmail or Dot.
 
 A genuine global-reset email can prompt fresh checks of both Plus and Pro when
 both are configured; one email task serves all monitored accounts. Each account
@@ -203,6 +213,9 @@ or an idle timer alone cannot start it.
 
 The email task records the event and account checks; each account's existing task
 handles any eligible request. Accounts sharing the browser take turns.
+If the account Page is unavailable, the email task can still announce the public
+event using its own verified alerts Page. It reports personal verification as
+blocked. Direct alerts from the source can run independently of both Pages.
 
 Keep ordinary account timers independent of email delivery. A genuine global-reset
 email can verify the trigger and begin account checks in the same run. Banked-reset,
@@ -249,7 +262,8 @@ including reminders for any second account:
    reset deadline saved separately so an early reminder cannot erase it. Other
    account timers keep their own normal schedules. A reminder must not wait behind
    a five-hour, weekly or failure-backoff schedule.
-5. Save which account, grant, expiry and warning stage have already been notified.
+5. Use the [planner](PLANNER.md) on each saved inventory. Save which account,
+   grant, expiry and warning stage have already been notified.
    Preserve the count when several grants share timestamps. Read this state back
    before sending, keep the notification receipt afterward, and reconcile an
    unknown outcome instead of sending another alert blindly. A restart or repeated

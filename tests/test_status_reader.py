@@ -39,6 +39,22 @@ class FakeClient:
 
 
 class IdentityGates(unittest.TestCase):
+    def test_inventory_and_usage_only_do_not_depend_on_model_catalog(self):
+        for inventory in (True, False):
+            with self.subTest(inventory=inventory):
+                data = responses()
+                del data['model/list']
+                data['account/rateLimits/read']['rateLimitResetCredits'] = {
+                    'availableCount': 1, 'credits': [{
+                        'status': 'available', 'grantedAt': 2000000000, 'expiresAt': 2000259200,
+                    }],
+                }
+                result = reader.collect(FakeClient(data), {'expectedEmail': 'test@example.invalid'},
+                                        inventory=inventory, skip_model_catalog=not inventory)
+                self.assertEqual(result['state'], 'metadata_verified')
+                self.assertNotIn('modelCatalog', result)
+                self.assertEqual('rateLimitResetCredits' in result['usage'], inventory)
+
     def test_correct_binding_and_private_fields_redacted(self):
         data = responses()
         data['account/rateLimits/read']['privateToken'] = 'secret-fixture'
