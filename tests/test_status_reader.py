@@ -1,4 +1,5 @@
 """Identity gates and real cross-platform subprocess transport, without accounts."""
+import errno
 import json
 import os
 from pathlib import Path
@@ -39,6 +40,19 @@ class FakeClient:
 
 
 class IdentityGates(unittest.TestCase):
+    def test_startup_errors_identify_stage_without_paths(self):
+        failures = (
+            (FileNotFoundError("private-path"), "path_missing"),
+            (PermissionError("private-path"), "permission_denied"),
+            (subprocess.TimeoutExpired(["private-path"], 10), "timeout"),
+            (OSError(errno.EROFS, "private-path"), "read_only_filesystem"),
+            (OSError("private-path"), "os_error"),
+        )
+        for error, reason in failures:
+            with self.subTest(reason=reason), self.assertRaises(reader.Hold) as result:
+                reader.startup_process(lambda: (_ for _ in ()).throw(error), "cli_version_check")
+            self.assertEqual(str(result.exception), "cli_version_check_" + reason)
+
     def test_inventory_and_usage_only_do_not_depend_on_model_catalog(self):
         for inventory in (True, False):
             with self.subTest(inventory=inventory):

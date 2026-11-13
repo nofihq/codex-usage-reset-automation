@@ -89,6 +89,12 @@ null fields as zero or as permission to send. Use `--skip-model-catalog` for
 timer status and post-send verification. `--inventory` reads banked metadata
 without loading the unrelated model catalog and never redeems anything.
 
+Startup reasons identify the version check or app-server launch and whether
+the path was missing, access was denied, the filesystem was read-only, the check
+timed out or the OS reported another error. They never include raw process
+output, credentials or private
+paths. A startup hold does not establish expired sign-in.
+
 
 The adapter calls only `initialize`, `account/read` with `refreshToken=false`,
 `account/rateLimits/read`, and optionally `model/list`. It never starts a thread, warms up a
