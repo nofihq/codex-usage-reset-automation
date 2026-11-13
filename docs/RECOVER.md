@@ -50,6 +50,13 @@ If the test passes, return to the original account timer and verify its own
 read-only execution and private account binding. A standalone test does not
 inherit the account timer's permissions or clear an earlier refusal.
 
+If a scheduled run has no terminal, check whether the supported attach action
+for Dot's existing cloud computer is available in that run. The browser panel's
+Ready label is not shell evidence. Qualify the attachment and one harmless
+command from the original timer itself; a foreground success cannot prove it.
+An overdue or early run is not a reason to press Run now or send a catch-up
+request. Check its original native dispatch and outcome first.
+
 ## Repair request
 
 A practical repair request to paste into Dot:
