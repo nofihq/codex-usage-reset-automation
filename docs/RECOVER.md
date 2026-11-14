@@ -57,6 +57,15 @@ command from the original timer itself; a foreground success cannot prove it.
 An overdue or early run is not a reason to press Run now or send a catch-up
 request. Check its original native dispatch and outcome first.
 
+The native executable's version command and the app-server have different
+startup requirements. The app-server initializes its local SQLite state even
+for a metadata-only session. In an already-authorized, owner-only writable
+scratch directory, test with `python3 scripts/smoke_cli.py --binary PINNED_BINARY
+--scratch APPROVED_PRIVATE_DIRECTORY` after verifying the binary fingerprint.
+The script uses a new empty CLI home under that directory and returns a redacted
+result. A missing or read-only runtime calls for a supported execution mode or
+runtime repair before testing an authenticated account.
+
 ## Repair request
 
 A practical repair request to paste into Dot:
