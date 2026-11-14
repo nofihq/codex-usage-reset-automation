@@ -12,6 +12,8 @@ against the usage response before redacting identifiers. Unknown or changed
 bindings stop the read. Never treat CLI sign-in as proof of browser sign-in.
 
 The canonical ledger is an owner-only Page with guarded writes and fresh readback.
+Public source notices use an independent owner-only Page for their deduplication;
+that Page never authorizes account actions.
 Local cloud files are a cache. Preserve completed and uncertain requests across
 wakes; a missing or conflicting ledger stops submissions. Never silently create
 a replacement ledger or renew an initialization permit.

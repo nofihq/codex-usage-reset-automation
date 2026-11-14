@@ -14,6 +14,7 @@ uses its existing CODEX_HOME. No login, refresh, thread or inference is requeste
 """
 
 import argparse
+import errno
 import datetime
 import json
 import math
@@ -32,6 +33,21 @@ import time
 
 class Hold(Exception):
     pass
+
+
+def startup_process(action, stage):
+    """Report which startup operation failed without leaking its argv or paths."""
+    try:
+        return action()
+    except FileNotFoundError:
+        raise Hold(stage + "_path_missing") from None
+    except PermissionError:
+        raise Hold(stage + "_permission_denied") from None
+    except subprocess.TimeoutExpired:
+        raise Hold(stage + "_timeout") from None
+    except OSError as error:
+        reason = "_read_only_filesystem" if error.errno == errno.EROFS else "_os_error"
+        raise Hold(stage + reason) from None
 
 
 PLANS = set("free go plus pro prolite promax team self_serve_business_prolite self_serve_business_usage_based business ent26 enterprise_cbp_automation enterprise_cbp_usage_based enterprise edu edu_plus edu_pro unknown".split())
@@ -150,20 +166,23 @@ class MetadataClient:
             env.pop(key, None)
         env.update(CODEX_HOME=home, XDG_RUNTIME_DIR=runtime)
         # Inspect the installed binary without opening the selected credential store.
-        with tempfile.TemporaryDirectory(prefix="version-", dir=runtime) as empty_home:
-            version = subprocess.run(
-                [binary, "--version"], cwd=empty_home,
-                env=dict(env, CODEX_HOME=empty_home), capture_output=True, timeout=10,
-            )
+        def check_version():
+            with tempfile.TemporaryDirectory(prefix="version-", dir=runtime) as empty_home:
+                return subprocess.run(
+                    [binary, "--version"], cwd=empty_home,
+                    env=dict(env, CODEX_HOME=empty_home), capture_output=True, timeout=10,
+                )
+
+        version = startup_process(check_version, "cli_version_check")
         if version.returncode or version.stdout.strip() != ("codex-cli " + SUPPORTED_VERSION).encode():
             raise Hold("unsupported_cli_version")
-        self.process = subprocess.Popen(
+        self.process = startup_process(lambda: subprocess.Popen(
             [binary, "-c", 'forced_login_method="chatgpt"',
              "-c", 'cli_auth_credentials_store="file"',
              "app-server", "--listen", "stdio://"], env=env, cwd=home,
             stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL, close_fds=True,
-        )
+        ), "cli_server_start")
         self.messages = queue.Queue(maxsize=4)
         self.stopped = threading.Event()
         def read():
@@ -328,7 +347,7 @@ def sanitize_inventory(value):
     return output
 
 
-def collect(client, expected, inventory=False):
+def collect(client, expected, inventory=False, skip_model_catalog=False):
     expected = validate_expectations(expected)
     client.call("initialize", {
         "clientInfo": {"name": "status_metadata_reader", "title": "Read-only usage check", "version": "1.0"},
@@ -375,6 +394,14 @@ def collect(client, expected, inventory=False):
         raise Hold("usage_limit_binding_mismatch")
     if inventory:
         sanitized["rateLimitResetCredits"] = sanitize_inventory(usage.get("rateLimitResetCredits"))
+    result = {
+        "state": "metadata_verified", "eligibility": "unknown",
+        "checkedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "identityMatchesExpected": True, "usageBindingMatchesExpected": True,
+        "planType": plan(account.get("planType")), "usage": sanitized,
+    }
+    if inventory or skip_model_catalog:
+        return result
     models = client.call("model/list", {"includeHidden": False, "limit": 100})
     data = models.get("data")
     if (not isinstance(data, list) or len(data) > 100
@@ -389,11 +416,7 @@ def collect(client, expected, inventory=False):
     expected_model = expected.get("expectedModel", "gpt-6-luna")
     expected_listed = any(row["model"] == expected_model for row in data)
     return {
-        "state": "metadata_verified", "eligibility": "unknown",
-        "checkedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "identityMatchesExpected": True, "usageBindingMatchesExpected": True,
-        "planType": plan(account.get("planType")),
-        "usage": sanitized,
+        **result,
         "luna": {"listedOnFirstPage": listed, "morePages": bool(models.get("nextCursor"))},
         "modelCatalog": {"expectedModel": expected_model,
                          "listedOnFirstPage": expected_listed, "morePages": bool(cursor)},
@@ -417,6 +440,7 @@ def main():
     identity.add_argument("--expectations-file")
     parser.add_argument("--timeout", type=float, default=45)
     parser.add_argument("--inventory", action="store_true")
+    parser.add_argument("--skip-model-catalog", action="store_true")
     client = None
     code = 2
     try:
@@ -451,7 +475,7 @@ def main():
             raise Hold("missing_expected_identity")
         binary = str(Path(args.binary).absolute()) if args.binary else native_binary(args.tools)
         client = MetadataClient(binary, str(Path(args.home).absolute()), str(Path(args.runtime).absolute()), args.timeout)
-        output = collect(client, expected, args.inventory)
+        output = collect(client, expected, args.inventory, args.skip_model_catalog)
         code = 0
     except Hold as error:
         output = {"state": "hold", "reason": str(error)}
