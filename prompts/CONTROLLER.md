@@ -42,7 +42,7 @@ browser, CLI, inventory or model actions. An unknown/denied write, denied action
 state or permission error does not qualify for this retry. Report a new blocker once;
 keep unchanged failures quiet when durable deduplication is available.
 
-A fallback or stale/unknown dispatch never sends. When a genuine scheduled fallback
+A fallback or stale/unknown dispatch never sends a model request. When a genuine scheduled fallback
 obtains fresh state, it can stage a separate future eligibility recovery on the same
 task, preserving all claims and the normal deadline. Read back its guarded mode, due time
 and native schedule; leave at least three minutes to dispatch. Process known due reminders
@@ -127,7 +127,13 @@ notification receipts and any uniquely matched owner-reported redemption.
 
 The first account timer coordinates warnings across accounts. Use the helper on each
 account's saved inventory, choose the earliest next wake, and preserve all ordinary
-deadlines. Process reminders with the saved inventory and no account probe. Warn at
+deadlines. When an earlier wake cannot be saved, check for due warnings at each
+verified native repeat. Keep the warning deadline distinct from the actual next
+scheduled check and report late delivery as such. The coordinator can use the
+hosted Page and notification tools to process due saved warnings during an account
+hold, as long as the Page is fresh, its warning claim can be verified, and normal
+review allows delivery. Computing a due time from saved timestamps requires no CLI
+or account probe. Warn at
 72 hours and again at 24 hours, immediately on a late discovery, and only once when both
 stages are overdue. Do not warn about already expired grants. Guard and read back each
 account/grant/stage claim before sending; keep accepted or uncertain receipts. Group

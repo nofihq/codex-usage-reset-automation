@@ -56,6 +56,10 @@ run prove different things. Use the next eligible window for any real request.
   unknown expiry, removed grants, indistinguishable grants, and uncertain
   alert delivery. Check both accounts if configured. A due reminder is read-only
   and must not overwrite the ordinary deadline or rearm a time in the past.
+- When only the native repeat can be retained, check the saved warning threshold
+  against the first calculated repeat after it. Verify an actual scheduled run
+  processes the existing warning claim before account work. A calculated wake is
+  distinct from a saved next-wake readback and an accepted notice.
 - Check device push separately from a saved task or a posted Dot message.
   Record actual dispatch delay when observed. Do not change a real expiry,
   replay a public alert into production, or redeem a grant just to test.
