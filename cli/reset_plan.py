@@ -70,7 +70,7 @@ def verify_window(first, second, target, sent_at, completed_at):
 
 
 def route_wake(now, intended_at, delivery, mode, ledger, has_hold):
-    """Reduce verified scheduler facts to a scope. Never grant send authority."""
+    """Return the account scope and whether the coordinator can check saved reminders."""
     now, intended_at = stamp(now), stamp(intended_at)
     if (delivery not in ("intended", "recurrence", "unknown")
             or mode not in ("ordinary", "reminder", "recovery", "state")
@@ -78,20 +78,23 @@ def route_wake(now, intended_at, delivery, mode, ledger, has_hold):
             or type(has_hold) is not bool):
         raise ValueError("invalid_wake")
     if ledger != "fresh":
-        return {"scope": "service_only", "reason": ledger}
-    if delivery != "intended" or now < intended_at:
-        return {"scope": "service_only", "reason": "unverified_or_early_wake"}
+        return {"scope": "service_only", "reason": ledger, "check_saved_reminders": False}
+    if delivery == "unknown" or now < intended_at:
+        return {"scope": "service_only", "reason": "unverified_or_early_wake",
+                "check_saved_reminders": False}
+    if delivery == "recurrence":
+        return {"scope": "service_only", "reason": "fallback_wake", "check_saved_reminders": True}
     if mode == "reminder":
-        return {"scope": "saved_reminders_only"}
+        return {"scope": "saved_reminders_only", "check_saved_reminders": True}
     if mode == "state" or has_hold:
-        return {"scope": "service_only", "reason": "state_wake_or_hold"}
+        return {"scope": "service_only", "reason": "state_wake_or_hold", "check_saved_reminders": True}
     if mode == "recovery":
-        return {"scope": "eligibility_read_only"}
+        return {"scope": "eligibility_read_only", "check_saved_reminders": True}
     # After an outage, a sparse fallback can land many hours later. It must
     # never be interpreted as catch-up authorization for the ordinary run.
     if now - intended_at > HOUR:
-        return {"scope": "service_only", "reason": "stale_ordinary_wake"}
-    return {"scope": "ordinary_preflight"}
+        return {"scope": "service_only", "reason": "stale_ordinary_wake", "check_saved_reminders": True}
+    return {"scope": "ordinary_preflight", "check_saved_reminders": True}
 
 
 def plan_public_notice(kind, message_id, event_id, authenticated, native, receipts):

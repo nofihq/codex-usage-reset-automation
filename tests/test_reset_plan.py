@@ -78,6 +78,18 @@ class WindowTiming(unittest.TestCase):
 
 
 class WakeScope(unittest.TestCase):
+    def test_verified_fallback_can_check_reminders_under_an_account_hold(self):
+        for delivery, ledger, now, expected in (
+                ("recurrence", "fresh", NOW, True),
+                ("intended", "fresh", NOW, True),
+                ("unknown", "fresh", NOW, False),
+                ("recurrence", "unavailable", NOW, False),
+                ("recurrence", "fresh", NOW - 1, False)):
+            with self.subTest(delivery=delivery, ledger=ledger, now=now):
+                route = planner.route_wake(now, NOW, delivery, "state", ledger, True)
+                self.assertEqual(route["scope"], "service_only")
+                self.assertIs(route["check_saved_reminders"], expected)
+
     def test_actual_outage_and_fallback_cannot_send(self):
         for now, delivery, mode, ledger, hold in (
                 (NOW, "intended", "ordinary", "temporary_error", False),
