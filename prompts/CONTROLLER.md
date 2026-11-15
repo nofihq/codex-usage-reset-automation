@@ -167,10 +167,14 @@ Use one verified warning coordinator. The first account timer is the default.
 If an existing dedicated reminder can run at the saved warning deadlines, have it
 claim the same pending stages under sole ownership. Verify the new native wakes and
 the guarded ownership change before retiring the old warning schedule. Preserve
-prior accepted, reserved and unknown receipts. Use the helper on each account's
-saved inventory, choose the earliest next wake, and preserve all ordinary
-deadlines. When an earlier wake cannot be saved, check for due warnings at each
-verified native repeat. Keep the warning deadline distinct from the actual next
+prior accepted, reserved and unknown receipts. When the scheduler supports only
+one exact date at a time, the dispatched one-time task may appear Completed with
+no next wake. Verify that the native scheduler consumed this exact occurrence and
+there is no later owner pause or conflicting edit. At or after its deadline, set
+and enable the next pending date on the same task, then read it back. Use the
+helper on each account's saved inventory, choose the earliest next wake, and
+preserve all ordinary deadlines. When an earlier wake cannot be saved, check for
+due warnings at each verified native repeat. Keep the warning deadline distinct from the actual next
 scheduled check and report late delivery as such. The coordinator can use the
 hosted Page and notification tools to process due saved warnings during an account
 hold, as long as the Page is fresh, its warning claim can be verified, and normal

@@ -71,6 +71,11 @@ run prove different things. Use the next eligible window for any real request.
   and must not overwrite the ordinary deadline or rearm a time in the past.
 - For a dedicated reminder, read back the actual scheduled warning times and
   confirm that only the designated task can claim those pending stages.
+  If it advances through exact one-time dates, test two scheduled dry runs on
+  that task. The first verifies native consumption, performs an inert guarded
+  write and readback, removes the marker, and enables the second date. The
+  second verifies dispatch and restores the earliest real reminder. Keep user
+  pauses and all real receipts intact.
 - When only the native repeat can be retained, check the saved warning threshold
   against the first calculated repeat after it. Verify an actual scheduled run
   processes the existing warning claim before account work. A calculated wake is
