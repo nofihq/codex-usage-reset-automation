@@ -21,10 +21,11 @@ your account; it does not create extra allowance or reset usage itself.
 
 **Use it from Windows, macOS or Linux through a supported desktop browser, or
 from the ChatGPT mobile app.** No local CLI, Python, Node, server or API key is
-needed on your device. Inside its cloud computer, the dot uses the official
-Codex CLI and a small Python reader for exact usage/reset data. Its cloud browser
-handles the `OK` request, account selection and spending checks. Mobile web is not
-supported.
+needed on your device. The dot can read reset times and saved expiries in its
+signed-in cloud browser when Usage exposes them. The official CLI and a small
+Python reader supply backend eligibility before activating a window. The same
+cloud browser handles account selection, spending checks and the `OK` request.
+Mobile web is not supported.
 
 ## What it does
 

@@ -15,7 +15,10 @@ Give your dot the [controller instructions](../prompts/CONTROLLER.md). Ask it to
 confirm access to its cloud browser, private Pages, saved cloud tasks and the
 account's usage information before doing anything that consumes usage. Follow
 [Cloud tools](CLOUD_TOOLS.md) to install the official CLI and status reader on the
-dot's computer. You do not install these on your Windows, Mac or other device.
+dot's computer before enabling activation. For read-only timing and alerts, start
+with the cloud browser's signed-in Usage page and the tests in the
+[verification guide](VERIFY.md#1-read-only-setup-and-recovery). You do not install
+the reader on your Windows, Mac or other device.
 
 For reset-email triggers, connect Gmail through ChatGPT's plugin settings and
 confirm that incoming-message event tasks are available. Availability depends on
@@ -28,7 +31,7 @@ Use the dot's supported private sign-in flow in its **cloud browser**. Complete
 MFA yourself when needed. Give the account a nickname such as `plus`; do not use
 an email address as a public configuration example.
 
-Authorize the CLI separately using [the cloud sign-in steps](CLOUD_TOOLS.md#sign-in).
+For activation, authorize the CLI separately using [the cloud sign-in steps](CLOUD_TOOLS.md#sign-in).
 A saved browser login does not sign in the CLI. Verify that both contexts identify
 the intended account, and that the reader binds authenticated routing identity
 to the usage response before reporting numeric data.

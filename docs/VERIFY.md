@@ -5,10 +5,11 @@ run prove different things. Use the next eligible window for any real request.
 
 ## 1. Read-only setup and recovery
 
-- Dot uses its cloud computer. Confirm that the pinned reader and
-  [planner](PLANNER.md) are available after a later scheduled wake.
-- Confirm the browser and authenticated CLI separately match the selected account.
-  Verify the account actually returns the selected 300- or 10,080-minute window.
+- Confirm that Dot uses its cloud computer. If you configured the CLI reader,
+  confirm it and the [planner](PLANNER.md) are available at a later scheduled wake.
+- Confirm the saved browser matches the selected account and that Usage shows
+  the configured five-hour or weekly window. Before activation, independently
+  verify the CLI identity and its selected 300- or 10,080-minute window.
 - Check that both account and optional alerts Pages are owner-only. A fresh full
   block and current hash support a guarded edit and exact readback. A stale
   write fails without replacing a winning write or touching unrelated fields.
