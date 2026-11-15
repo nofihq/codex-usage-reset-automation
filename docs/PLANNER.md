@@ -13,6 +13,7 @@ selected ledger fields, never credentials, email bodies or Page IDs. It returns
 | `observe` | `result`: status reader JSON; `target`: 300 or 10080 | Account window, remaining percent, and whether the numeric/backend usage gate passes. Browser/spending/claims still apply. |
 | `verify_active_window` | `first`, `second`: fresh reader JSON for the same bound account; `target`: 300 or 10080 | Fixed reset and read-only deadline when two reads at least 60 seconds apart agree and the later read shows usage in that window. |
 | `verify_window` | `first`, `second`: reader JSON; `target`, `sent_at`, `completed_at` | Fixed reset and ordinary deadline, if two reads at least 60 seconds apart agree and fit the actual send/reply interval. |
+| `verify_browser_window` | `first`, `second`: exact Usage label observations below; `target`; optional paired `sent_at`, `completed_at` | The same fixed reset check using the signed-in Usage page. Without send/reply times, this can establish a read-only deadline for an active window. |
 | `plan_public_notice` | `kind`: subscription/forecast/global/banked_announcement/banked; `message_id`: native Gmail message ID; `event_id`: stable source ID or null; Booleans `authenticated` and `native`; `receipts`: map of prior keys to claimed/accepted/unknown; optional `legacy_keys`: exact receipt keys for the same notice | Public notice claim keys, duplicate, or hold. Does not parse or authenticate mail or authorize account work. |
 | `plan_reminders` | `now`, `normal_due_at`, saved `inventory`: the `rateLimitResetCredits` object or null; `receipts`: map of stage keys to claimed/accepted/unknown/suppressed; optional future `retry_at` | Due notices, receipt keys needing reconciliation, incomplete inventory flag, and earliest future wake. Call per account. |
 
@@ -24,6 +25,16 @@ Do not use the host's local time to infer expiry.
 Use `verify_active_window` when the account has already started the window
 through normal use. Its result can anchor a read-only wake on the existing timer.
 Keep the send claim and eligibility checks in the controller.
+
+For `verify_browser_window`, each observation contains the bound account match
+as `identityMatchesExpected: true`, `source: "usage_exact_reset_label"`, the
+matched row's `windowDurationMins` and `remainingPercent`, the exact label's
+`resetsAt` in Unix seconds, and `checkedAt` as the capture time in ISO format with
+a time zone. Read the countdown's ordinary visible tooltip or its browser-provided
+title in **Settings → Usage**. Bind it to the right row and require an absolute
+date, seconds, and time zone. A rounded countdown is insufficient. Verify the
+account and fresh render both times. Timing evidence does not establish backend
+ordinary-usage permission or affect a saved claim or hold.
 
 A verified fallback can check saved reminders while account work stays held.
 `check_saved_reminders` permits checking due times only. Sending a notice still

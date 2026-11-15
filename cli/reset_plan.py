@@ -82,6 +82,34 @@ def verify_window(first, second, target, sent_at, completed_at):
     return {"resets_at": b, "normal_due_at": stamp(b + 120)}
 
 
+def verify_browser_window(first, second, target, sent_at=None, completed_at=None):
+    """Check exact Settings → Usage reset labels from two fresh browser renders."""
+    if type(target) is not int or target not in TARGETS:
+        raise ValueError("invalid_target")
+    for read in (first, second):
+        remaining = read["remainingPercent"]
+        window = read["windowDurationMins"]
+        if (read.get("identityMatchesExpected") is not True
+                or read.get("source") != "usage_exact_reset_label"
+                or type(window) is not int or window != target
+                or type(remaining) not in (int, float) or not 0 <= remaining <= 100):
+            raise ValueError("unverified_browser_usage")
+    reset = stamp(second["resetsAt"])
+    start = reset - target * 60
+    first_read, second_read = captured_at(first), captured_at(second)
+    if (stamp(first["resetsAt"]) != reset or second_read - first_read < 60
+            or not start <= first_read < second_read < reset):
+        raise ValueError("fixed_window_unverified")
+    due = stamp(reset + 120)
+    if sent_at is None and completed_at is None:
+        if second["remainingPercent"] == 100:
+            raise ValueError("active_window_unverified")
+        return {"resets_at": reset, "read_only_due_at": due}
+    if not stamp(sent_at) <= start <= stamp(completed_at) <= first_read:
+        raise ValueError("fixed_window_unverified")
+    return {"resets_at": reset, "normal_due_at": due}
+
+
 def route_wake(now, intended_at, delivery, mode, ledger, has_hold):
     """Return the account scope and whether the coordinator can check saved reminders."""
     now, intended_at = stamp(now), stamp(intended_at)
@@ -222,7 +250,8 @@ def reminder_plan(now, normal_due_at, inventory, receipts, retry_at=None):
 
 
 OPERATIONS = {"observe": observation, "verify_active_window": verify_active_window,
-              "verify_window": verify_window, "route_wake": route_wake,
+              "verify_window": verify_window, "verify_browser_window": verify_browser_window,
+              "route_wake": route_wake,
               "plan_public_notice": plan_public_notice,
               "plan_reminders": reminder_plan}
 

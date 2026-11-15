@@ -45,6 +45,10 @@ When normal account activity has already started a window, two fresh exact
 reads can establish its next reset with `verify_active_window`. Use its
 deadline for a read-only wake on the existing timer. Keep all existing send
 claims, eligibility gates and review holds.
+If Settings → Usage exposes an exact reset date, seconds and time zone on the
+matched row's ordinary tooltip or browser-provided title, two fresh renders can
+establish the same timing with `verify_browser_window`. Use the rounded countdown
+only to time a read. The label does not replace backend ordinary-usage permission.
 
 On an explicit retryable Page read error, keep the repeat enabled and use at most one
 retry of the same read after a short delay (up to 60 seconds), if the runtime allows it.
@@ -108,8 +112,9 @@ a new verified ordinary wake; it does not inherit authority to submit.
    Submit `Reply with only OK.` once to OpenAI at `https://chatgpt.com`. Do not retry
    unknown submissions or switch interfaces to bypass a denial.
 5. Require a completed exact `OK`. Take two post-completion status reads at least 60
-   seconds apart in one bounded operation, without another prompt. Use the helper to
-   verify the same fixed target reset and that its start fits the send/reply interval.
+   seconds apart in one bounded operation, without another prompt. Use either the
+   authenticated reader or the exact browser labels above. Verify the same fixed
+   target reset and that its start fits the send/reply interval.
    Record the result and archive only that exact completed chat, with readback. An
    inconclusive pair or uncertain cleanup needs reconciliation, never a new `OK`.
 6. Save and verify the next ordinary deadline at reset + two minutes. Rearm to the

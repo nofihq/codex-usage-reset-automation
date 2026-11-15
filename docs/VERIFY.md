@@ -23,6 +23,9 @@ run prove different things. Use the next eligible window for any real request.
   permitted read-only check sees a rounded countdown of five minutes or less,
   verify one supported wait and fresh read in that run. The saved repeat, exact
   ordinary deadline and send eligibility stay separate from that observation.
+- If the matched Usage row offers a tooltip or browser-provided title with the
+  absolute reset date, seconds and time zone, verify it on two fresh account-bound
+  renders at least 60 seconds apart. The timing check works without a CLI login.
 - Confirm task identity, mode, destination, enablement and actual next wake
   after any update. For existing tasks, follow [recovery](RECOVER.md) and keep
   the original state through cutover.
@@ -36,7 +39,7 @@ run prove different things. Use the next eligible window for any real request.
   If the picker omits an included-usage label, verify official Work plan coverage
   for the exact model, successful selection in the bound account, and fresh
   backend ordinary-usage permission and spending controls.
-- Observe one completed exact `OK`, two authenticated target reset reads at
+- Observe one completed exact `OK`, two account-bound target reset reads at
   least 60 seconds apart, a fixed window start consistent with that request,
   and archive readback for the exact disposable chat. An uncertain outcome
   holds even if the wake or tool call is repeated.

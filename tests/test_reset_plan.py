@@ -28,6 +28,13 @@ def status(capture, reset, target=300, target_used=0, other_used=25):
     }
 
 
+def browser_status(capture, reset, target=300, remaining=90):
+    return {"source": "usage_exact_reset_label", "identityMatchesExpected": True,
+            "windowDurationMins": target, "remainingPercent": remaining,
+            "resetsAt": reset,
+            "checkedAt": datetime.fromtimestamp(capture, timezone.utc).isoformat()}
+
+
 def inventory(expiry, count=1):
     return {"availableCount": count, "credits": [
         {"status": "available", "grantedAt": expiry - 30 * DAY, "expiresAt": expiry}
@@ -36,6 +43,31 @@ def inventory(expiry, count=1):
 
 
 class WindowTiming(unittest.TestCase):
+    def test_two_exact_browser_labels_anchor_both_window_lengths(self):
+        for target in (300, 10080):
+            with self.subTest(target=target):
+                reset = NOW + target * 60
+                first = browser_status(NOW + 5, reset, target)
+                second = browser_status(NOW + 65, reset, target)
+                self.assertEqual(planner.verify_browser_window(first, second, target),
+                                 {"resets_at": reset, "read_only_due_at": reset + 120})
+                self.assertEqual(planner.verify_browser_window(first, second, target, NOW, NOW + 3),
+                                 {"resets_at": reset, "normal_due_at": reset + 120})
+
+    def test_browser_label_requires_identity_freshness_and_actual_window_start(self):
+        reset = NOW + 300 * 60
+        first = browser_status(NOW + 5, reset)
+        second = browser_status(NOW + 65, reset)
+        for changed in ({"identityMatchesExpected": False}, {"source": "countdown"},
+                        {"windowDurationMins": 10080}, {"resetsAt": reset + 60},
+                        {"remainingPercent": 100}, {"remainingPercent": True},
+                        {"checkedAt": first["checkedAt"]}):
+            with self.subTest(changed=changed), self.assertRaises(ValueError):
+                planner.verify_browser_window(first, {**second, **changed}, 300)
+        for send, complete in ((NOW + 1, NOW + 3), (NOW, NOW + 6), (NOW, None)):
+            with self.subTest(send=send, complete=complete), self.assertRaises(ValueError):
+                planner.verify_browser_window(first, second, 300, send, complete)
+
     def test_active_window_can_set_read_only_wake_from_regular_usage(self):
         for target in (300, 10080):
             with self.subTest(target=target):
