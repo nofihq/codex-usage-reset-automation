@@ -62,6 +62,14 @@ metadata and existing-browser checks only within its granted scope; it never sen
 reads banked inventory. If a fixed window is still active, wait for its verified reset
 plus two minutes. On fresh evidence that eligibility recovered, stage a future ordinary
 wake under the normal gates. Never use recovery to replay a missed or uncertain request.
+
+If a permitted read-only check reaches an active window and the matching Usage
+row shows five minutes or less remaining, wait that long plus two minutes and
+take one fresh read in the same run, using a supported wait. Keep the existing
+schedule and ordinary deadline. If waiting is unavailable or the second read
+still shows an active window, report the last observation and finish. A rounded
+countdown or a full usage row leaves send eligibility and any review hold unchanged.
+
 An ordinary dispatch over an hour late is service-only; an early dispatch waits for the
 intended time or exits. Keep the native fallback until ordinary recurrence is proven.
 At an ordinary wake, handle any simultaneously due saved reminders as a separate

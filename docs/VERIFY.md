@@ -19,6 +19,10 @@ run prove different things. Use the next eligible window for any real request.
   unknown native provenance and conflicting schedules cannot submit. A
   recovered native fallback stages a later read-only eligibility run; prove
   that later wake separately. Existing claims and review holds survive.
+- Check a repeat that arrives shortly before the current window ends. When the
+  permitted read-only check sees a rounded countdown of five minutes or less,
+  verify one supported wait and fresh read in that run. The saved repeat, exact
+  ordinary deadline and send eligibility stay separate from that observation.
 - Confirm task identity, mode, destination, enablement and actual next wake
   after any update. For existing tasks, follow [recovery](RECOVER.md) and keep
   the original state through cutover.
