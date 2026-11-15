@@ -36,6 +36,25 @@ def inventory(expiry, count=1):
 
 
 class WindowTiming(unittest.TestCase):
+    def test_active_window_can_set_read_only_wake_from_regular_usage(self):
+        for target in (300, 10080):
+            with self.subTest(target=target):
+                reset = NOW + target * 60
+                first = status(NOW + 4, reset, target)
+                second = status(NOW + 72, reset, target, target_used=1)
+                self.assertEqual(planner.verify_active_window(first, second, target),
+                                 {"resets_at": reset, "read_only_due_at": reset + 120})
+
+    def test_active_window_rejects_idle_moving_and_stale_estimates(self):
+        reset = NOW + 300 * 60
+        first = status(NOW + 4, reset)
+        for second in (status(NOW + 72, reset),
+                       status(NOW + 72, reset + 68, target_used=1),
+                       status(NOW + 63, reset, target_used=1),
+                       status(reset, reset, target_used=1)):
+            with self.subTest(second=second), self.assertRaises(ValueError):
+                planner.verify_active_window(first, second, 300)
+
     def test_target_selected_by_duration_and_verified_for_both_windows(self):
         for target in (300, 10080):
             with self.subTest(target=target):

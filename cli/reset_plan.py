@@ -50,14 +50,27 @@ def observation(result, target):
     }
 
 
+def captured_at(result):
+    value = datetime.fromisoformat(result["checkedAt"].replace("Z", "+00:00"))
+    if value.tzinfo is None:
+        raise ValueError("missing_capture_timezone")
+    return value.timestamp()
+
+
+def verify_active_window(first, second, target):
+    """Verify timing for a read-only wake after ordinary account activity."""
+    _, _, first_reset, _ = metadata(first, target)
+    _, window, reset, _ = metadata(second, target)
+    first_read, second_read = captured_at(first), captured_at(second)
+    if (first_reset != reset or window["usedPercent"] == 0
+            or second_read - first_read < 60
+            or not reset - target * 60 <= first_read < second_read < reset):
+        raise ValueError("active_window_unverified")
+    return {"resets_at": reset, "read_only_due_at": stamp(reset + 120)}
+
+
 def verify_window(first, second, target, sent_at, completed_at):
     sent_at, completed_at = stamp(sent_at), stamp(completed_at)
-
-    def captured_at(result):
-        value = datetime.fromisoformat(result["checkedAt"].replace("Z", "+00:00"))
-        if value.tzinfo is None:
-            raise ValueError("missing_capture_timezone")
-        return value.timestamp()
 
     a = observation(first, target)["resets_at"]
     b = observation(second, target)["resets_at"]
@@ -197,7 +210,8 @@ def reminder_plan(now, normal_due_at, inventory, receipts, retry_at=None):
             "next_future_wake": min(wake, default=None)}
 
 
-OPERATIONS = {"observe": observation, "verify_window": verify_window, "route_wake": route_wake,
+OPERATIONS = {"observe": observation, "verify_active_window": verify_active_window,
+              "verify_window": verify_window, "route_wake": route_wake,
               "plan_public_notice": plan_public_notice,
               "plan_reminders": reminder_plan}
 

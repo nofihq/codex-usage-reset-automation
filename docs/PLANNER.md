@@ -11,6 +11,7 @@ selected ledger fields, never credentials, email bodies or Page IDs. It returns
 | --- | --- | --- |
 | `route_wake` | `now`, `intended_at` for this occurrence; `delivery`: intended/recurrence/unknown; `mode`: ordinary/reminder/recovery/state; `ledger`: fresh/temporary_error/unavailable; Boolean `has_hold` | Maximum account scope and `check_saved_reminders` for the bound coordinator. Pass actual native provenance; guessed provenance is unknown. |
 | `observe` | `result`: status reader JSON; `target`: 300 or 10080 | Account window, remaining percent, and whether the numeric/backend usage gate passes. Browser/spending/claims still apply. |
+| `verify_active_window` | `first`, `second`: fresh reader JSON for the same bound account; `target`: 300 or 10080 | Fixed reset and read-only deadline when two reads at least 60 seconds apart agree and the later read shows usage in that window. |
 | `verify_window` | `first`, `second`: reader JSON; `target`, `sent_at`, `completed_at` | Fixed reset and ordinary deadline, if two reads at least 60 seconds apart agree and fit the actual send/reply interval. |
 | `plan_public_notice` | `kind`: subscription/forecast/global/banked; `message_id`: native Gmail message ID; `event_id`: stable source ID or null; Booleans `authenticated` and `native`; `receipts`: map of prior keys to claimed/accepted/unknown | Public notice claim keys, duplicate, or hold. Does not parse or authenticate mail or authorize account work. |
 | `plan_reminders` | `now`, `normal_due_at`, saved `inventory`: the `rateLimitResetCredits` object or null; `receipts`: map of stage keys to claimed/accepted/unknown/suppressed; optional future `retry_at` | Due notices, receipt keys needing reconciliation, incomplete inventory flag, and earliest future wake. Call per account. |
@@ -19,6 +20,10 @@ Times use integer Unix seconds. For send/reply bounds use the observed UTC
 seconds (round send down, completion up only if the first read is later; use
 consistent whole-second bounds). Reader `checkedAt` retains its ISO timestamp.
 Do not use the host's local time to infer expiry.
+
+Use `verify_active_window` when the account has already started the window
+through normal use. Its result can anchor a read-only wake on the existing timer.
+Keep the send claim and eligibility checks in the controller.
 
 A verified fallback can check saved reminders while account work stays held.
 `check_saved_reminders` permits checking due times only. Sending a notice still

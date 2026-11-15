@@ -41,6 +41,11 @@ the ordinary reset deadline separate from reminder, recovery and fallback wakes.
 native schedule and ledger disagree, perform service reconciliation only. Do not spin
 on an overdue deadline.
 
+When normal account activity has already started a window, two fresh exact
+reads can establish its next reset with `verify_active_window`. Use its
+deadline for a read-only wake on the existing timer. Keep all existing send
+claims, eligibility gates and review holds.
+
 On an explicit retryable Page read error, keep the repeat enabled and use at most one
 retry of the same read after a short delay (up to 60 seconds), if the runtime allows it.
 If it still fails, or no supported wait exists, finish that occurrence without account,
