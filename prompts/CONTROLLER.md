@@ -98,10 +98,12 @@ a new verified ordinary wake; it does not inherit authority to submit.
    competing claim, unknown write or unknown submission holds. Never renew an old permit.
 4. Reuse the bound cloud browser session. In a fresh disposable ChatGPT **Work**
    chat that uses the target Codex allowance, finish identity and spending checks
-   before configuring the exact final composer. Verify an authorized included model, minimum
-   reasoning, Fast off, and no real or ambiguous restriction. Use fresh visible evidence
-   tied to the actual controls, through normal review. Inspect before any model change
-   and recheck after; Settings navigation can reset the selection. Respect the browser's
+   before configuring the exact final composer. Verify the exact included model, minimum
+   reasoning, Fast off, and no real or ambiguous restriction. If the picker has no
+   inclusion label, use current official Work plan coverage for that exact model, a
+   successful selection in the bound account, and the fresh usage and spending checks
+   from step 1. Inspect before any model change and recheck after through normal review.
+   Settings navigation can reset the selection. Respect the browser's
    current documented workflow. No files, tools or project.
    Submit `Reply with only OK.` once to OpenAI at `https://chatgpt.com`. Do not retry
    unknown submissions or switch interfaces to bypass a denial.

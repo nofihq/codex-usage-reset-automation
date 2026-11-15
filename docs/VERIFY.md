@@ -33,6 +33,9 @@ run prove different things. Use the next eligible window for any real request.
   scoped claim. Verify the browser spending and model controls in the actual
   final composer: no purchased credits, reload off, included model, minimum
   reasoning and Fast off. Stop on real or ambiguous access restrictions.
+  If the picker omits an included-usage label, verify official Work plan coverage
+  for the exact model, successful selection in the bound account, and fresh
+  backend ordinary-usage permission and spending controls.
 - Observe one completed exact `OK`, two authenticated target reset reads at
   least 60 seconds apart, a fixed window start consistent with that request,
   and archive readback for the exact disposable chat. An uncertain outcome

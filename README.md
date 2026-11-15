@@ -91,8 +91,10 @@ late or be missed; the source's direct alerts are an independent fallback.
 
 Configure a **72-hour early warning and a 24-hour follow-up** for available banked
 resets, using the expiry shown by your account. This gives you at least a day's
-planned notice when the expiry is known early enough. The same cloud task handles
-these read-only reminders for each account; no extra `OK` or automatic redemption.
+planned notice when the expiry is known early enough. Use one cloud task to handle
+these read-only reminders for all configured accounts, with no extra `OK` or
+automatic redemption. Reuse an existing dedicated reminder if it can run at the
+saved warning times.
 Read inventory once during setup, then use the saved expiries without daily checks.
 A verified new banked-grant email or your direct request can cause another inventory
 read. Reminders say when availability was last checked and are conditional on the
