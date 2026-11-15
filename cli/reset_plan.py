@@ -215,8 +215,10 @@ def reminder_plan(now, normal_due_at, inventory, receipts, retry_at=None):
             raise ValueError("invalid_grant_interval")
         if expiry > now:
             grants[expiry, grant] = grants.get((expiry, grant), 0) + 1
-    # A partial snapshot may still give exact warnings for known grants.
+    # A partial snapshot may give exact warnings for known grants. A count
+    # lower than the reported available rows contradicts their availability.
     unknown |= count is None or available_rows != count
+    contradictory_count = count is not None and available_rows > count
     if any(status not in ("claimed", "accepted", "unknown", "suppressed")
            for status in receipts.values()):
         raise ValueError("invalid_reminder_receipt")
@@ -234,7 +236,7 @@ def reminder_plan(now, normal_due_at, inventory, receipts, retry_at=None):
                 elif status is None:
                     pending.append((key, deadline))
             # A later stage must not turn an unknown first send into a blind retry.
-            if uncertain:
+            if uncertain or contradictory_count:
                 continue
             for _, deadline in pending:
                 if deadline > now:

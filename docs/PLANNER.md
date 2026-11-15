@@ -62,7 +62,9 @@ Persist stage keys across refreshes. Never map an owner-reported redemption to
 one of multiple indistinguishable grants. If a same-timestamp grant group changes
 and the identity of a prior warning or redemption becomes unclear, reconcile
 the group before scheduling another notice. Claimed or unknown sends hold that
-grant's later stages until reconciled. Do not put an overdue timestamp back into
+grant's later stages until reconciled. If the available count is smaller than
+the listed available grants, reconcile the inventory before setting warnings.
+Do not put an overdue timestamp back into
 the scheduler; process any due work allowed for the current wake first.
 
 During setup verify the exact helper source alongside the reader. If the cloud

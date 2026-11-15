@@ -266,6 +266,21 @@ class Reminders(unittest.TestCase):
         self.assertTrue(plan["inventory_incomplete"])
         self.assertEqual(plan["due_notices"], [])
 
+    def test_empty_or_contradictory_inventory_cannot_warn_for_an_old_grant(self):
+        normal = NOW + 5 * DAY
+        empty = planner.reminder_plan(NOW, normal, {"availableCount": 0, "credits": []}, {})
+        self.assertFalse(empty["inventory_incomplete"])
+        self.assertEqual(empty["due_notices"], [])
+        expiry = NOW + 2 * DAY
+        stale = inventory(expiry)
+        stale["availableCount"] = 0
+        prior_claim = f"{expiry}:{expiry - 30 * DAY}:1:72"
+        conflicting = planner.reminder_plan(NOW, normal, stale, {prior_claim: "unknown"})
+        self.assertTrue(conflicting["inventory_incomplete"])
+        self.assertEqual(conflicting["due_notices"], [])
+        self.assertEqual(conflicting["next_future_wake"], normal)
+        self.assertEqual(conflicting["reconcile"], [prior_claim])
+
     def test_cli_returns_redacted_hold_for_malformed_input(self):
         script = Path(planner.__file__)
         result = subprocess.run([sys.executable, str(script)], capture_output=True, text=True,
