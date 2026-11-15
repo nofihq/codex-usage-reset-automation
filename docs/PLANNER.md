@@ -15,7 +15,7 @@ selected ledger fields, never credentials, email bodies or Page IDs. It returns
 | `verify_window` | `first`, `second`: reader JSON; `target`, `sent_at`, `completed_at` | Fixed reset and ordinary deadline, if two reads at least 60 seconds apart agree and fit the actual send/reply interval. |
 | `verify_browser_window` | `first`, `second`: exact Usage label observations below; `target`; optional paired `sent_at`, `completed_at` | The same fixed reset check using the signed-in Usage page. Without send/reply times, this can establish a read-only deadline for an active window. |
 | `plan_public_notice` | `kind`: subscription/forecast/global/banked_announcement/banked; `message_id`: native Gmail message ID; `event_id`: stable source ID or null; Booleans `authenticated` and `native`; `receipts`: map of prior keys to claimed/accepted/unknown; optional `legacy_keys`: exact receipt keys for the same notice | Public notice claim keys, duplicate, or hold. Does not parse or authenticate mail or authorize account work. |
-| `plan_reminders` | `now`, `normal_due_at`, saved `inventory`: the `rateLimitResetCredits` object or null; `receipts`: map of stage keys to claimed/accepted/unknown/suppressed; optional future `retry_at` | Due notices, receipt keys needing reconciliation, incomplete inventory flag, and earliest future wake. Call per account. |
+| `plan_reminders` | `now`, `normal_due_at`, saved `inventory`: the `rateLimitResetCredits` object, browser minutes below, or null; `receipts`: map of stage keys to claimed/accepted/unknown/suppressed; optional future `retry_at` | Due notices, receipt keys needing reconciliation, incomplete inventory flag, and earliest future wake. Call per account. |
 
 Times use integer Unix seconds. For send/reply bounds use the observed UTC
 seconds (round send down, completion up only if the first read is later; use
@@ -66,6 +66,17 @@ grant's later stages until reconciled. If the available count is smaller than
 the listed available grants, reconcile the inventory before setting warnings.
 Do not put an overdue timestamp back into
 the scheduler; process any due work allowed for the current wake first.
+
+When the bound Usage page supplies the complete available count and expiry times
+to the minute, inventory may use `source: "usage_expiry_minute"`,
+`identityMatchesExpected: true`, `availableCount` and one `credits` row with
+`status: "available"` and `expiresAt` per observed grant. Convert the displayed
+date and time zone to Unix seconds at the start of the displayed minute. The
+planner schedules one minute before each 72- or 24-hour boundary and returns
+`expires_at_precision: "displayed_minute"` for the notice. Keys are
+`displayed_minute:expiry:ordinal:stage`. Match existing receipts to the same
+grant and stage before changing sources. If multiple grants or receipts cannot
+be matched uniquely, reconcile them before sending any new notice for that group.
 
 During setup verify the exact helper source alongside the reader. If the cloud
 working files disappear, restore the pinned public code and check it before use.

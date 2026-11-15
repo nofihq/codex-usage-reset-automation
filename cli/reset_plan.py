@@ -181,7 +181,8 @@ def reminder_plan(now, normal_due_at, inventory, receipts, retry_at=None):
     """Plan current-account notices; receipts are keyed by expiry/grant time/ordinal/stage.
 
     inventory is the sanitized banked inventory from a fresh authorized reader
-    result, or the latest saved copy. Callers must preserve receipts on refresh.
+    result, the bound browser's available expiry minutes, or the latest saved copy.
+    Callers must preserve receipts on refresh and reconcile both sources' keys.
     A claimed, accepted, or unknown receipt blocks automatic repeat delivery.
     """
     now = stamp(now)
@@ -195,6 +196,10 @@ def reminder_plan(now, normal_due_at, inventory, receipts, retry_at=None):
     due, reconcile = [], []
     grants = {}
     rows = None if inventory is None else inventory.get("credits")
+    browser_minutes = inventory is not None and inventory.get("source") == "usage_expiry_minute"
+    if browser_minutes and inventory.get("identityMatchesExpected") is not True:
+        raise ValueError("unverified_browser_inventory")
+    lead = 60 if browser_minutes else 0
     if rows is not None and not isinstance(rows, list):
         raise ValueError("invalid_inventory_rows")
     unknown = rows is None
@@ -207,28 +212,32 @@ def reminder_plan(now, normal_due_at, inventory, receipts, retry_at=None):
             unknown |= row.get("status") in (None, "unknown")
             continue
         available_rows += 1
-        if row.get("expiresAt") is None or row.get("grantedAt") is None:
+        if row.get("expiresAt") is None or (not browser_minutes and row.get("grantedAt") is None):
             unknown = True
             continue
-        grant, expiry = stamp(row["grantedAt"]), stamp(row["expiresAt"])
-        if expiry <= grant:
+        expiry = stamp(row["expiresAt"])
+        grant = None if browser_minutes else stamp(row["grantedAt"])
+        if browser_minutes and expiry % 60:
+            raise ValueError("invalid_expiry_minute")
+        if grant is not None and expiry <= grant:
             raise ValueError("invalid_grant_interval")
-        if expiry > now:
+        if expiry - lead > now:
             grants[expiry, grant] = grants.get((expiry, grant), 0) + 1
     # A partial snapshot may give exact warnings for known grants. A count
     # lower than the reported available rows contradicts their availability.
     unknown |= count is None or available_rows != count
-    contradictory_count = count is not None and available_rows > count
+    cannot_schedule = (count is not None and available_rows > count) or (browser_minutes and unknown)
     if any(status not in ("claimed", "accepted", "unknown", "suppressed")
            for status in receipts.values()):
         raise ValueError("invalid_reminder_receipt")
     for (expiry, grant), quantity in sorted(grants.items()):
         for i in range(1, quantity + 1):
-            prefix = f"{expiry}:{grant}:{i}:"
+            prefix = (f"displayed_minute:{expiry}:{i}:" if browser_minutes
+                      else f"{expiry}:{grant}:{i}:")
             pending = []
             uncertain = False
             for hours in (72, 24):
-                key, deadline = prefix + str(hours), expiry - hours * HOUR
+                key, deadline = prefix + str(hours), expiry - hours * HOUR - lead
                 status = receipts.get(key)
                 if status in ("unknown", "claimed"):
                     reconcile.append(key)
@@ -236,16 +245,19 @@ def reminder_plan(now, normal_due_at, inventory, receipts, retry_at=None):
                 elif status is None:
                     pending.append((key, deadline))
             # A later stage must not turn an unknown first send into a blind retry.
-            if uncertain or contradictory_count:
+            if uncertain or cannot_schedule:
                 continue
             for _, deadline in pending:
                 if deadline > now:
                     wake.append(deadline)
             stages = [key for key, deadline in pending if deadline <= now]
             if stages:
-                due.append({"expires_at": expiry, "stages": stages,
-                            "late_first_notice": expiry - now < DAY
-                            and receipts.get(prefix + "72") != "accepted"})
+                notice = {"expires_at": expiry, "stages": stages,
+                          "late_first_notice": expiry - lead - now < DAY
+                          and receipts.get(prefix + "72") != "accepted"}
+                if browser_minutes:
+                    notice["expires_at_precision"] = "displayed_minute"
+                due.append(notice)
     return {"normal_due": normal_due_at <= now, "due_notices": due,
             "reconcile": reconcile, "inventory_incomplete": unknown,
             "next_future_wake": min(wake, default=None)}

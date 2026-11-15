@@ -158,6 +158,10 @@ Save the latest complete authenticated inventory, verification time, and receipt
 the account Page. An unknown/partial read must not erase known expiries or imply no
 grants. Remove missing grants only after a complete verified refresh. Preserve
 notification receipts and any uniquely matched owner-reported redemption.
+If the account's available inventory displays expiry minutes and time zones,
+use the planner's browser inventory format. Set advance warnings one minute
+early and show the displayed expiry. Match original receipts before switching
+inventory sources and hold genuine ambiguous matches.
 
 Use one verified warning coordinator. The first account timer is the default.
 If an existing dedicated reminder can run at the saved warning deadlines, have it

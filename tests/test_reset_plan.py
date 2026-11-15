@@ -218,6 +218,41 @@ class PublicNotice(unittest.TestCase):
 
 
 class Reminders(unittest.TestCase):
+    def test_available_browser_expiry_minute_warns_conservatively_and_deduplicates(self):
+        expiry = NOW - NOW % 60 + 4 * DAY
+        due = expiry - 3 * DAY - 60
+        normal = expiry + DAY
+        snapshot = {"source": "usage_expiry_minute", "identityMatchesExpected": True,
+                    "availableCount": 1,
+                    "credits": [{"status": "available", "expiresAt": expiry}]}
+        self.assertEqual(planner.reminder_plan(due - 1, normal, snapshot, {})["next_future_wake"], due)
+        start = planner.reminder_plan(due, normal, snapshot, {})
+        early_key = f"displayed_minute:{expiry}:1:72"
+        self.assertEqual(start["due_notices"], [{"expires_at": expiry,
+                         "expires_at_precision": "displayed_minute", "stages": [early_key],
+                         "late_first_notice": False}])
+        next_warning = expiry - DAY - 60
+        accepted = planner.reminder_plan(due, normal, snapshot, {early_key: "accepted"})
+        self.assertEqual(accepted["next_future_wake"], next_warning)
+        self.assertEqual(accepted["due_notices"], [])
+        self.assertEqual(planner.reminder_plan(next_warning, normal, snapshot, {early_key: "unknown"})[
+            "reconcile"], [early_key])
+
+    def test_browser_inventory_requires_complete_available_rows_and_a_matched_account(self):
+        expiry = NOW - NOW % 60 + 2 * DAY
+        snapshot = {"source": "usage_expiry_minute", "identityMatchesExpected": True,
+                    "availableCount": 2,
+                    "credits": [{"status": "available", "expiresAt": expiry}]}
+        partial = planner.reminder_plan(NOW, NOW + DAY, snapshot, {})
+        self.assertTrue(partial["inventory_incomplete"])
+        self.assertEqual(partial["due_notices"], [])
+        with self.assertRaises(ValueError):
+            planner.reminder_plan(NOW, NOW + DAY,
+                                  {**snapshot, "identityMatchesExpected": False}, {})
+        snapshot["credits"][0]["expiresAt"] += 1
+        with self.assertRaises(ValueError):
+            planner.reminder_plan(NOW, NOW + DAY, snapshot, {})
+
     def test_warning_does_not_move_normal_deadline_or_wait_behind_backoff(self):
         due = NOW + 6 * DAY
         snapshot = inventory(NOW + 4 * DAY)

@@ -62,6 +62,8 @@ run prove different things. Use the next eligible window for any real request.
   If the account Page is held but the alerts Page is readable, public notices
   still work and personal checks are explicitly unverified.
 - Verify the personal inventory has real per-grant expiry timestamps.
+  If Usage gives dates and times to the minute, verify the complete available
+  count and schedule the warnings one minute earlier than the displayed deadlines.
   Simulate before/at/after the 72-hour and 24-hour deadlines, late discovery,
   unknown expiry, removed grants, indistinguishable grants, and uncertain
   alert delivery. Check both accounts if configured. A due reminder is read-only
