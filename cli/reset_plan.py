@@ -110,7 +110,8 @@ def route_wake(now, intended_at, delivery, mode, ledger, has_hold):
     return {"scope": "ordinary_preflight", "check_saved_reminders": True}
 
 
-def plan_public_notice(kind, message_id, event_id, authenticated, native, receipts):
+def plan_public_notice(kind, message_id, event_id, authenticated, native, receipts,
+                       legacy_keys=None):
     """Deduplicate a classified source event independently of account state."""
     if native is not True or authenticated is not True:
         return {"scope": "hold_unverified_source"}
@@ -128,6 +129,12 @@ def plan_public_notice(kind, message_id, event_id, authenticated, native, receip
     keys = [key("message", message_id)]
     if event_id is not None:
         keys.append(key(kind, event_id))
+    if legacy_keys is not None:
+        if not isinstance(legacy_keys, list) or any(
+            not isinstance(value, str) or not value.strip() for value in legacy_keys
+        ):
+            raise ValueError("invalid_legacy_notice_keys")
+        keys = list(dict.fromkeys(keys + legacy_keys))
     states = [receipts.get(k) for k in keys]
     if any(state not in (None, "claimed", "accepted", "unknown") for state in states):
         raise ValueError("invalid_public_receipt")

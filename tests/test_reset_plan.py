@@ -133,6 +133,22 @@ class WakeScope(unittest.TestCase):
 
 
 class PublicNotice(unittest.TestCase):
+    def test_cutover_shares_claim_with_legacy_alert_handler(self):
+        decide = planner.plan_public_notice
+        legacy_key = "legacy-alert:one-notice"
+        args = ("global", "new-delivery", "public-event", True, True)
+        plan = decide(*args, {}, legacy_keys=[legacy_key, legacy_key])
+        self.assertEqual(plan["scope"], "claim_public_notice")
+        self.assertEqual(plan["keys"].count(legacy_key), 1)
+        for receipt, expected in (("claimed", "reconcile_only"),
+                                  ("unknown", "reconcile_only"),
+                                  ("accepted", "duplicate")):
+            with self.subTest(receipt=receipt):
+                self.assertEqual(decide(*args, {legacy_key: receipt}, legacy_keys=[legacy_key]),
+                                 {"scope": expected})
+        with self.assertRaises(ValueError):
+            decide(*args, {}, legacy_keys="not a list")
+
     def test_banked_announcement_and_landing_have_distinct_receipts(self):
         decide = planner.plan_public_notice
         announcement = decide("banked_announcement", "announced-mail", "grant", True, True, {})

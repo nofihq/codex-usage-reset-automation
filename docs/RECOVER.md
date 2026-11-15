@@ -21,12 +21,14 @@ This repair needs no access to your Linux, Windows or Mac files.
    its owner resumes it. Remove expired instructions from the task prompt and
    preserve their records in private history. Verify the saved task binding
    after the change and check a genuine scheduled wake.
-4. Give the Gmail handler its separate owner-only alerts Page. Copy its
-   public-event deduplication records with verified readback before cutover. If
-   the old state cannot be read, keep the existing event task and direct source
-   alerts; do not assume old events were never sent. Prove a new native delivery
-   independently of the account tasks. Personal reconciliation still needs
-   fresh account state.
+4. Keep public notices available during the Gmail handler update. You can keep
+   using the existing guarded Page during cutover if both versions reserve the
+   same exact legacy receipt keys before sending. The [planner](PLANNER.md)
+   accepts those keys during the transition. Move receipts to an owner-only
+   alerts Page after the old writers have drained, with complete readback. If
+   you cannot verify shared claims, keep the existing event task and direct
+   source alerts. Prove a new native delivery independently of the account
+   tasks. Personal reconciliation still needs fresh account state.
 5. Verify a real scheduled read and guarded test on one account. Then verify a
    separate recovery wake and an eligible ordinary cycle, with one exact
    reply and the next deadline read back. Start with the five-hour timer if that
