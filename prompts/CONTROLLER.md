@@ -151,6 +151,16 @@ itself is unavailable, hold Dot's notice and rely on the owner's direct source a
 A replay cannot repeat a notice or create a new account request; reconcile an
 unfinished account handoff from its original receipt, with the same deadline and budget.
 
+For a read-only event handoff, keep the event ID, verified stage and each intended
+consumer's pending status under that original receipt. The Gmail task reads it
+back before starting an existing controller through its supported on-demand
+action. The controller claims the exact pending marker under a current guard
+before account work. Serialize controllers that share a cloud browser. Complete
+or reconcile the same marker and keep dispatch status separate from work status.
+On-demand dispatch carries no activation permission. The receiver changes a
+timer only after verifying the account's own fixed reset changed. The reminder
+owner refreshes the actual available inventory and retains existing receipts.
+
 ## Banked expiry warnings
 
 Read inventory during setup, on a verified new grant, or when the owner requests it.

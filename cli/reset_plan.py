@@ -174,7 +174,11 @@ def plan_public_notice(kind, message_id, event_id, authenticated, native, receip
     if (kind == "banked_announcement" and event_id is not None
             and receipts.get(key("banked", event_id)) is not None):
         return {"scope": "reconcile_only"}
-    return {"scope": "claim_public_notice", "keys": keys, "kind": kind}
+    plan = {"scope": "claim_public_notice", "keys": keys, "kind": kind}
+    follow_up = {"global": "usage_windows", "banked": "banked_inventory"}.get(kind)
+    if follow_up is not None:
+        plan["read_only_follow_up"] = follow_up
+    return plan
 
 
 def reminder_plan(now, normal_due_at, inventory, receipts, retry_at=None):

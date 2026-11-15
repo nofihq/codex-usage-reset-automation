@@ -44,6 +44,10 @@ For a public notice, use the same guarded edit to claim all returned keys and
 then record one outcome under those keys. Never use a guessed event ID. Without
 one, deduplication is by exact native message ID. Hashes identify receipt keys;
 they do not authenticate the source. Account handoff has its own guarded state.
+New confirmed global and banked landing events return `read_only_follow_up` as
+`usage_windows` or `banked_inventory`. This identifies the work to request if
+the existing receiver is authorized. Forecasts, announcements and duplicates
+do not start a new handoff.
 
 During migration, supply `legacy_keys` only when both handlers claim the same
 notice through those keys in the same guarded Page. Claim and finalize all

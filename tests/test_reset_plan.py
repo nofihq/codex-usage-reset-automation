@@ -185,9 +185,11 @@ class PublicNotice(unittest.TestCase):
         decide = planner.plan_public_notice
         announcement = decide("banked_announcement", "announced-mail", "grant", True, True, {})
         self.assertEqual(announcement["scope"], "claim_public_notice")
+        self.assertNotIn("read_only_follow_up", announcement)
         receipts = dict.fromkeys(announcement["keys"], "accepted")
         landing = decide("banked", "landed-mail", "grant", True, True, receipts)
         self.assertEqual(landing["scope"], "claim_public_notice")
+        self.assertEqual(landing["read_only_follow_up"], "banked_inventory")
         existing_banked = dict.fromkeys(landing["keys"], "accepted")
         self.assertEqual(decide("banked_announcement", "late-announce", "grant",
                                 True, True, existing_banked), {"scope": "reconcile_only"})
@@ -201,9 +203,11 @@ class PublicNotice(unittest.TestCase):
         decide = planner.plan_public_notice
         forecast = decide("forecast", "message-1", "event", True, True, {})
         self.assertEqual(forecast["scope"], "claim_public_notice")
+        self.assertNotIn("read_only_follow_up", forecast)
         receipts = dict.fromkeys(forecast["keys"], "accepted")
         global_notice = decide("global", "message-2", "event", True, True, receipts)
         self.assertEqual(global_notice["scope"], "claim_public_notice")
+        self.assertEqual(global_notice["read_only_follow_up"], "usage_windows")
         receipts.update(dict.fromkeys(global_notice["keys"], "accepted"))
         self.assertEqual(decide("global", "message-3", "event", True, True, receipts)["scope"],
                          "duplicate")
