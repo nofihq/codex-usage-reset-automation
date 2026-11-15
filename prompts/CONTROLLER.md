@@ -35,11 +35,11 @@ and use an elapsed interval of five hours or seven days. Set and read back the
 next intended wake on that same task when a fresh confirmed window changes
 the boundary. A genuine global report prompts an account check; only a verified
 change to that account's window changes the timer. A forecast or banked grant
-keeps the current cadence. With no verified current boundary, retain the sparse
-recovery repeat. The ledger keeps
-the ordinary reset deadline separate from reminder, recovery and fallback wakes. If the
-native schedule and ledger disagree, perform service reconciliation only. Do not spin
-on an overdue deadline.
+keeps the current cadence. An independently authorized read-only timer can use a
+five-hour or seven-day observation cadence based on the displayed Usage countdown
+while an exact boundary is unavailable. Label its time as a check. Keep the exact
+ordinary deadline separate from reminders and observations. Reconcile any mismatch
+before acting on saved state. Do not spin on an overdue deadline.
 
 When normal account activity has already started a window, two fresh exact
 reads can establish its next reset with `verify_active_window`. Use its
@@ -48,10 +48,13 @@ claims, eligibility gates and review holds.
 
 On an explicit retryable Page read error, keep the repeat enabled and use at most one
 retry of the same read after a short delay (up to 60 seconds), if the runtime allows it.
-If it still fails, or no supported wait exists, finish that occurrence without account,
-browser, CLI, inventory or model actions. An unknown/denied write, denied action, missing
-state or permission error does not qualify for this retry. Report a new blocker once;
-keep unchanged failures quiet when durable deduplication is available.
+If it still fails, or no supported wait exists, stop work that depends on the Page.
+An independently authorized read-only timer may still read the expected account's
+visible Usage row if that read is permitted by the existing holds. No claim,
+notification, inventory change or model request is authorized by this read. An unknown
+or denied write, denied action, missing state or permission error does not qualify
+for this retry. Report a new blocker once. Keep unchanged failures quiet when durable
+deduplication is available.
 
 A fallback or stale/unknown dispatch never sends a model request. When a genuine scheduled fallback
 obtains fresh state, it can stage a separate future eligibility recovery on the same
@@ -149,8 +152,12 @@ the account Page. An unknown/partial read must not erase known expiries or imply
 grants. Remove missing grants only after a complete verified refresh. Preserve
 notification receipts and any uniquely matched owner-reported redemption.
 
-The first account timer coordinates warnings across accounts. Use the helper on each
-account's saved inventory, choose the earliest next wake, and preserve all ordinary
+Use one verified warning coordinator. The first account timer is the default.
+If an existing dedicated reminder can run at the saved warning deadlines, have it
+claim the same pending stages under sole ownership. Verify the new native wakes and
+the guarded ownership change before retiring the old warning schedule. Preserve
+prior accepted, reserved and unknown receipts. Use the helper on each account's
+saved inventory, choose the earliest next wake, and preserve all ordinary
 deadlines. When an earlier wake cannot be saved, check for due warnings at each
 verified native repeat. Keep the warning deadline distinct from the actual next
 scheduled check and report late delivery as such. The coordinator can use the

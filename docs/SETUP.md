@@ -88,11 +88,11 @@ on that same timer so a failed schedule update leaves a future wake. With a
 current verified boundary, choose every five hours for a five-hour target or
 every seven days for a weekly target. Use UTC or an elapsed-time interval so
 daylight saving changes do not shift the cadence. Re-anchor when a verified
-new window changes the boundary. Until a current boundary is verified, retain
-a sparse recovery cadence such as every 12 hours. Later fallback occurrences only
-check saved state and service availability; they do not poll your account or
-inventory or send another `OK`. Verify after an actual scheduled test that the
-timer remains enabled before manually rescheduling it.
+new window changes the boundary. When the only supported view is a countdown,
+an independently authorized read-only timer can check Usage at the chosen cadence.
+Save it as an observation and keep request eligibility held until the ordinary
+checks pass. A sparse service recovery cadence can check saved state when Usage
+access is unavailable. Verify the task and recurring schedule after a real run.
 After saved-state access recovers, the fallback can schedule a separate read-only
 eligibility check. It waits for a known active window to end and preserves any
 review hold. Normal requests resume only after fresh eligibility checks pass.
@@ -247,8 +247,10 @@ The announcement says a saved reset may be available. The expiry reminder warns
 that a reset actually present in your account is approaching its use-by time.
 Do not rely on the public email service to send that personal expiry reminder.
 
-Ask the dot to use your first account's existing task as the reminder coordinator,
-including reminders for any second account:
+Use one reminder coordinator across accounts. Start with your first account's
+existing task. You can reuse an existing dedicated reminder when its native
+schedule can wake at the exact saved deadlines. Verify sole ownership of the
+same warning keys before retiring an old warning schedule.
 
 1. Read the account's banked inventory with the reader's `--inventory` option.
    Use the expiry returned for each available reset; do not assume every grant
@@ -263,12 +265,11 @@ including reminders for any second account:
    inventory checks. Read inventory again only after a verified new banked-grant
    availability email or your direct request. Ordinary usage checks and expiry
    reminder wakes do not request inventory.
-4. Use that **same saved task** for read-only reminder wakes across the
-   configured accounts. Its next wake is the earlier of its normal account check
-   or any pending expiry warning. Keep every account's normal
-   reset deadline saved separately so an early reminder cannot erase it. Other
-   account timers keep their own normal schedules. A reminder must not wait behind
-   a five-hour, weekly or failure-backoff schedule.
+4. Use the same coordinator for read-only reminder wakes across accounts. Set a
+   dedicated coordinator to the earliest pending expiry warning. If it also
+   checks an account, use the earlier of the next account check and warning.
+   Store ordinary account deadlines separately to preserve them during reminder
+   wakes. A reminder must not wait behind a five-hour, weekly or backoff schedule.
 5. Use the [planner](PLANNER.md) on each saved inventory. Save which account,
    grant, expiry and warning stage have already been notified.
    Preserve the count when several grants share timestamps. Read this state back

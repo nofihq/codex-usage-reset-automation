@@ -60,6 +60,8 @@ run prove different things. Use the next eligible window for any real request.
   unknown expiry, removed grants, indistinguishable grants, and uncertain
   alert delivery. Check both accounts if configured. A due reminder is read-only
   and must not overwrite the ordinary deadline or rearm a time in the past.
+- For a dedicated reminder, read back the actual scheduled warning times and
+  confirm that only the designated task can claim those pending stages.
 - When only the native repeat can be retained, check the saved warning threshold
   against the first calculated repeat after it. Verify an actual scheduled run
   processes the existing warning claim before account work. A calculated wake is
