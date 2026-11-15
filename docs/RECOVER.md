@@ -18,7 +18,9 @@ This repair needs no access to your Linux, Windows or Mac files.
    claims, consumed permits, holds, pending expiries and native deadlines. Do not
    overwrite a legacy ledger with a generated blank one. Retain the source
    intact if any data cannot be migrated. A stopped timer stays stopped unless
-   its owner resumes it.
+   its owner resumes it. Remove expired instructions from the task prompt and
+   preserve their records in private history. Verify the saved task binding
+   after the change and check a genuine scheduled wake.
 4. Give the Gmail handler its separate owner-only alerts Page. Copy its
    public-event deduplication records with verified readback before cutover. If
    the old state cannot be read, keep the existing event task and direct source
@@ -49,6 +51,15 @@ that it is cloud-only, stop before executing a command.
 If the test passes, return to the original account timer and verify its own
 read-only execution and private account binding. A standalone test does not
 inherit the account timer's permissions or clear an earlier refusal.
+
+If the saved cloud browser works in the foreground and the original timer
+cannot be changed safely, an explicitly scoped one-time native test can check
+whether a scheduled run can read both the existing Page and **Settings → Usage**
+from the saved session. Verify the visible account and target window. Report
+whether the reset is shown as an absolute time or as a countdown. A countdown
+can help time another read. A verified account boundary is still required to
+anchor the ordinary cadence. Keep the test read-only and check that it has no
+future wake after dispatch. A passing test establishes access for that run.
 
 If a scheduled run has no terminal, check whether the supported attach action
 for Dot's existing cloud computer is available in that run. The browser panel's
