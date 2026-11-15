@@ -116,7 +116,7 @@ def plan_public_notice(kind, message_id, event_id, authenticated, native, receip
         return {"scope": "hold_unverified_source"}
     if kind == "subscription":
         return {"scope": "ignore"}
-    if kind not in ("forecast", "global", "banked"):
+    if kind not in ("forecast", "global", "banked_announcement", "banked"):
         return {"scope": "hold_unclassified_source"}
 
     def key(prefix, value):
@@ -134,6 +134,10 @@ def plan_public_notice(kind, message_id, event_id, authenticated, native, receip
     if "accepted" in states:
         return {"scope": "duplicate"}
     if any(state is not None for state in states):
+        return {"scope": "reconcile_only"}
+    # The existing banked key may be a landing or an older unstaged receipt.
+    if (kind == "banked_announcement" and event_id is not None
+            and receipts.get(key("banked", event_id)) is not None):
         return {"scope": "reconcile_only"}
     return {"scope": "claim_public_notice", "keys": keys, "kind": kind}
 

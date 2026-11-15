@@ -13,7 +13,7 @@ selected ledger fields, never credentials, email bodies or Page IDs. It returns
 | `observe` | `result`: status reader JSON; `target`: 300 or 10080 | Account window, remaining percent, and whether the numeric/backend usage gate passes. Browser/spending/claims still apply. |
 | `verify_active_window` | `first`, `second`: fresh reader JSON for the same bound account; `target`: 300 or 10080 | Fixed reset and read-only deadline when two reads at least 60 seconds apart agree and the later read shows usage in that window. |
 | `verify_window` | `first`, `second`: reader JSON; `target`, `sent_at`, `completed_at` | Fixed reset and ordinary deadline, if two reads at least 60 seconds apart agree and fit the actual send/reply interval. |
-| `plan_public_notice` | `kind`: subscription/forecast/global/banked; `message_id`: native Gmail message ID; `event_id`: stable source ID or null; Booleans `authenticated` and `native`; `receipts`: map of prior keys to claimed/accepted/unknown | Public notice claim keys, duplicate, or hold. Does not parse or authenticate mail or authorize account work. |
+| `plan_public_notice` | `kind`: subscription/forecast/global/banked_announcement/banked; `message_id`: native Gmail message ID; `event_id`: stable source ID or null; Booleans `authenticated` and `native`; `receipts`: map of prior keys to claimed/accepted/unknown | Public notice claim keys, duplicate, or hold. Does not parse or authenticate mail or authorize account work. |
 | `plan_reminders` | `now`, `normal_due_at`, saved `inventory`: the `rateLimitResetCredits` object or null; `receipts`: map of stage keys to claimed/accepted/unknown/suppressed; optional future `retry_at` | Due notices, receipt keys needing reconciliation, incomplete inventory flag, and earliest future wake. Call per account. |
 
 Times use integer Unix seconds. For send/reply bounds use the observed UTC
@@ -33,6 +33,12 @@ For a public notice, use the same guarded edit to claim all returned keys and
 then record one outcome under those keys. Never use a guessed event ID. Without
 one, deduplication is by exact native message ID. Hashes identify receipt keys;
 they do not authenticate the source. Account handoff has its own guarded state.
+
+Use `banked_announcement` for a heads-up before a banked grant is reported
+available and `banked` for the landing report. Use the same stable rollout ID
+when the source supplies one. Preserve legacy banked keys and exact message
+receipts. When an older receipt's stage is ambiguous, reconcile it against the
+original message before processing another report for that rollout.
 
 Receipt keys are `expiry:grant:ordinal:stage` within a single account. Ordinals
 preserve multiplicity for indistinguishable grants; they are not service IDs.

@@ -228,6 +228,10 @@ Track forecasts and completed resets as separate notification stages, even when
 they refer to the same event. A forecast notice suppresses repeated forecasts,
 not the later authenticated reset confirmation.
 
+Keep a banked-reset announcement and its landing report as separate stages of
+one rollout. Announcements are heads-ups. A landing report can trigger an
+eligible inventory refresh to confirm a personal grant and its expiry.
+
 The source batches email delivery, so this is not an instant-alert guarantee.
 Ask the dot to record source, inbox and wake times where available and distinguish
 missing timestamps from measured delay. Notify once about a meaningful confirmed

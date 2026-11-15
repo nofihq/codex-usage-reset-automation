@@ -113,15 +113,20 @@ subject filter. Welcome/confirmation messages do nothing. Classify the actual wo
 - Confirmed global reset: announce the public report promptly. Then, separately, use
   eligible account checks to verify whether it affected each account. Only the account
   timer may send, with fresh state and all of the account gates above.
-- Banked update: announce it separately as a public report until inventory confirms it.
-  A verified new grant can request one read-only inventory refresh. Never redeem or
-  send `OK` because a banked reset arrived.
+- Banked announcement: one public heads-up that a grant is expected, using
+  `banked_announcement`. Leave inventory and account timing alone.
+- Banked landing: report the source's availability update using `banked`. A
+  verified new grant can request one read-only inventory refresh. Never redeem
+  or send `OK` because a banked reset arrived.
 
 Use the planner to decide whether to claim a public notice. Claim all returned
 keys in one guarded alerts Page edit and read them back before sending. Dedup
 by authenticated Gmail message and stable source event plus type when available.
 Forecast and confirmation are separate stages; different deliveries of the same
-confirmed event are not separate opportunities. Save the receipt or uncertainty.
+confirmed event are not separate opportunities. Banked announcement and landing
+also have separate notice keys. Preserve old receipts and reconcile ambiguous
+legacy stages before processing a new delivery for the same rollout. Save the
+receipt or uncertainty.
 A blocked account Page must not prevent a verified public notice. Do not claim a
 personal refill or inventory update if account access is blocked. If the alerts Page
 itself is unavailable, hold Dot's notice and rely on the owner's direct source alerts.

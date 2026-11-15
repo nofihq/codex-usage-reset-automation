@@ -133,6 +133,22 @@ class WakeScope(unittest.TestCase):
 
 
 class PublicNotice(unittest.TestCase):
+    def test_banked_announcement_and_landing_have_distinct_receipts(self):
+        decide = planner.plan_public_notice
+        announcement = decide("banked_announcement", "announced-mail", "grant", True, True, {})
+        self.assertEqual(announcement["scope"], "claim_public_notice")
+        receipts = dict.fromkeys(announcement["keys"], "accepted")
+        landing = decide("banked", "landed-mail", "grant", True, True, receipts)
+        self.assertEqual(landing["scope"], "claim_public_notice")
+        existing_banked = dict.fromkeys(landing["keys"], "accepted")
+        self.assertEqual(decide("banked_announcement", "late-announce", "grant",
+                                True, True, existing_banked), {"scope": "reconcile_only"})
+        receipts.update(dict.fromkeys(landing["keys"], "accepted"))
+        for kind in ("banked_announcement", "banked"):
+            with self.subTest(kind=kind):
+                self.assertEqual(decide(kind, "repeated-mail", "grant", True, True, receipts),
+                                 {"scope": "duplicate"})
+
     def test_forecast_does_not_swallow_confirmation_but_replay_does(self):
         decide = planner.plan_public_notice
         forecast = decide("forecast", "message-1", "event", True, True, {})
