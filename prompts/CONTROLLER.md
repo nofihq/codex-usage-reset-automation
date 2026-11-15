@@ -29,8 +29,14 @@ A missing capability stops the dependent action. Respect normal review and owner
 
 ## Account timer and recovery
 
-Keep a native repeat (for example, every 12 hours starting at the intended UTC deadline)
-as a fallback. Set and read back the next intended wake on the same task. The ledger keeps
+Keep one native repeating timer per account. When the owner chooses a five-hour
+or weekly cadence, start the repeat at the verified target reset plus two minutes
+and use an elapsed interval of five hours or seven days. Set and read back the
+next intended wake on that same task when a fresh confirmed window changes
+the boundary. A genuine global report prompts an account check; only a verified
+change to that account's window changes the timer. A forecast or banked grant
+keeps the current cadence. With no verified current boundary, retain the sparse
+recovery repeat. The ledger keeps
 the ordinary reset deadline separate from reminder, recovery and fallback wakes. If the
 native schedule and ledger disagree, perform service reconciliation only. Do not spin
 on an overdue deadline.

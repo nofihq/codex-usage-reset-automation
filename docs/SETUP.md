@@ -83,10 +83,13 @@ Before any model request, require the dot to:
 Use one saved timer for this account. The task-owning controller must verify each
 schedule update; a worker's suggested next time is not a saved schedule.
 
-Ask it to keep a sparse repeat, such as every 12 hours, on that same timer so a
-failed attempt to save the next wake cannot leave a completed one-time task with
-no future run. Keep the next run scheduled for the verified reset plus two
-minutes; the repeat is a recovery fallback. Later fallback occurrences only
+Set the next wake for the verified reset plus two minutes. Keep a native repeat
+on that same timer so a failed schedule update leaves a future wake. With a
+current verified boundary, choose every five hours for a five-hour target or
+every seven days for a weekly target. Use UTC or an elapsed-time interval so
+daylight saving changes do not shift the cadence. Re-anchor when a verified
+new window changes the boundary. Until a current boundary is verified, retain
+a sparse recovery cadence such as every 12 hours. Later fallback occurrences only
 check saved state and service availability; they do not poll your account or
 inventory or send another `OK`. Verify after an actual scheduled test that the
 timer remains enabled before manually rescheduling it.

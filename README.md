@@ -41,6 +41,10 @@ the dot must stop and request sign-in instead of guessing or retrying a request.
 
 The normal loop is one scheduled Dot task per account: read the timing, use the
 saved Work session for one eligible request, confirm the new timing, then rearm.
+Use a five-hour or weekly repeat on that same task if you want it to keep
+waking on the account's cadence. Start from the next verified account boundary
+plus two minutes. Re-anchor after a newly verified window start, including
+when a confirmed global reset changes that account's boundary.
 The private Page only needs enough current state to preserve the window, a send
 reservation and its result, and any pending reminders. A scheduled timestamp
 alone cannot tell whether a browser submit happened before a run stopped.
