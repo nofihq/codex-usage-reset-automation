@@ -37,6 +37,21 @@ This repair needs no access to your Linux, Windows or Mac files.
 6. Verify saved expiry reminders with simulated dates and check real notification
    delivery separately. No fake live grant, changed expiry or banked redemption.
 
+## Free space for new event receipts
+
+Measure room for a new event, its final notice receipt and any receiver
+acknowledgments together. A small test marker can fit while a real event cannot.
+Keep the original deduplication keys, outcome states, active claims and pending
+handoffs in their authoritative block. Store a native Gmail message reference
+instead of copying the email body into each new record.
+
+If an older rollback snapshot or redundant evidence body takes up space,
+archive its exact bytes privately and retain a pointer, byte count and digest.
+Reconstruct the original record and confirm that all live bindings and receipt
+lookups agree before and after. Test a realistically sized guarded write,
+readback and cleanup with an inert marker. A rejected or uncertain write never
+permits a duplicate claim or notice.
+
 ## Isolate the cloud runtime
 
 If the original timer cannot be edited safely, a single standalone native Dot
