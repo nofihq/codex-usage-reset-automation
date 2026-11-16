@@ -9,7 +9,7 @@ selected ledger fields, never credentials, email bodies or Page IDs. It returns
 
 | Operation | Inputs besides `operation` | Result |
 | --- | --- | --- |
-| `route_wake` | `now`, `intended_at` for this occurrence; `delivery`: intended/recurrence/unknown; `mode`: ordinary/reminder/recovery/state; `ledger`: fresh/temporary_error/unavailable; Boolean `has_hold` | Maximum account scope and `check_saved_reminders` for the bound coordinator. Pass actual native provenance; guessed provenance is unknown. |
+| `route_wake` | `now`, `intended_at` for this occurrence; `delivery`: intended/recurrence/unknown; `mode`: ordinary/observation/reminder/recovery/state; `ledger`: fresh/temporary_error/unavailable; Boolean `has_hold` | Maximum account scope and `check_saved_reminders` for the bound coordinator. Pass actual native provenance; guessed provenance is unknown. |
 | `observe` | `result`: status reader JSON; `target`: 300 or 10080 | Account window, remaining percent, and whether the numeric/backend usage gate passes. Browser/spending/claims still apply. |
 | `verify_active_window` | `first`, `second`: fresh reader JSON for the same bound account; `target`: 300 or 10080 | Fixed reset and read-only deadline when two reads at least 60 seconds apart agree and the later read shows usage in that window. |
 | `verify_window` | `first`, `second`: reader JSON; `target`, `sent_at`, `completed_at` | Fixed reset and ordinary deadline, if two reads at least 60 seconds apart agree and fit the actual send/reply interval. |
@@ -39,6 +39,12 @@ ordinary-usage permission or affect a saved claim or hold.
 A verified fallback can check saved reminders while account work stays held.
 `check_saved_reminders` permits checking due times only. Sending a notice still
 requires ownership of the existing receipt key, guarded readback and normal review.
+
+Use `observation` only for a native timer independently authorized to read its
+already-selected saved account. This read-only scope works when Page state is
+unavailable. Check the intended identity around each read. Account switching,
+alerts, timer edits and model requests require their own guarded work. Pass
+`has_hold: true` if any hold applies to the read itself.
 
 For a public notice, use the same guarded edit to claim all returned keys and
 then record one outcome under those keys. Never use a guessed event ID. Without

@@ -41,6 +41,12 @@ while an exact boundary is unavailable. Label its time as a check. Keep the exac
 ordinary deadline separate from reminders and observations. Reconcile any mismatch
 before acting on saved state. Do not spin on an overdue deadline.
 
+For an independently authorized observation, read the already-selected account
+in its own normal tab in the managed browser and verify the identity before and
+after the read. This observation does not require the Page. Account switching,
+claims, reminders, model requests and timer writes still require their current
+guards. Report an account mismatch instead of switching in this scope.
+
 When normal account activity has already started a window, two fresh exact
 reads can establish its next reset with `verify_active_window`. Use its
 deadline for a read-only wake on the existing timer. Keep all existing send

@@ -114,10 +114,14 @@ def route_wake(now, intended_at, delivery, mode, ledger, has_hold):
     """Return the account scope and whether the coordinator can check saved reminders."""
     now, intended_at = stamp(now), stamp(intended_at)
     if (delivery not in ("intended", "recurrence", "unknown")
-            or mode not in ("ordinary", "reminder", "recovery", "state")
+            or mode not in ("ordinary", "observation", "reminder", "recovery", "state")
             or ledger not in ("fresh", "temporary_error", "unavailable")
             or type(has_hold) is not bool):
         raise ValueError("invalid_wake")
+    if mode == "observation":
+        if delivery != "unknown" and not has_hold and 0 <= now - intended_at <= HOUR:
+            return {"scope": "saved_account_usage_read_only", "check_saved_reminders": False}
+        return {"scope": "service_only", "reason": "observation_held", "check_saved_reminders": False}
     if ledger != "fresh":
         return {"scope": "service_only", "reason": ledger, "check_saved_reminders": False}
     if delivery == "unknown" or now < intended_at:

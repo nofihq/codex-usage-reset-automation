@@ -129,6 +129,23 @@ class WindowTiming(unittest.TestCase):
 
 
 class WakeScope(unittest.TestCase):
+    def test_bound_observation_can_read_usage_while_page_is_unavailable(self):
+        for delivery in ("intended", "recurrence"):
+            for ledger in ("fresh", "temporary_error", "unavailable"):
+                with self.subTest(delivery=delivery, ledger=ledger):
+                    self.assertEqual(planner.route_wake(NOW, NOW, delivery, "observation", ledger, False),
+                                     {"scope": "saved_account_usage_read_only",
+                                      "check_saved_reminders": False})
+
+    def test_observation_holds_unverified_stale_and_disallowed_wakes(self):
+        for delay, delivery, hold in ((-1, "intended", False), (0, "unknown", False),
+                                      (HOUR + 1, "intended", False), (0, "recurrence", True)):
+            with self.subTest(delay=delay, delivery=delivery, hold=hold):
+                self.assertEqual(planner.route_wake(NOW + delay, NOW, delivery, "observation",
+                                                    "fresh", hold),
+                                 {"scope": "service_only", "reason": "observation_held",
+                                  "check_saved_reminders": False})
+
     def test_verified_fallback_can_check_reminders_under_an_account_hold(self):
         for delivery, ledger, now, expected in (
                 ("recurrence", "fresh", NOW, True),
