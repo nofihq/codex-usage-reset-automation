@@ -85,6 +85,12 @@ command from the original timer itself; a foreground success cannot prove it.
 An overdue or early run is not a reason to press Run now or send a catch-up
 request. Check its original native dispatch and outcome first.
 
+For an authorized browser-only check, verify the exact Dot cloud computer and
+use its supported attach action once if the scheduler sees it offline. After
+attach, open the normal computer-control surface and perform the saved browser
+read against the bound account. Report the actual attach and browser results.
+A tool that was never called did not establish a service error or refusal.
+
 The native executable's version command and the app-server have different
 startup requirements. The app-server initializes its local SQLite state even
 for a metadata-only session. In an already-authorized, owner-only writable
