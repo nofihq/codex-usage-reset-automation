@@ -88,7 +88,9 @@ request. Check its original native dispatch and outcome first.
 For an authorized browser-only check, verify the exact Dot cloud computer and
 use its supported attach action once if the scheduler sees it offline. After
 attach, open the normal computer-control surface and perform the saved browser
-read against the bound account. Report the actual attach and browser results.
+read against the bound account. If no tab is open, open ChatGPT in the same
+managed browser profile and use **Settings → Usage**. Verify the signed-in
+account before reading. Report the actual attach and browser results.
 A tool that was never called did not establish a service error or refusal.
 
 The native executable's version command and the app-server have different
