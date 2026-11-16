@@ -51,6 +51,10 @@ When normal account activity has already started a window, two fresh exact
 reads can establish its next reset with `verify_active_window`. Use its
 deadline for a read-only wake on the existing timer. Keep all existing send
 claims, eligibility gates and review holds.
+For an authorized timing-only change, verify the existing native task identity,
+scope, destination and current recurrence before the edit. Read the new schedule
+back. If the scheduler offers minute precision, round the verified deadline up
+to the next selectable minute. Reconcile shared bindings before guarded work.
 If Settings → Usage exposes an exact reset date, seconds and time zone on the
 matched row's ordinary tooltip or browser-provided title, two fresh renders can
 establish the same timing with `verify_browser_window`. Use the rounded countdown
