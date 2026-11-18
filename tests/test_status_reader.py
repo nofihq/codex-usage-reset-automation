@@ -1,4 +1,5 @@
 """Identity gates and real cross-platform subprocess transport, without accounts."""
+import errno
 import json
 import os
 from pathlib import Path
@@ -39,6 +40,35 @@ class FakeClient:
 
 
 class IdentityGates(unittest.TestCase):
+    def test_startup_errors_identify_stage_without_paths(self):
+        failures = (
+            (FileNotFoundError("private-path"), "path_missing"),
+            (PermissionError("private-path"), "permission_denied"),
+            (subprocess.TimeoutExpired(["private-path"], 10), "timeout"),
+            (OSError(errno.EROFS, "private-path"), "read_only_filesystem"),
+            (OSError("private-path"), "os_error"),
+        )
+        for error, reason in failures:
+            with self.subTest(reason=reason), self.assertRaises(reader.Hold) as result:
+                reader.startup_process(lambda: (_ for _ in ()).throw(error), "cli_version_check")
+            self.assertEqual(str(result.exception), "cli_version_check_" + reason)
+
+    def test_inventory_and_usage_only_do_not_depend_on_model_catalog(self):
+        for inventory in (True, False):
+            with self.subTest(inventory=inventory):
+                data = responses()
+                del data['model/list']
+                data['account/rateLimits/read']['rateLimitResetCredits'] = {
+                    'availableCount': 1, 'credits': [{
+                        'status': 'available', 'grantedAt': 2000000000, 'expiresAt': 2000259200,
+                    }],
+                }
+                result = reader.collect(FakeClient(data), {'expectedEmail': 'test@example.invalid'},
+                                        inventory=inventory, skip_model_catalog=not inventory)
+                self.assertEqual(result['state'], 'metadata_verified')
+                self.assertNotIn('modelCatalog', result)
+                self.assertEqual('rateLimitResetCredits' in result['usage'], inventory)
+
     def test_correct_binding_and_private_fields_redacted(self):
         data = responses()
         data['account/rateLimits/read']['privateToken'] = 'secret-fixture'
@@ -216,6 +246,7 @@ class Transport(unittest.TestCase):
                 with self.assertRaisesRegex(reader.Hold, 'unsupported_cli_version'):
                     reader.MetadataClient(str(root/'native'), str(home), str(runtime), 1)
                 start.assert_not_called()
+            self.assertEqual(list(runtime.iterdir()), [])
 
     def run_transport(self, variant='normal'):
         with tempfile.TemporaryDirectory() as temp:
@@ -246,7 +277,13 @@ for line in sys.stdin:
             popen = subprocess.Popen
             observed = []
             def launch(command, **kwargs):
-                observed.append((command, kwargs['env']))
+                env = kwargs['env']
+                scratch = Path(env['CODEX_SQLITE_HOME'])
+                self.assertEqual(scratch.parent, runtime)
+                self.assertEqual(Path(env['XDG_RUNTIME_DIR']), scratch)
+                self.assertEqual(Path(env['CODEX_HOME']), home)
+                (scratch/'fixture.sqlite').touch()
+                observed.append((command, env))
                 return popen([sys.executable, str(fake)], **kwargs)
             version = subprocess.CompletedProcess([], 0, stdout=b'codex-cli 0.159.2\n', stderr=b'')
             with patch.object(reader.subprocess, 'run', return_value=version), \
@@ -262,6 +299,8 @@ for line in sys.stdin:
                 finally: client.close()
             calls = [json.loads(line) for line in log.read_text(encoding='utf-8').splitlines()]
             self.assertFalse(client.reader.is_alive())
+            self.assertEqual(list(runtime.iterdir()), [])
+            self.assertEqual(list(home.iterdir()), [])
             return result, calls, observed
 
     def test_actual_child_transport_and_auth_environment(self):
@@ -276,6 +315,9 @@ for line in sys.stdin:
                     'CODEX_REFRESH_TOKEN_URL_OVERRIDE'):
             self.assertNotIn(key, observed[0][1])
         self.assertIn('forced_login_method="chatgpt"', observed[0][0])
+        state_path = json.dumps(observed[0][1]['CODEX_SQLITE_HOME'], ensure_ascii=False)
+        self.assertIn(f'sqlite_home={state_path}', observed[0][0])
+        self.assertIn(f'log_dir={state_path}', observed[0][0])
 
     def test_errors_auth_requests_and_timeouts_stop_without_retry(self):
         for variant in ('auth', 'bad', 'oversize', 'timeout', 'rpc_error'):

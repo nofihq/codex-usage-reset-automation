@@ -1,9 +1,13 @@
 # Cloud setup
 
-Start with one account. You will create one private Page, one account timer and,
-optionally, one Gmail event task. All execution stays on the dot's cloud computer.
+Start with one account. Create one private account Page and one account timer.
+Public alerts optionally add one Gmail event task and its own private alerts Page.
+All execution stays on the dot's cloud computer.
 Windows, macOS and Linux use the same steps in a supported desktop browser;
 the ChatGPT mobile app can be used too.
+
+Already have tasks? Use [the recovery guide](RECOVER.md) to preserve their history
+and avoid a second initialization.
 
 ## 1. Check the dot's tools
 
@@ -11,7 +15,10 @@ Give your dot the [controller instructions](../prompts/CONTROLLER.md). Ask it to
 confirm access to its cloud browser, private Pages, saved cloud tasks and the
 account's usage information before doing anything that consumes usage. Follow
 [Cloud tools](CLOUD_TOOLS.md) to install the official CLI and status reader on the
-dot's computer. You do not install these on your Windows, Mac or other device.
+dot's computer before enabling activation. For read-only timing and alerts, start
+with the cloud browser's signed-in Usage page and the tests in the
+[verification guide](VERIFY.md#1-read-only-setup-and-recovery). You do not install
+the reader on your Windows, Mac or other device.
 
 For reset-email triggers, connect Gmail through ChatGPT's plugin settings and
 confirm that incoming-message event tasks are available. Availability depends on
@@ -24,7 +31,7 @@ Use the dot's supported private sign-in flow in its **cloud browser**. Complete
 MFA yourself when needed. Give the account a nickname such as `plus`; do not use
 an email address as a public configuration example.
 
-Authorize the CLI separately using [the cloud sign-in steps](CLOUD_TOOLS.md#sign-in).
+For activation, authorize the CLI separately using [the cloud sign-in steps](CLOUD_TOOLS.md#sign-in).
 A saved browser login does not sign in the CLI. Verify that both contexts identify
 the intended account, and that the reader binds authenticated routing identity
 to the usage response before reporting numeric data.
@@ -79,16 +86,23 @@ Before any model request, require the dot to:
 Use one saved timer for this account. The task-owning controller must verify each
 schedule update; a worker's suggested next time is not a saved schedule.
 
-Ask it to keep a sparse repeat, such as every 12 hours, on that same timer so a
-failed attempt to save the next wake cannot leave a completed one-time task with
-no future run. Keep the next run scheduled for the verified reset plus two
-minutes; the repeat is a recovery fallback. Later fallback occurrences only
-check saved state and service availability; they do not poll your account or
-inventory or send another `OK`. Verify after an actual scheduled test that the
-timer remains enabled before manually rescheduling it.
+Set the next wake for the verified reset plus two minutes. Keep a native repeat
+on that same timer so a failed schedule update leaves a future wake. With a
+current verified boundary, choose every five hours for a five-hour target or
+every seven days for a weekly target. Use UTC or an elapsed-time interval so
+daylight saving changes do not shift the cadence. Re-anchor when a verified
+new window changes the boundary. When the only supported view is a countdown,
+an independently authorized read-only timer can check Usage at the chosen cadence.
+Save it as an observation and keep request eligibility held until the ordinary
+checks pass. A sparse service recovery cadence can check saved state when Usage
+access is unavailable. Verify the task and recurring schedule after a real run.
 After saved-state access recovers, the fallback can schedule a separate read-only
 eligibility check. It waits for a known active window to end and preserves any
 review hold. Normal requests resume only after fresh eligibility checks pass.
+Use the [planner](PLANNER.md) to distinguish the intended wake from a stale,
+early or fallback occurrence. The [controller](../prompts/CONTROLLER.md) allows
+one retry of a retryable Page read. Hold Page-dependent work on a missing or
+denied Page and keep any independently authorized observation enabled.
 
 To review it in ChatGPT on the web, open **Scheduled** and expand **Your dot** in
 the sidebar. Open the account task and check its enabled state and next run.
@@ -181,10 +195,13 @@ Follow these steps to connect the emails:
    without limiting it to the signup email's subject. The dot identifies the
    message type after waking, using the [controller instructions](../prompts/CONTROLLER.md).
 4. Keep this event task separate from account timers: an event task cannot also
-   have a time schedule. If replacing a poller, verify the replacement is enabled
-   and its prompt is saved before disabling the old poller.
+   have a time schedule. Store its public-event notice claims in its own owner-only
+   alerts Page, separate from the account Page. If replacing a poller, verify the
+   replacement is enabled and its prompt is saved before disabling the old poller.
 5. Verify a genuine email arriving after enablement causes an automatic wake.
    Reading mail manually or pressing Run now does not prove event delivery.
+   Keep a direct source alert channel if timely public heads-ups matter; its
+   delivery does not rely on Gmail or Dot.
 
 A genuine global-reset email can prompt fresh checks of both Plus and Pro when
 both are configured; one email task serves all monitored accounts. Each account
@@ -203,6 +220,9 @@ or an idle timer alone cannot start it.
 
 The email task records the event and account checks; each account's existing task
 handles any eligible request. Accounts sharing the browser take turns.
+If the account Page is unavailable, the email task can still announce the public
+event using its own verified alerts Page. It reports personal verification as
+blocked. Direct alerts from the source can run independently of both Pages.
 
 Keep ordinary account timers independent of email delivery. A genuine global-reset
 email can verify the trigger and begin account checks in the same run. Banked-reset,
@@ -211,6 +231,10 @@ forecast and subscription-confirmation emails never authorize an `OK`.
 Track forecasts and completed resets as separate notification stages, even when
 they refer to the same event. A forecast notice suppresses repeated forecasts,
 not the later authenticated reset confirmation.
+
+Keep a banked-reset announcement and its landing report as separate stages of
+one rollout. Announcements are heads-ups. A landing report can trigger an
+eligible inventory refresh to confirm a personal grant and its expiry.
 
 The source batches email delivery, so this is not an instant-alert guarantee.
 Ask the dot to record source, inbox and wake times where available and distinguish
@@ -227,8 +251,10 @@ The announcement says a saved reset may be available. The expiry reminder warns
 that a reset actually present in your account is approaching its use-by time.
 Do not rely on the public email service to send that personal expiry reminder.
 
-Ask the dot to use your first account's existing task as the reminder coordinator,
-including reminders for any second account:
+Use one reminder coordinator across accounts. Start with your first account's
+existing task. You can reuse an existing dedicated reminder when its native
+schedule can wake at the exact saved deadlines. Verify sole ownership of the
+same warning keys before retiring an old warning schedule.
 
 1. Read the account's banked inventory with the reader's `--inventory` option.
    Use the expiry returned for each available reset; do not assume every grant
@@ -243,13 +269,13 @@ including reminders for any second account:
    inventory checks. Read inventory again only after a verified new banked-grant
    availability email or your direct request. Ordinary usage checks and expiry
    reminder wakes do not request inventory.
-4. Use that **same saved task** for read-only reminder wakes across the
-   configured accounts. Its next wake is the earlier of its normal account check
-   or any pending expiry warning. Keep every account's normal
-   reset deadline saved separately so an early reminder cannot erase it. Other
-   account timers keep their own normal schedules. A reminder must not wait behind
-   a five-hour, weekly or failure-backoff schedule.
-5. Save which account, grant, expiry and warning stage have already been notified.
+4. Use the same coordinator for read-only reminder wakes across accounts. Set a
+   dedicated coordinator to the earliest pending expiry warning. If it also
+   checks an account, use the earlier of the next account check and warning.
+   Store ordinary account deadlines separately to preserve them during reminder
+   wakes. A reminder must not wait behind a five-hour, weekly or backoff schedule.
+5. Use the [planner](PLANNER.md) on each saved inventory. Save which account,
+   grant, expiry and warning stage have already been notified.
    Preserve the count when several grants share timestamps. Read this state back
    before sending, keep the notification receipt afterward, and reconcile an
    unknown outcome instead of sending another alert blindly. A restart or repeated

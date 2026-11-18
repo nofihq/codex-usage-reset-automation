@@ -4,15 +4,16 @@ A cloud-dot setup for checking Codex usage, sending one short `OK` when eligible
 and keeping the next reset check scheduled. It runs on the dot's cloud computer,
 so your own device can be off.
 
-After setup, saved cloud tasks are configured to handle usage checks, eligible
-requests and reminders automatically. No always-on device, extra hosting or API
-key is required. Duplicate events stay quiet; meaningful results, failures and
-required actions are reported.
+Start with one account and choose its five-hour or weekly window. Add public
+reset alerts and personal expiry reminders independently. No always-on device,
+extra hosting or API key is required.
 
 Execution is best effort: expired sign-in, unavailable cloud services or a denied
 action can stop requests. Some failures require private sign-in or a platform
 repair. A saved schedule or successful past run does not prove the next run will
 work; use the [verification checklist](docs/VERIFY.md) to check actual outcomes.
+Already seeing “ledger unavailable” or repeated fallback wakes? Start with
+[repairing an existing setup](docs/RECOVER.md).
 
 The goal is to start an eligible new usage window with a tiny request rather
 than wait until you next need to work. The dot checks the reset time returned by
@@ -20,22 +21,34 @@ your account; it does not create extra allowance or reset usage itself.
 
 **Use it from Windows, macOS or Linux through a supported desktop browser, or
 from the ChatGPT mobile app.** No local CLI, Python, Node, server or API key is
-needed on your device. Inside its cloud computer, the dot uses the official
-Codex CLI and a small Python reader for exact usage/reset data. Its cloud browser
-handles the `OK` request, account selection and spending checks. Mobile web is not
-supported.
+needed on your device. The dot can read reset times and saved expiries in its
+signed-in cloud browser when Usage exposes them. The official CLI and a small
+Python reader supply backend eligibility before activating a window. The same
+cloud browser handles account selection, spending checks and the `OK` request.
+Mobile web is not supported.
 
 ## What it does
 
 | Part | Job |
 |---|---|
 | Official CLI + Python reader | Read and validate account identity, usage and numeric reset times |
-| Dot's cloud browser | Verify the selected account and spending controls, send the eligible `OK`, then archive its exact chat |
-| Private Page + cloud tasks | Preserve duplicate protection and schedule the next check |
+| Dot's cloud browser | Reuse the saved ChatGPT Work session, verify the selected account and spending controls, and send one eligible `OK` |
+| Private Pages + cloud tasks | Preserve request and alert receipts independently; schedule the next check |
+| [Read-only planner](docs/PLANNER.md) | Calculate wake scope, fixed window verification and warning times |
 
 The CLI is used only for reads in this workflow. Browser and CLI sign-in are
 separate; follow the private authorization steps for each. If a session expires,
 the dot must stop and request sign-in instead of guessing or retrying a request.
+
+The normal loop is one scheduled Dot task per account: read the timing, use the
+saved Work session for one eligible request, confirm the new timing, then rearm.
+Use a five-hour or weekly repeat on that same task if you want it to keep
+waking on the account's cadence. Start from the next verified account boundary
+plus two minutes. Re-anchor after a newly verified window start, including
+when a confirmed global reset changes that account's boundary.
+The private Page only needs enough current state to preserve the window, a send
+reservation and its result, and any pending reminders. A scheduled timestamp
+alone cannot tell whether a browser submit happened before a run stopped.
 
 ### One prompt, then two usage checks
 
@@ -71,15 +84,18 @@ not emails sent directly by Tibo or OpenAI.
 
 Your normal account timer still works without these emails. See
 [email setup and message types](docs/SETUP.md#5-add-tibo-reset-email-alerts)
-for signup, Gmail and notification details. Email can arrive late; it is not an
-instant-alert guarantee.
+for signup, Gmail and notification details. Public Dot notices use a separate
+alerts Page so an account-ledger failure does not hold them. Email can arrive
+late or be missed; the source's direct alerts are an independent fallback.
 
 ### Banked-reset expiry reminders
 
 Configure a **72-hour early warning and a 24-hour follow-up** for available banked
 resets, using the expiry shown by your account. This gives you at least a day's
-planned notice when the expiry is known early enough. The same cloud task handles
-these read-only reminders for each account; no extra `OK` or automatic redemption.
+planned notice when the expiry is known early enough. Use one cloud task to handle
+these read-only reminders for all configured accounts, with no extra `OK` or
+automatic redemption. Reuse an existing dedicated reminder if it can run at the
+saved warning times.
 Read inventory once during setup, then use the saved expiries without daily checks.
 A verified new banked-grant email or your direct request can cause another inventory
 read. Reminders say when availability was last checked and are conditional on the
@@ -156,5 +172,6 @@ Personal account state and credentials are not included.
 | [Cloud tools](docs/CLOUD_TOOLS.md) | Install and sign in to the usage reader inside the dot's computer |
 | [Native CLI](docs/CLI.md) | Optional Windows, macOS and Linux usage-reader commands |
 | [Verify](docs/VERIFY.md) | Check your own setup, scheduled run and email-trigger delivery |
+| [Recovery](docs/RECOVER.md) | Diagnose a stuck task and preserve existing state |
 | [Controller prompt](prompts/CONTROLLER.md) | Instructions for the cloud coordinator and account checks |
 | [Security](SECURITY.md) | Credentials, private state and request safeguards |
