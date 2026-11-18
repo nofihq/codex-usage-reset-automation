@@ -86,6 +86,9 @@ run prove different things. Use the next eligible window for any real request.
 - Check device push separately from a saved task or a posted Dot message.
   Record actual dispatch delay when observed. Do not change a real expiry,
   replay a public alert into production, or redeem a grant just to test.
+- For a warning assigned to its native completion result, verify the actual
+  scheduled result appears at its destination and the phase has no separate
+  send. Push being enabled in Settings does not establish device delivery.
 
 ## Check another device
 

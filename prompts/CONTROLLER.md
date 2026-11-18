@@ -220,5 +220,11 @@ identical expiries for display, preserving the count. Give the account, local ex
 time remaining and last verification time; say “if still unused.” For a late first
 notice with under 24 hours left, say so. An expiry reminder never sends `OK`.
 
+For an exact, preassigned one-time warning, the native task's completion result
+can be the phase's only delivery. Verify the genuine due occurrence and its
+destination, and include the last verified expiry with “if still unused.” Do not
+send a separate alert for that phase or mark it delivered before observing the
+actual result. Any receipt write and rearming still require their normal guards.
+
 Keep updates brief. Distinguish public reports, verified account results, pending or
 blocked checks, and actual delivery. Save precise times and evidence privately.
