@@ -11,7 +11,8 @@ A missing capability stops the dependent action. Respect normal review and owner
   Keep public email deduplication on a separate owner-only alerts Page. No private data in GitHub.
   Account claims and consumed permits stay authoritative in the account Page across restarts.
   Never create a blank replacement or use cached state to authorize work.
-- Read the known block in full with the current hash. Distinguish an explicit transient
+- Before work that depends on saved state, read the known block in full with the
+  current hash. Distinguish an explicit transient
   read failure from a size limit, permission denial, malformed response or missing state.
   A supported full/block view can resolve truncation; never parse a clipped response.
   Patch only intended fields against that hash, preserve unknown fields and read back the result.
@@ -24,7 +25,8 @@ A missing capability stops the dependent action. Respect normal review and owner
   native configuration back after a change; contradictory ledger flags or stale native
   bindings hold. Keep old results as history rather than carrying old headers into prompts.
 - Use the pinned [decision helper](../docs/PLANNER.md) for scope, usage and reminder
-  timing. Its inputs must come from real supported tool results and the fresh ledger.
+  timing. Use real supported tool results and a fresh ledger for inputs that
+  depend on saved state.
   The helper does not authorize actions, store state or perform a send.
 
 ## Account timer and recovery
@@ -43,9 +45,10 @@ before acting on saved state. Do not spin on an overdue deadline.
 
 For an independently authorized observation, read the already-selected account
 in its own normal tab in the managed browser and verify the identity before and
-after the read. This observation does not require the Page. Account switching,
-claims, reminders, model requests and timer writes still require their current
-guards. Report an account mismatch instead of switching in this scope.
+after the read. Run this observation before any optional Page check. Shared browser
+reservations apply to account switching and work that depends on shared state.
+Claims, reminders, model requests and timer writes retain their current guards.
+Keep the ordinary observation read-only and report an account mismatch.
 
 When normal account activity has already started a window, two fresh exact
 reads can establish its next reset with `verify_active_window`. Use its

@@ -100,8 +100,9 @@ After saved-state access recovers, the fallback can schedule a separate read-onl
 eligibility check. It waits for a known active window to end and preserves any
 review hold. Normal requests resume only after fresh eligibility checks pass.
 Use the [planner](PLANNER.md) to distinguish the intended wake from a stale,
-early or fallback occurrence; a retryable Page read can be retried once under
-the [controller](../prompts/CONTROLLER.md). A missing or denied Page stays held.
+early or fallback occurrence. The [controller](../prompts/CONTROLLER.md) allows
+one retry of a retryable Page read. Hold Page-dependent work on a missing or
+denied Page and keep any independently authorized observation enabled.
 
 To review it in ChatGPT on the web, open **Scheduled** and expand **Your dot** in
 the sidebar. Open the account task and check its enabled state and next run.

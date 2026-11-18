@@ -7,8 +7,9 @@ This repair needs no access to your Linux, Windows or Mac files.
 1. In **Scheduled → Your dot**, inspect the existing account timers and Gmail
    task. Keep their identities. Record the observed mode, next wake and latest
    result. Do not click Run now to see if a prompt goes through.
-2. Keep both account tasks in service-only mode until their existing canonical
-   Page is readable and guarded state is verified. Inspect the exact error.
+2. Hold work that depends on the canonical Page until it is readable and guarded
+   state is verified. An independently authorized read of the already-selected
+   account can run in its own tab. Inspect the exact Page error.
    A retryable service failure gets one bounded retry and retains the native
    repeat. A size issue uses a supported full or exact-block read. Missing or
    denied access needs a supported owner repair; preserve the original Page and
@@ -19,8 +20,10 @@ This repair needs no access to your Linux, Windows or Mac files.
    overwrite a legacy ledger with a generated blank one. Retain the source
    intact if any data cannot be migrated. A stopped timer stays stopped unless
    its owner resumes it. Remove expired instructions from the task prompt and
-   preserve their records in private history. Verify the saved task binding
-   after the change and check a genuine scheduled wake.
+   preserve their records in private history. Rewrite conflicting instructions
+   in place. Check that an independent read can run without a shared reservation
+   and that every guarded action still requires its reservation. Verify the saved
+   task binding after the change and check a genuine scheduled wake.
 4. Keep public notices available during the Gmail handler update. You can keep
    using the existing guarded Page during cutover if both versions reserve the
    same exact legacy receipt keys before sending. The [planner](PLANNER.md)
