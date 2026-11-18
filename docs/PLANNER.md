@@ -41,10 +41,11 @@ A verified fallback can check saved reminders while account work stays held.
 requires ownership of the existing receipt key, guarded readback and normal review.
 
 Use `observation` only for a native timer independently authorized to read its
-already-selected saved account. This read-only scope works when Page state is
-unavailable. Check the intended identity around each read. Account switching,
-alerts, timer edits and model requests require their own guarded work. Pass
-`has_hold: true` if any hold applies to the read itself.
+saved account. This read-only scope works when Page state is unavailable. Check
+identity around each read. A temporary saved-account switch needs explicit scope
+for the same observation and verified restoration. Alerts, timer edits and model
+requests require their own guarded work. Pass `has_hold: true` if any hold applies
+to the read itself.
 
 For a public notice, use the same guarded edit to claim all returned keys and
 then record one outcome under those keys. Never use a guessed event ID. Without

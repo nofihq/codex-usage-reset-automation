@@ -43,12 +43,14 @@ while an exact boundary is unavailable. Label its time as a check. Keep the exac
 ordinary deadline separate from reminders and observations. Reconcile any mismatch
 before acting on saved state. Do not spin on an overdue deadline.
 
-For an independently authorized observation, read the already-selected account
-in its own normal tab in the managed browser and verify the identity before and
-after the read. Run this observation before any optional Page check. Shared browser
-reservations apply to account switching and work that depends on shared state.
-Claims, reminders, model requests and timer writes retain their current guards.
-Keep the ordinary observation read-only and report an account mismatch.
+For an independently authorized observation, use a separate normal tab in the
+managed browser and verify the account around the read. Run this observation
+before any optional Page check. If its exact native scope also authorizes a
+temporary switch to an existing signed-in account, use the normal switcher and
+verify restoration in the same run. Stop for an observed browser conflict,
+identity mismatch, uncertain account transition or applicable denial. Event
+handoffs, claims, reminders, model requests and timer writes retain their shared
+state and reservation guards.
 If the timer already has an authorized, identity-bound cloud CLI reader, it can
 also read usage metadata once after the browser observation. Use the existing
 private setup and skip inventory. Skip the model catalog when the reader supports
