@@ -49,6 +49,10 @@ after the read. Run this observation before any optional Page check. Shared brow
 reservations apply to account switching and work that depends on shared state.
 Claims, reminders, model requests and timer writes retain their current guards.
 Keep the ordinary observation read-only and report an account mismatch.
+If the timer already has an authorized, identity-bound cloud CLI reader, it can
+also read usage metadata once after the browser observation. Use the existing
+private setup and skip the model catalog and inventory. Record any missing tool,
+failure or denial separately from the browser result.
 
 When normal account activity has already started a window, two fresh exact
 reads can establish its next reset with `verify_active_window`. Use its

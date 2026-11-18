@@ -7,6 +7,9 @@ run prove different things. Use the next eligible window for any real request.
 
 - Confirm that Dot uses its cloud computer. If you configured the CLI reader,
   confirm it and the [planner](PLANNER.md) are available at a later scheduled wake.
+  In the existing account timer's read-only mode, verify a real authenticated
+  metadata read and account match. Check the browser result and the CLI result
+  from that same run. A successful manual read only verifies the manual path.
 - Confirm the saved browser matches the selected account and that Usage shows
   the configured five-hour or weekly window. Before activation, independently
   verify the CLI identity and its selected 300- or 10,080-minute window.
