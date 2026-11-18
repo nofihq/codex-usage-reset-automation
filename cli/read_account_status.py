@@ -164,25 +164,33 @@ class MetadataClient:
                     "OPENAI_IDENTITY_TOKEN_FILE", "OPENAI_WORKLOAD_IDENTITY_CONTEXT",
                     "CODEX_REFRESH_TOKEN_URL_OVERRIDE"):
             env.pop(key, None)
-        env.update(CODEX_HOME=home, XDG_RUNTIME_DIR=runtime)
-        # Inspect the installed binary without opening the selected credential store.
-        def check_version():
-            with tempfile.TemporaryDirectory(prefix="version-", dir=runtime) as empty_home:
-                return subprocess.run(
-                    [binary, "--version"], cwd=empty_home,
-                    env=dict(env, CODEX_HOME=empty_home), capture_output=True, timeout=10,
-                )
-
-        version = startup_process(check_version, "cli_version_check")
-        if version.returncode or version.stdout.strip() != ("codex-cli " + SUPPORTED_VERSION).encode():
-            raise Hold("unsupported_cli_version")
-        self.process = startup_process(lambda: subprocess.Popen(
-            [binary, "-c", 'forced_login_method="chatgpt"',
-             "-c", 'cli_auth_credentials_store="file"',
-             "app-server", "--listen", "stdio://"], env=env, cwd=home,
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL, close_fds=True,
-        ), "cli_server_start")
+        self.scratch = startup_process(
+            lambda: tempfile.TemporaryDirectory(prefix="metadata-", dir=runtime),
+            "cli_runtime_setup",
+        )
+        scratch_path = self.scratch.name
+        try:
+            env.update(CODEX_HOME=home, CODEX_SQLITE_HOME=scratch_path, XDG_RUNTIME_DIR=scratch_path)
+            # Inspect the binary without opening the selected credential store.
+            version = startup_process(lambda: subprocess.run(
+                [binary, "--version"], cwd=scratch_path,
+                env=dict(env, CODEX_HOME=scratch_path), capture_output=True, timeout=10,
+            ), "cli_version_check")
+            if version.returncode or version.stdout.strip() != ("codex-cli " + SUPPORTED_VERSION).encode():
+                raise Hold("unsupported_cli_version")
+            # Explicit overrides keep app-server SQLite and logs out of the sign-in home.
+            state_path = json.dumps(scratch_path, ensure_ascii=False)
+            self.process = startup_process(lambda: subprocess.Popen(
+                [binary, "-c", 'forced_login_method="chatgpt"',
+                 "-c", 'cli_auth_credentials_store="file"',
+                 "-c", f"sqlite_home={state_path}", "-c", f"log_dir={state_path}",
+                 "app-server", "--listen", "stdio://"], env=env, cwd=home,
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL, close_fds=True,
+            ), "cli_server_start")
+        except BaseException:
+            self.scratch.cleanup()
+            raise
         self.messages = queue.Queue(maxsize=4)
         self.stopped = threading.Event()
         def read():
@@ -204,7 +212,11 @@ class MetadataClient:
                     except queue.Full:
                         pass
         self.reader = threading.Thread(target=read, daemon=True)
-        self.reader.start()
+        try:
+            self.reader.start()
+        except BaseException:
+            self.close()
+            raise
 
     def send(self, message):
         self.process.stdin.write((json.dumps(message) + "\n").encode())
@@ -259,11 +271,12 @@ class MetadataClient:
                 self.process.kill()
                 self.process.wait()
         self.process.stdin.close()
-        self.reader.join(timeout=2)
-        if not self.reader.is_alive():
-            self.process.stdout.close()
-        else:
+        if self.reader.ident is not None:
+            self.reader.join(timeout=2)
+        if self.reader.is_alive():
             raise OSError("Reader shutdown incomplete")
+        self.process.stdout.close()
+        self.scratch.cleanup()
 
 
 def number(value, minimum, maximum, integer=False):

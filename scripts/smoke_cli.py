@@ -37,8 +37,12 @@ def smoke(binary, scratch):
             except Hold as error:
                 if str(error) != 'missing_chatgpt_identity':
                     raise
+            if not any(Path(client.scratch.name).glob('*.sqlite')) or any(home.glob('*.sqlite')):
+                raise Hold('sqlite_state_outside_runtime')
         finally:
             client.close()
+        if any(runtime.iterdir()):
+            raise Hold('runtime_cleanup_incomplete')
         # Exercise the actual beginner-facing entry point, not only imports.
         entry = Path(__file__).resolve().parents[1]/'cli'/'read_account_status.py'
         setup = subprocess.run([sys.executable, str(entry), '--init-private', str(root)],

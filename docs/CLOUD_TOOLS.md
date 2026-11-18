@@ -89,7 +89,13 @@ null fields as zero or as permission to send. Use `--skip-model-catalog` for
 timer status and post-send verification. `--inventory` reads banked metadata
 without loading the unrelated model catalog and never redeems anything.
 
-Startup reasons identify the version check or app-server launch and whether
+The reader puts app-server SQLite state and logs in a temporary directory under
+the private `--runtime` path. It removes the directory when the reader closes.
+The account home still supplies the original sign-in and the official CLI can
+renew that sign-in normally. The scheduler needs a writable private runtime even
+for metadata reads.
+
+Startup reasons identify runtime setup, the version check or app-server launch and whether
 the path was missing, access was denied, the filesystem was read-only, the check
 timed out or the OS reported another error. They never include raw process
 output, credentials or private

@@ -246,6 +246,7 @@ class Transport(unittest.TestCase):
                 with self.assertRaisesRegex(reader.Hold, 'unsupported_cli_version'):
                     reader.MetadataClient(str(root/'native'), str(home), str(runtime), 1)
                 start.assert_not_called()
+            self.assertEqual(list(runtime.iterdir()), [])
 
     def run_transport(self, variant='normal'):
         with tempfile.TemporaryDirectory() as temp:
@@ -276,7 +277,13 @@ for line in sys.stdin:
             popen = subprocess.Popen
             observed = []
             def launch(command, **kwargs):
-                observed.append((command, kwargs['env']))
+                env = kwargs['env']
+                scratch = Path(env['CODEX_SQLITE_HOME'])
+                self.assertEqual(scratch.parent, runtime)
+                self.assertEqual(Path(env['XDG_RUNTIME_DIR']), scratch)
+                self.assertEqual(Path(env['CODEX_HOME']), home)
+                (scratch/'fixture.sqlite').touch()
+                observed.append((command, env))
                 return popen([sys.executable, str(fake)], **kwargs)
             version = subprocess.CompletedProcess([], 0, stdout=b'codex-cli 0.159.2\n', stderr=b'')
             with patch.object(reader.subprocess, 'run', return_value=version), \
@@ -292,6 +299,8 @@ for line in sys.stdin:
                 finally: client.close()
             calls = [json.loads(line) for line in log.read_text(encoding='utf-8').splitlines()]
             self.assertFalse(client.reader.is_alive())
+            self.assertEqual(list(runtime.iterdir()), [])
+            self.assertEqual(list(home.iterdir()), [])
             return result, calls, observed
 
     def test_actual_child_transport_and_auth_environment(self):
@@ -306,6 +315,9 @@ for line in sys.stdin:
                     'CODEX_REFRESH_TOKEN_URL_OVERRIDE'):
             self.assertNotIn(key, observed[0][1])
         self.assertIn('forced_login_method="chatgpt"', observed[0][0])
+        state_path = json.dumps(observed[0][1]['CODEX_SQLITE_HOME'], ensure_ascii=False)
+        self.assertIn(f'sqlite_home={state_path}', observed[0][0])
+        self.assertIn(f'log_dir={state_path}', observed[0][0])
 
     def test_errors_auth_requests_and_timeouts_stop_without_retry(self):
         for variant in ('auth', 'bad', 'oversize', 'timeout', 'rpc_error'):
