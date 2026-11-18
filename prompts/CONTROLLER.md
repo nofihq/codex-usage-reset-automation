@@ -109,6 +109,10 @@ a new verified ordinary wake; it does not inherit authority to submit.
    exhausted Codex bucket, 100% target remaining under the owner's accepted heuristic,
    zero purchased credits and auto reload off. Stop for active work, unknown controls,
    an uncertain request, unresolved cleanup, or an applicable review hold.
+   A newly started window can still report 0% used. If a fresh observation after the
+   old boundary shows a new reset timestamp, compare fresh reads before treating the
+   window as idle. A fixed new timestamp followed by increasing usage is evidence the
+   window has already started. Keep it as a timing observation and send nothing.
 2. Require one of: the prior verified fixed target anchor has expired; the owner granted
    one short-lived initialization permit for this exact account/task/target; or the owner
    enabled starts after confirmed global resets and this specific account's refill is
