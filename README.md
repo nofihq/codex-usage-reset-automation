@@ -72,6 +72,8 @@ schedule one minute early. Warnings include the last verification time and
 
 - Read back the enabled task, account, full instructions and actual next run.
 - Observe one completed eligible `OK` and a new fixed reset consistent with it.
+- A deliberate owner-requested write smoke test can use existing included
+  allowance in an active window. Report that it did not start a new window.
 - Observe a real scheduled wake on the same task.
 - Test the expiry task's next-date update on that same task, then verify that its
   real warning date and instructions are restored.

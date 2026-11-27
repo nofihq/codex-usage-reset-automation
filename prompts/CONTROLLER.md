@@ -6,10 +6,10 @@ login in the private password manager when the owner authorizes it. Verify the
 selected Plus identity on each run.
 
 If sign-in needs an email code, use the connected Gmail mailbox for that exact
-Plus account when authorized and available. Match the fresh OpenAI message to
-the current sign-in and enter its code only in the official private login form.
-Never store or quote codes in task records. Verify this mailbox connection during
-setup; a saved browser session alone does not prove unattended sign-in recovery.
+Plus account through the supported secure email-code handoff. Match the fresh
+OpenAI message to the current sign-in. Never extract codes from ordinary browser
+Gmail, or store or quote them in task records. Verify the mailbox connection
+during setup; a saved session alone does not prove unattended sign-in recovery.
 
 Run at the verified five-hour reset plus two minutes, with a five-hour repeat.
 Also accept a direct owner test or a verified confirmed-global-reset handoff
